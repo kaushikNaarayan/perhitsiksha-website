@@ -4,6 +4,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import StatsCounter from '../components/ui/StatsCounter';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
+import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
 import type { Story, Testimonial } from '../types';
 
 // Import data
@@ -16,6 +17,19 @@ import heroBgImage from '../assets/images/hero-bg.png';
 const Home: React.FC = () => {
   const [featuredStories, setFeaturedStories] = useState<Story[]>([]);
   const [featuredTestimonial, setFeaturedTestimonial] = useState<Testimonial | null>(null);
+
+  // Celebrity endorsements data
+  const celebrityEndorsements = [
+    { id: '1', name: 'Priyamani', videoId: 'l4JAmumyw5k', profession: 'Actress' },
+    { id: '2', name: 'Madhur Bhandarkar', videoId: 'LD5Qzq7pxwg', profession: 'Film Director' },
+    { id: '3', name: 'Amala Akkineni', videoId: 'g9viUStaIUI', profession: 'Actress' },
+    { id: '4', name: 'Ravi Dubey', videoId: '2WgZU1tg0gI', profession: 'Actor' },
+    { id: '5', name: 'Anjum Sharma', videoId: 'pI6ZTT17-QA', profession: 'Actor' },
+    { id: '6', name: 'Venkatesh Prasad', videoId: '5Ft1a0I1LHo', profession: 'Former Cricketer' },
+    { id: '7', name: 'Suresh Raina', videoId: 'G3RbOb5t22E', profession: 'Cricketer' },
+    { id: '8', name: 'Atul Wassan', videoId: '4Z9V_wbU5mg', profession: 'Cricket Commentator' },
+    { id: '9', name: 'Pullela Gopichand', videoId: 'Bcleh93Fhbc', profession: 'Badminton Coach' }
+  ];
 
   useEffect(() => {
     // Load featured stories
@@ -93,6 +107,19 @@ const Home: React.FC = () => {
             <StatsCounter value={15} suffix="+" label="Years of Impact" />
             <StatsCounter value={95} suffix="%" label="Success Rate" />
           </div>
+        </div>
+      </section>
+
+      {/* Celebrity Endorsements */}
+      <section className="bg-primary-50 section-padding">
+        <div className="max-w-7xl mx-auto container-padding">
+          <div className="text-center mb-12">
+            <h2 className="heading-2 mb-4">Celebrity Endorsements</h2>
+            <p className="body-large max-w-2xl mx-auto">
+              Prominent personalities from sports, cinema, and media support our mission to democratize education
+            </p>
+          </div>
+          <YouTubeShortsCarousel endorsements={celebrityEndorsements} />
         </div>
       </section>
 
