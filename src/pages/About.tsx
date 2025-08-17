@@ -41,8 +41,8 @@ const About: React.FC = () => {
     },
     {
       year: '2023',
-      title: '300+ Students Supported',
-      description: 'Celebrated supporting over 300 students with a 95% graduation success rate.',
+      title: '200+ Students Supported',
+      description: 'Celebrated supporting over 200 students across multiple states.',
       milestone: true
     },
     {
@@ -157,21 +157,20 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Impact Numbers */}
-      <section className="bg-primary-50 section-padding">
+      {/* Impact Numbers - Compact */}
+      <section className="bg-primary-50 py-6 sm:py-8 lg:py-10">
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="text-center mb-12">
-            <h2 className="heading-2 mb-4">Our Impact</h2>
+          <div className="text-center mb-6">
+            <h2 className="heading-2 mb-2">Our Impact</h2>
             <p className="body-large">
               Numbers that reflect our commitment to educational empowerment.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <StatsCounter value={300} suffix="+" label="Students Supported" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <StatsCounter value={200} suffix="+" label="Students Supported" />
             <StatsCounter value={500} suffix="+" label="Contributors" />
-            <StatsCounter value={95} suffix="%" label="Graduation Rate" />
-            <StatsCounter value={15} suffix="+" label="Years of Service" />
+            <StatsCounter value={3} suffix="" label="Years of Impact" />
           </div>
         </div>
       </section>

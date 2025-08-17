@@ -98,15 +98,21 @@ const Home: React.FC = () => {
         overlay={false}
       />
 
-      {/* Impact Stats */}
-      <section className="bg-white section-padding">
+      {/* Impact Stats - Compact */}
+      <section className="bg-white py-6 sm:py-8 lg:py-10 relative">
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <StatsCounter value={300} suffix="+" label="Students Supported" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <StatsCounter value={200} suffix="+" label="Students Supported" />
             <StatsCounter value={500} suffix="+" label="Contributors" />
-            <StatsCounter value={15} suffix="+" label="Years of Impact" />
-            <StatsCounter value={95} suffix="%" label="Success Rate" />
+            <StatsCounter value={3} suffix="" label="Years of Impact" />
           </div>
+        </div>
+        
+        {/* Animated Scroll Indicator */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
         </div>
       </section>
 
