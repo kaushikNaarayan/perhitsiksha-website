@@ -4,6 +4,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
 import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
+import CelebrityCarousel from '../components/ui/CelebrityCarousel';
 import type { Story, Testimonial } from '../types';
 
 // Import data
@@ -17,7 +18,7 @@ const Home: React.FC = () => {
   const [featuredStories, setFeaturedStories] = useState<Story[]>([]);
   const [featuredTestimonial, setFeaturedTestimonial] = useState<Testimonial | null>(null);
 
-  // Celebrity endorsements data
+  // Celebrity endorsements data for carousel
   const celebrityEndorsements = [
     { id: '1', name: 'Priyamani', videoId: 'l4JAmumyw5k', profession: 'Actress' },
     { id: '2', name: 'Madhur Bhandarkar', videoId: 'LD5Qzq7pxwg', profession: 'Film Director' },
@@ -29,6 +30,12 @@ const Home: React.FC = () => {
     { id: '8', name: 'Atul Wassan', videoId: '4Z9V_wbU5mg', profession: 'Cricket Commentator' },
     { id: '9', name: 'Pullela Gopichand', videoId: 'Bcleh93Fhbc', profession: 'Badminton Coach' }
   ];
+
+  // Celebrity data for text carousel (simpler format)
+  const celebrityCarouselData = celebrityEndorsements.map(celebrity => ({
+    name: celebrity.name,
+    profession: celebrity.profession
+  }));
 
   useEffect(() => {
     // Load featured stories
@@ -76,9 +83,11 @@ const Home: React.FC = () => {
       <section className="bg-primary-50 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-6">
-            <p className="body-large max-w-2xl mx-auto">
-              Prominent personalities from sports, cinema, and media support our mission to democratize education
-            </p>
+            <CelebrityCarousel 
+              celebrities={celebrityCarouselData}
+              className="body-large max-w-2xl mx-auto"
+              interval={2000}
+            />
           </div>
           <YouTubeShortsCarousel endorsements={celebrityEndorsements} />
         </div>

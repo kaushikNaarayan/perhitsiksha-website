@@ -1,6 +1,7 @@
 import React from 'react';
 import type { HeroProps } from '../../types';
 import Button from './Button';
+import TypewriterText from './TypewriterText';
 
 const Hero: React.FC<HeroProps> = ({
   title,
@@ -36,7 +37,11 @@ const Hero: React.FC<HeroProps> = ({
         {/* Semi-transparent text background for readability */}
         <div className={`${backgroundImage ? 'hero-content-box rounded-2xl p-8 shadow-2xl' : ''}`}>
           <h1 className={`heading-1 mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}>
-            {title}
+            <TypewriterText 
+              text={title} 
+              className={backgroundImage ? 'text-white' : 'text-gray-900'}
+              speed={150}
+            />
           </h1>
           
           {subtitle && (
