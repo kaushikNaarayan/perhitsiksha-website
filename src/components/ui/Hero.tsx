@@ -7,6 +7,7 @@ const Hero: React.FC<HeroProps> = ({
   subtitle,
   primaryCTA,
   secondaryCTA,
+  stats,
   backgroundImage,
   overlay = true,
 }) => {
@@ -65,6 +66,22 @@ const Hero: React.FC<HeroProps> = ({
                   {secondaryCTA.text}
                 </Button>
               )}
+            </div>
+          )}
+
+          {/* Impact Stats */}
+          {stats && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8 pt-6 border-t border-gray-300 border-opacity-50">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className={`text-2xl md:text-3xl lg:text-4xl font-bold mb-1 ${backgroundImage ? 'text-white' : 'text-primary-500'}`}>
+                    {stat.prefix || ''}{stat.value.toLocaleString()}{stat.suffix || ''}
+                  </div>
+                  <div className={`text-sm md:text-base font-medium ${backgroundImage ? 'text-gray-200' : 'text-gray-600'}`}>
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

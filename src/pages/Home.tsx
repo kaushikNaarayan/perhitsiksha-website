@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Hero from '../components/ui/Hero';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import StatsCounter from '../components/ui/StatsCounter';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
 import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
 import type { Story, Testimonial } from '../types';
@@ -86,35 +85,15 @@ const Home: React.FC = () => {
       <Hero
         title="Empowering Education for Every Child"
         subtitle="We provide financial aid, mentorship, and career guidance to help underprivileged students complete their education and transform their lives."
-        primaryCTA={{
-          text: "Support a Student",
-          href: "#contribute"
-        }}
-        secondaryCTA={{
-          text: "Watch Stories",
-          href: "/testimonials"
-        }}
+        stats={[
+          { value: 200, suffix: "+", label: "Students Supported" },
+          { value: 500, suffix: "+", label: "Contributors" },
+          { value: 3, suffix: "", label: "Years of Impact" }
+        ]}
         backgroundImage={heroBgImage}
         overlay={false}
       />
 
-      {/* Impact Stats - Compact */}
-      <section className="bg-white py-6 sm:py-8 lg:py-10 relative">
-        <div className="max-w-7xl mx-auto container-padding">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <StatsCounter value={200} suffix="+" label="Students Supported" />
-            <StatsCounter value={500} suffix="+" label="Contributors" />
-            <StatsCounter value={3} suffix="" label="Years of Impact" />
-          </div>
-        </div>
-        
-        {/* Animated Scroll Indicator */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </div>
-      </section>
 
       {/* Celebrity Endorsements */}
       <section className="bg-primary-50 section-padding">

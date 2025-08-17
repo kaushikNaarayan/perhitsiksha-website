@@ -83,6 +83,12 @@ export interface HeroProps {
     text: string;
     href: string;
   };
+  stats?: Array<{
+    value: number;
+    suffix?: string;
+    prefix?: string;
+    label: string;
+  }>;
   backgroundImage?: string;
   overlay?: boolean;
 }
