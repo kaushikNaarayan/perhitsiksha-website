@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface CelebrityEndorsement {
   id: string;
@@ -14,14 +14,39 @@ interface YouTubeShortsCarouselProps {
 const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorsements }) => {
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    if (!isAutoScrolling || !scrollContainerRef.current) return;
+
+    const interval = setInterval(() => {
+      if (scrollContainerRef.current) {
+        const container = scrollContainerRef.current;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        
+        if (container.scrollLeft >= maxScroll) {
+          // Reset to beginning
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          // Scroll right
+          container.scrollBy({ left: 280, behavior: 'smooth' });
+        }
+      }
+    }, 3000); // Scroll every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoScrolling]);
 
   const scrollLeft = () => {
+    setIsAutoScrolling(false); // Stop auto-scroll on manual interaction
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: -280, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
+    setIsAutoScrolling(false); // Stop auto-scroll on manual interaction
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: 280, behavior: 'smooth' });
     }
@@ -73,6 +98,16 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorseme
             key={celebrity.id}
             className="flex-none w-64 snap-center"
           >
+            {/* Celebrity Info */}
+            <div className="pb-3 text-center">
+              <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                {celebrity.name}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {celebrity.profession}
+              </p>
+            </div>
+
             {/* Video Container - Portrait aspect ratio */}
             <div className="relative w-full bg-gray-900 rounded-xl overflow-hidden shadow-lg" style={{ aspectRatio: '9/16' }}>
               {playingVideo === celebrity.videoId ? (
@@ -123,16 +158,6 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorseme
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Celebrity Info */}
-            <div className="pt-3 text-center">
-              <h3 className="font-semibold text-gray-900 text-lg mb-1">
-                {celebrity.name}
-              </h3>
-              <p className="text-sm text-gray-600">
-                {celebrity.profession}
-              </p>
             </div>
           </div>
         ))}

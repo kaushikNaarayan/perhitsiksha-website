@@ -98,6 +98,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 2rem;
+    text-align: center;
   }
   
   .hero-content-box::before {

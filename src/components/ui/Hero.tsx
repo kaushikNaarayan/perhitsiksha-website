@@ -81,7 +81,7 @@ const Hero: React.FC<HeroProps> = ({
             <TypewriterText 
               text={title} 
               className={backgroundImage ? 'text-white' : 'text-gray-900'}
-              speed={20}
+              speed={75}
             />
           </h1>
           
