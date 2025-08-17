@@ -32,39 +32,42 @@ const Hero: React.FC<HeroProps> = ({
       
       {/* Content */}
       <div className="relative z-20 max-w-4xl mx-auto text-center container-padding">
-        <h1 className={`heading-1 mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}>
-          {title}
-        </h1>
-        
-        {subtitle && (
-          <p className={`body-large mb-8 max-w-2xl mx-auto ${backgroundImage ? 'text-gray-200' : 'text-gray-600'}`}>
-            {subtitle}
-          </p>
-        )}
-        
-        {(primaryCTA || secondaryCTA) && (
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {primaryCTA && (
-              <Button
-                href={primaryCTA.href}
-                variant="primary"
-                size="lg"
-              >
-                {primaryCTA.text}
-              </Button>
-            )}
-            
-            {secondaryCTA && (
-              <Button
-                href={secondaryCTA.href}
-                variant={backgroundImage ? "secondary" : "outline"}
-                size="lg"
-              >
-                {secondaryCTA.text}
-              </Button>
-            )}
-          </div>
-        )}
+        {/* Semi-transparent text background for readability */}
+        <div className={`${backgroundImage ? 'bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-2xl p-8 shadow-2xl' : ''}`}>
+          <h1 className={`heading-1 mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}>
+            {title}
+          </h1>
+          
+          {subtitle && (
+            <p className={`body-large mb-8 max-w-2xl mx-auto ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}>
+              {subtitle}
+            </p>
+          )}
+          
+          {(primaryCTA || secondaryCTA) && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {primaryCTA && (
+                <Button
+                  href={primaryCTA.href}
+                  variant="primary"
+                  size="lg"
+                >
+                  {primaryCTA.text}
+                </Button>
+              )}
+              
+              {secondaryCTA && (
+                <Button
+                  href={secondaryCTA.href}
+                  variant={backgroundImage ? "secondary" : "outline"}
+                  size="lg"
+                >
+                  {secondaryCTA.text}
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
