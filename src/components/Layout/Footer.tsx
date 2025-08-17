@@ -102,57 +102,15 @@ const Footer: React.FC = () => {
                   Privacy Policy
                 </a>
               </li>
-              <li>
-                <a 
-                  href="/transparency" 
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
-                >
-                  Transparency
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="/reports" 
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
-                >
-                  Annual Reports
-                </a>
-              </li>
             </ul>
           </div>
         </div>
 
-        {/* Newsletter Signup */}
-        <div className="border-t border-gray-800 pt-8 mb-8">
-          <div className="max-w-md">
-            <h3 className="text-lg font-semibold mb-2">Stay Updated</h3>
-            <p className="text-gray-300 mb-4">
-              Get the latest stories and updates from our community.
-            </p>
-            <form className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                required
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 bg-primary-500 hover:bg-primary-600 rounded-lg font-medium transition-colors duration-200"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
-        </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © {currentYear} PerhitSiksha. All rights reserved.
-          </p>
+        <div className="border-t border-gray-800 pt-6 text-center">
           <p className="text-gray-400 text-sm">
-            Registered NGO dedicated to educational empowerment.
+            © {currentYear} PerhitSiksha. All rights reserved.
           </p>
         </div>
       </div>

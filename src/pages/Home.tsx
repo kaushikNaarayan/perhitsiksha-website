@@ -44,38 +44,17 @@ const Home: React.FC = () => {
     {
       id: '1',
       title: 'Financial Aid',
-      description: 'Direct financial support for tuition, books, and living expenses to help students complete their education.',
-      icon: '💰',
-      features: [
-        'Tuition fee assistance',
-        'Books and supplies funding',
-        'Living expense support',
-        'Emergency financial aid'
-      ]
+      description: 'Direct financial support for tuition, books, and living expenses to help students complete their education.'
     },
     {
       id: '2',
-      title: 'Mentorship Program',
-      description: 'One-on-one guidance from industry professionals to help students navigate their academic and career journey.',
-      icon: '🎓',
-      features: [
-        'Industry expert mentors',
-        'Career guidance sessions',
-        'Skill development workshops',
-        'Personal growth coaching'
-      ]
+      title: 'Mentorship',
+      description: 'One-on-one guidance from industry professionals to help students navigate their academic and career journey.'
     },
     {
       id: '3',
       title: 'Career Guidance',
-      description: 'Comprehensive career counseling, interview preparation, and job placement assistance.',
-      icon: '🚀',
-      features: [
-        'Career counseling',
-        'Interview preparation',
-        'Resume building workshops',
-        'Job placement assistance'
-      ]
+      description: 'Comprehensive career counseling, interview preparation, and job placement assistance.'
     }
   ];
 
@@ -83,8 +62,7 @@ const Home: React.FC = () => {
     <div>
       {/* Hero Section */}
       <Hero
-        title="Empowering Education for Every Child"
-        subtitle="We provide financial aid, mentorship, and career guidance to help underprivileged students complete their education and transform their lives."
+        title="Education for Every Child"
         stats={[
           { value: 200, suffix: "+", label: "Students Supported" },
           { value: 500, suffix: "+", label: "Contributors" }
@@ -98,7 +76,6 @@ const Home: React.FC = () => {
       <section className="bg-primary-50 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-6">
-            <h2 className="heading-2 mb-2">Celebrity Endorsements</h2>
             <p className="body-large max-w-2xl mx-auto">
               Prominent personalities from sports, cinema, and media support our mission to democratize education
             </p>
@@ -131,15 +108,7 @@ const Home: React.FC = () => {
             {programs.map((program) => (
               <Card key={program.id} className="p-4 text-center">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{program.title}</h3>
-                <p className="text-sm text-gray-600 mb-3">{program.description}</p>
-                <ul className="text-xs text-gray-600 space-y-1">
-                  {program.features.map((feature, index) => (
-                    <li key={index} className="flex items-center">
-                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2"></span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-sm text-gray-600">{program.description}</p>
               </Card>
             ))}
           </div>
@@ -149,16 +118,11 @@ const Home: React.FC = () => {
       {/* Featured Stories */}
       <section className="bg-white section-padding">
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              <h2 className="heading-2 mb-4">Success Stories</h2>
-              <p className="body-large">
-                Real stories of transformation and hope from our community.
-              </p>
-            </div>
-            <Button href="/stories" variant="outline">
-              View All Stories
-            </Button>
+          <div className="text-center mb-12">
+            <h2 className="heading-2 mb-4">Success Stories</h2>
+            <p className="body-large">
+              Real stories of transformation and hope from our community.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -194,6 +158,12 @@ const Home: React.FC = () => {
                 </div>
               </Card>
             ))}
+          </div>
+          
+          <div className="text-center mt-8">
+            <a href="/stories" className="text-primary-500 hover:text-primary-600 font-medium">
+              View All Stories →
+            </a>
           </div>
         </div>
       </section>
@@ -242,29 +212,10 @@ const Home: React.FC = () => {
             Help us empower the next generation through education.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Button variant="secondary" size="lg">
-              Donate Now
-            </Button>
+          <div className="flex justify-center">
             <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-primary-500">
               Become a Mentor
             </Button>
-          </div>
-
-          {/* Newsletter Signup */}
-          <div className="max-w-md mx-auto">
-            <h3 className="text-lg font-semibold mb-4">Stay Updated</h3>
-            <form className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
-                required
-              />
-              <Button variant="secondary" size="md">
-                Subscribe
-              </Button>
-            </form>
           </div>
         </div>
       </section>
