@@ -1,0 +1,60 @@
+[
+  {
+    "id": "1",
+    "title": "From Village School to Engineering College",
+    "excerpt": "Ravi's journey from a small village in Rajasthan to becoming a software engineer at a Fortune 500 company.",
+    "content": "Ravi grew up in a small village in Rajasthan where his father worked as a farmer. Despite financial constraints, his family prioritized education. When Ravi excelled in his 12th grade exams, the dream of engineering college seemed impossible due to the high fees. PerhitSiksha stepped in, providing not just financial support but also mentorship throughout his journey. Today, Ravi works as a software engineer and has started a coding club in his village to inspire other young minds.",
+    "category": "Education",
+    "date": "2024-03-15",
+    "image": "/images/stories/ravi-story.jpg",
+    "featured": true
+  },
+  {
+    "id": "2",
+    "title": "Breaking the Glass Ceiling",
+    "excerpt": "How Sneha became the first woman in her family to pursue higher education and is now a successful doctor.",
+    "content": "In a conservative family where women were traditionally not encouraged to pursue careers, Sneha's determination to become a doctor seemed like an impossible dream. With PerhitSiksha's support, she not only completed her medical degree but also specialized in pediatrics. She now runs a free clinic in her hometown, providing healthcare to underprivileged children and inspiring other young women in her community.",
+    "category": "Career",
+    "date": "2024-02-28",
+    "image": "/images/stories/sneha-story.jpg",
+    "featured": true
+  },
+  {
+    "id": "3",
+    "title": "Building Tomorrow's Leaders",
+    "excerpt": "The story of how our mentorship program shapes not just careers, but character.",
+    "content": "Our mentorship program pairs students with industry professionals who provide guidance beyond academics. The story of Maya and her mentor Dr. Krishnan shows how this relationship transformed not just Maya's career prospects but also her confidence and leadership skills. Maya, who was once shy and uncertain, now leads a student organization and has already started her own social initiative.",
+    "category": "Community",
+    "date": "2024-01-20",
+    "featured": false
+  },
+  {
+    "id": "4",
+    "title": "The Ripple Effect of Education",
+    "excerpt": "How supporting one student's education created positive change in an entire community.",
+    "content": "When we supported Arjun's engineering education, we didn't just help one student. Arjun went on to develop water purification systems for rural areas. His innovation has now provided clean water to over 50 villages, impacting thousands of lives. This is the ripple effect of education - one supported student can transform entire communities.",
+    "category": "Community",
+    "date": "2023-12-10",
+    "image": "/images/stories/arjun-story.jpg",
+    "featured": true
+  },
+  {
+    "id": "5",
+    "title": "Second Chances, First Success",
+    "excerpt": "Mohan's story of overcoming early academic setbacks to achieve his dreams.",
+    "content": "Mohan failed his first attempt at engineering entrance exams and spent two years working odd jobs to support his family. When he decided to try again, PerhitSiksha provided support for coaching classes and living expenses. Not only did he clear the exams, but he also graduated with honors and now works in renewable energy, contributing to India's clean energy mission.",
+    "category": "Education",
+    "date": "2023-11-22",
+    "featured": false
+  },
+  {
+    "id": "6",
+    "title": "Beyond Boundaries",
+    "excerpt": "How technology is helping us reach students in the most remote areas of India.",
+    "content": "In the remote hills of Uttarakhand, internet connectivity was a luxury. But when Priya, a bright student, couldn't afford to move to the city for coaching classes, we leveraged technology to bring education to her. Through virtual mentoring and online resources, Priya not only cleared her medical entrance exams but also topped her district. Her success has inspired other students in remote areas to dream big.",
+    "category": "Education",
+    "date": "2023-10-15",
+    "image": "/images/stories/priya-remote.jpg",
+    "featured": false
+  }
+]

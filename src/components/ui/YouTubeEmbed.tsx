@@ -1,0 +1,79 @@
+import React, { useState } from 'react';
+import type { YouTubeEmbedProps } from '../../types';
+
+const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
+  videoId,
+  title,
+  thumbnail,
+  lazyLoad = true,
+  autoPlay = false,
+}) => {
+  const [isLoaded, setIsLoaded] = useState(!lazyLoad);
+  const [imageError, setImageError] = useState(false);
+  
+  const thumbnailUrl = thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}${autoPlay ? '?autoplay=1' : ''}`;
+  
+  const handlePlay = () => {
+    setIsLoaded(true);
+  };
+  
+  const handleImageError = () => {
+    setImageError(true);
+  };
+  
+  if (isLoaded) {
+    return (
+      <div className="youtube-embed">
+        <iframe
+          src={embedUrl}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full"
+        />
+      </div>
+    );
+  }
+  
+  return (
+    <div className="youtube-embed cursor-pointer group" onClick={handlePlay}>
+      <div className="absolute inset-0">
+        {!imageError ? (
+          <img
+            src={thumbnailUrl}
+            alt={title}
+            className="w-full h-full object-cover rounded-lg"
+            onError={handleImageError}
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+              </div>
+              <p className="text-sm text-gray-500">Video Preview</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Overlay with play button */}
+        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center group-hover:bg-opacity-30 transition-all duration-200">
+          <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+            <svg 
+              className="w-8 h-8 text-gray-800 ml-1" 
+              fill="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default YouTubeEmbed;

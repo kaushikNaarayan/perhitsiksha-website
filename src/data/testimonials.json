@@ -1,0 +1,70 @@
+[
+  {
+    "id": "1",
+    "name": "Priya Sharma",
+    "role": "Student",
+    "location": "Delhi",
+    "youtubeId": "dQw4w9WgXcQ",
+    "quote": "PerhitSiksha changed my life by providing financial support for my engineering studies. Today, I'm working at a top tech company and giving back to help other students like me.",
+    "featured": true
+  },
+  {
+    "id": "2",
+    "name": "Rajesh Kumar",
+    "role": "Parent",
+    "location": "Mumbai",
+    "quote": "When I couldn't afford my daughter's college fees, PerhitSiksha stepped in. Their mentorship program helped her not just financially but also guided her career choices.",
+    "featured": false
+  },
+  {
+    "id": "3",
+    "name": "Dr. Anita Reddy",
+    "role": "Mentor",
+    "location": "Bangalore",
+    "youtubeId": "dQw4w9WgXcQ",
+    "quote": "As a mentor with PerhitSiksha, I've seen firsthand how education transforms lives. Every student I've guided has exceeded expectations.",
+    "featured": true
+  },
+  {
+    "id": "4",
+    "name": "Amit Patel",
+    "role": "Contributor",
+    "location": "Ahmedabad",
+    "quote": "Contributing to PerhitSiksha is the most meaningful investment I make. Knowing that my contribution directly supports a student's education gives me immense satisfaction.",
+    "featured": false
+  },
+  {
+    "id": "5",
+    "name": "Kavita Singh",
+    "role": "Student",
+    "location": "Pune",
+    "youtubeId": "dQw4w9WgXcQ",
+    "quote": "From a small village to pursuing my Master's degree - PerhitSiksha made this journey possible. Their support goes beyond money; they believed in my potential.",
+    "featured": true
+  },
+  {
+    "id": "6",
+    "name": "Suresh Gupta",
+    "role": "Parent",
+    "location": "Kolkata",
+    "quote": "My son is the first in our family to attend university. PerhitSiksha didn't just fund his education - they provided guidance that helped him choose the right career path.",
+    "featured": false
+  },
+  {
+    "id": "7",
+    "name": "Prof. Meera Joshi",
+    "role": "Mentor",
+    "location": "Chennai",
+    "quote": "In my 20 years as an educator, I've never seen an organization as committed to student success as PerhitSiksha. They truly care about each individual's growth.",
+    "featured": false
+  },
+  {
+    "id": "8",
+    "name": "Vikram Agarwal",
+    "role": "Contributor",
+    "location": "Hyderabad",
+    "youtubeId": "dQw4w9WgXcQ",
+    "quote": "After benefiting from educational support myself years ago, I now contribute to PerhitSiksha to pay it forward. It's amazing to see the impact we can create together.",
+    "featured": true
+  }
+]
