@@ -77,8 +77,8 @@ const Home: React.FC = () => {
           text: "Watch Stories",
           href: "/testimonials"
         }}
-        backgroundImage="/images/hero-education.jpg"
-        overlay={true}
+        backgroundImage="/images/hero-bg.png"
+        overlay={false}
       />
 
       {/* Impact Stats */}
@@ -98,10 +98,19 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-12">
             <h2 className="heading-2 mb-4">What We Do</h2>
-            <p className="body-large max-w-2xl mx-auto">
+            <p className="body-large max-w-2xl mx-auto mb-8">
               We believe every deserving student should have access to quality education, 
               regardless of their financial background.
             </p>
+            
+            {/* Video Introduction */}
+            <div className="max-w-2xl mx-auto">
+              <YouTubeEmbed
+                videoId="dQw4w9WgXcQ"
+                title="PerhitSiksha - Empowering Education"
+                lazyLoad={true}
+              />
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
