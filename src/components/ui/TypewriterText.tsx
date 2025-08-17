@@ -9,7 +9,7 @@ interface TypewriterTextProps {
 const TypewriterText: React.FC<TypewriterTextProps> = ({ 
   text, 
   className = '', 
-  speed = 100 
+  speed = 20 
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
