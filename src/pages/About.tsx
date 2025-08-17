@@ -4,6 +4,9 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import StatsCounter from '../components/ui/StatsCounter';
 
+// Import images
+import aboutHeroBg from '../assets/images/about-hero-bg.png';
+
 const About: React.FC = () => {
   const timelineEvents = [
     {
@@ -100,6 +103,8 @@ const About: React.FC = () => {
       <Hero
         title="About PerhitSiksha"
         subtitle="Empowering underprivileged students through education since 2009."
+        backgroundImage={aboutHeroBg}
+        overlay={false}
       />
 
       {/* Mission & Vision */}

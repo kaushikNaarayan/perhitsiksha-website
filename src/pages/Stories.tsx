@@ -7,6 +7,9 @@ import type { Story } from '../types';
 // Import data
 import storiesData from '../data/stories.json';
 
+// Import images
+import storiesHeroBg from '../assets/images/stories-hero-bg.jpg';
+
 const Stories: React.FC = () => {
   const [stories, setStories] = useState<Story[]>([]);
   const [filteredStories, setFilteredStories] = useState<Story[]>([]);
@@ -60,6 +63,8 @@ const Stories: React.FC = () => {
       <Hero
         title="Stories of Transformation"
         subtitle="Discover how education changes lives and creates ripples of positive impact in communities across India."
+        backgroundImage={storiesHeroBg}
+        overlay={false}
       />
 
       {/* Filters and Search */}

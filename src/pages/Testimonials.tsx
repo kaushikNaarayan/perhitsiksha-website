@@ -7,6 +7,9 @@ import type { Testimonial } from '../types';
 // Import data
 import testimonialsData from '../data/testimonials.json';
 
+// Import images
+import testimonialsHeroBg from '../assets/images/testimonials-hero-bg.png';
+
 const Testimonials: React.FC = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [filteredTestimonials, setFilteredTestimonials] = useState<Testimonial[]>([]);
@@ -40,6 +43,8 @@ const Testimonials: React.FC = () => {
       <Hero
         title="Voices of Change"
         subtitle="Hear directly from our community about how education transforms lives and creates lasting impact."
+        backgroundImage={testimonialsHeroBg}
+        overlay={false}
       />
 
       {/* Filters */}
