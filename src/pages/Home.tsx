@@ -87,8 +87,7 @@ const Home: React.FC = () => {
         subtitle="We provide financial aid, mentorship, and career guidance to help underprivileged students complete their education and transform their lives."
         stats={[
           { value: 200, suffix: "+", label: "Students Supported" },
-          { value: 500, suffix: "+", label: "Contributors" },
-          { value: 3, suffix: "", label: "Years of Impact" }
+          { value: 500, suffix: "+", label: "Contributors" }
         ]}
         backgroundImage={heroBgImage}
         overlay={false}
@@ -96,10 +95,10 @@ const Home: React.FC = () => {
 
 
       {/* Celebrity Endorsements */}
-      <section className="bg-primary-50 section-padding">
+      <section className="bg-primary-50 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="text-center mb-12">
-            <h2 className="heading-2 mb-4">Celebrity Endorsements</h2>
+          <div className="text-center mb-6">
+            <h2 className="heading-2 mb-2">Celebrity Endorsements</h2>
             <p className="body-large max-w-2xl mx-auto">
               Prominent personalities from sports, cinema, and media support our mission to democratize education
             </p>
@@ -109,17 +108,17 @@ const Home: React.FC = () => {
       </section>
 
       {/* What We Do */}
-      <section className="bg-gray-50 section-padding">
+      <section className="bg-gray-50 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="text-center mb-12">
-            <h2 className="heading-2 mb-4">What We Do</h2>
-            <p className="body-large max-w-2xl mx-auto mb-8">
+          <div className="text-center mb-8">
+            <h2 className="heading-2 mb-2">What We Do</h2>
+            <p className="body-large max-w-2xl mx-auto mb-6">
               We believe every deserving student should have access to quality education, 
               regardless of their financial background.
             </p>
             
             {/* Video Introduction */}
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               <YouTubeEmbed
                 videoId="c1fM-oB6FVw"
                 title="PerhitSiksha - Empowering Education"
@@ -128,23 +127,19 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {programs.map((program) => (
-              <Card key={program.id} className="p-6 text-center">
-                <div className="text-4xl mb-4">{program.icon}</div>
-                <h3 className="heading-3 mb-3">{program.title}</h3>
-                <p className="body-base mb-4">{program.description}</p>
-                <ul className="text-sm text-gray-600 space-y-1 mb-6">
+              <Card key={program.id} className="p-4 text-center">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{program.title}</h3>
+                <p className="text-sm text-gray-600 mb-3">{program.description}</p>
+                <ul className="text-xs text-gray-600 space-y-1">
                   {program.features.map((feature, index) => (
                     <li key={index} className="flex items-center">
-                      <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
+                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2"></span>
                       {feature}
                     </li>
                   ))}
                 </ul>
-                <Button variant="outline" size="sm">
-                  Learn More
-                </Button>
               </Card>
             ))}
           </div>

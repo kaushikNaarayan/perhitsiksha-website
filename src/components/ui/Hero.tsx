@@ -34,7 +34,7 @@ const Hero: React.FC<HeroProps> = ({
       {/* Content */}
       <div className="relative z-20 max-w-4xl mx-auto text-center container-padding">
         {/* Semi-transparent text background for readability */}
-        <div className={`${backgroundImage ? 'bg-gray-900 bg-opacity-30 backdrop-blur-sm rounded-2xl p-8 shadow-2xl' : ''}`}>
+        <div className={`${backgroundImage ? 'hero-content-box rounded-2xl p-8 shadow-2xl' : ''}`}>
           <h1 className={`heading-1 mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}>
             {title}
           </h1>
@@ -71,7 +71,7 @@ const Hero: React.FC<HeroProps> = ({
 
           {/* Impact Stats */}
           {stats && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8 pt-6 border-t border-gray-300 border-opacity-50">
+            <div className={`grid grid-cols-1 ${stats.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-6 mt-8 pt-6 border-t border-gray-300 border-opacity-50`}>
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className={`text-2xl md:text-3xl lg:text-4xl font-bold mb-1 ${backgroundImage ? 'text-white' : 'text-primary-500'}`}>

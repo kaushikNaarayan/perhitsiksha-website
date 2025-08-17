@@ -167,10 +167,9 @@ const About: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <StatsCounter value={200} suffix="+" label="Students Supported" />
             <StatsCounter value={500} suffix="+" label="Contributors" />
-            <StatsCounter value={3} suffix="" label="Years of Impact" />
           </div>
         </div>
       </section>
