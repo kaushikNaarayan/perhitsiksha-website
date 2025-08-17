@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import logoImage from '../../assets/images/logo.jpg';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,7 +24,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img 
-              src="/images/logo.jpg" 
+              src={logoImage} 
               alt="PerhitSiksha Logo" 
               className="w-8 h-8 rounded-lg object-cover"
             />

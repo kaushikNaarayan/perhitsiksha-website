@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logoImage from '../../assets/images/logo.jpg';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -13,7 +14,7 @@ const Footer: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <img 
-                src="/images/logo.jpg" 
+                src={logoImage} 
                 alt="PerhitSiksha Logo" 
                 className="w-8 h-8 rounded-lg object-cover"
               />

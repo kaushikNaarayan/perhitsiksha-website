@@ -10,6 +10,9 @@ import type { Story, Testimonial } from '../types';
 import storiesData from '../data/stories.json';
 import testimonialsData from '../data/testimonials.json';
 
+// Import images
+import heroBgImage from '../assets/images/hero-bg.png';
+
 const Home: React.FC = () => {
   const [featuredStories, setFeaturedStories] = useState<Story[]>([]);
   const [featuredTestimonial, setFeaturedTestimonial] = useState<Testimonial | null>(null);
@@ -77,7 +80,7 @@ const Home: React.FC = () => {
           text: "Watch Stories",
           href: "/testimonials"
         }}
-        backgroundImage="/images/hero-bg.png"
+        backgroundImage={heroBgImage}
         overlay={false}
       />
 
