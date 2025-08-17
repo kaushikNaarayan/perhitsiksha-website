@@ -16,26 +16,31 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorseme
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
-  // Auto-scroll effect
+  // Continuous smooth auto-scroll effect
   useEffect(() => {
     if (!isAutoScrolling || !scrollContainerRef.current) return;
 
-    const interval = setInterval(() => {
-      if (scrollContainerRef.current) {
-        const container = scrollContainerRef.current;
+    const container = scrollContainerRef.current;
+    let scrollPosition = 0;
+    const scrollSpeed = 0.5; // pixels per frame
+    
+    const smoothScroll = () => {
+      if (container) {
         const maxScroll = container.scrollWidth - container.clientWidth;
         
-        if (container.scrollLeft >= maxScroll) {
-          // Reset to beginning
-          container.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          // Scroll right
-          container.scrollBy({ left: 280, behavior: 'smooth' });
+        scrollPosition += scrollSpeed;
+        
+        if (scrollPosition >= maxScroll) {
+          scrollPosition = 0; // Reset to beginning
         }
+        
+        container.scrollLeft = scrollPosition;
       }
-    }, 3000); // Scroll every 3 seconds
+    };
 
-    return () => clearInterval(interval);
+    const animationFrame = setInterval(smoothScroll, 16); // 60fps
+
+    return () => clearInterval(animationFrame);
   }, [isAutoScrolling]);
 
   const scrollLeft = () => {

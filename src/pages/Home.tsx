@@ -64,9 +64,7 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <Hero
         title="Education for Every Child"
-        stats={[
-          { value: 200, suffix: "+", label: "Students Supported" }
-        ]}
+        stats={[]}
         backgroundImage={heroBgImage}
         overlay={false}
       />
