@@ -33,7 +33,7 @@ const Hero: React.FC<HeroProps> = ({
       {/* Content */}
       <div className="relative z-20 max-w-4xl mx-auto text-center container-padding">
         {/* Semi-transparent text background for readability */}
-        <div className={`${backgroundImage ? 'bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-2xl p-8 shadow-2xl' : ''}`}>
+        <div className={`${backgroundImage ? 'bg-gray-900 bg-opacity-30 backdrop-blur-sm rounded-2xl p-8 shadow-2xl' : ''}`}>
           <h1 className={`heading-1 mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}>
             {title}
           </h1>
