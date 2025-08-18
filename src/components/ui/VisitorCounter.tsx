@@ -9,101 +9,114 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchRealGAData = async () => {
+    const fetchVisitorCount = async () => {
       const baseCount = 350; // Base count
-      let gaVisitors = 0;
+      let realVisitors = 0;
 
       try {
-        // Try to fetch real GA data from various sources
-        const apiEndpoints = [
-          '/api/analytics', // Vercel/Netlify function
-          'https://api.perhitsiksha.org/analytics', // Custom API if available
-          // Add more endpoints as needed
+        // Try lightweight visitor counter services used by other sites
+        const counterServices = [
+          {
+            name: 'Counter.dev',
+            url: 'https://api.counter.dev/perhitsiksha.org',
+            parser: (data: any) => data.count || 0
+          },
+          {
+            name: 'GoatCounter',
+            url: 'https://perhitsiksha.goatcounter.com/counter/visits.json',
+            parser: (data: any) => data.count || 0
+          },
+          {
+            name: 'Simple Counter API',
+            url: `https://api.countapi.xyz/get/perhitsiksha.org/visits`,
+            parser: (data: any) => data.value || 0
+          }
         ];
 
-        for (const endpoint of apiEndpoints) {
+        for (const service of counterServices) {
           try {
-            const response = await fetch(endpoint, {
+            console.log(`🔄 Trying ${service.name}...`);
+            const response = await fetch(service.url, {
               method: 'GET',
               headers: {
                 'Accept': 'application/json',
-              },
+              }
             });
 
             if (response.ok) {
               const data = await response.json();
-              if (data.success && typeof data.visitors === 'number') {
-                gaVisitors = data.visitors;
-                console.log(`✅ Real GA data fetched: ${gaVisitors} visitors`);
+              const count = service.parser(data);
+              
+              if (count && count > 0) {
+                realVisitors = count;
+                console.log(`✅ ${service.name} success: ${realVisitors} visitors`);
                 break;
               }
             }
-          } catch (apiError) {
-            console.warn(`GA API endpoint ${endpoint} failed:`, apiError);
+          } catch (serviceError) {
+            console.warn(`${service.name} failed:`, serviceError);
             continue;
           }
         }
 
-        // If no API worked, try to use Google Analytics Measurement Protocol
-        // to get some real data through gtag
-        if (gaVisitors === 0 && window.gtag) {
+        // If no lightweight service worked, try to register a hit and get count
+        if (realVisitors === 0) {
           try {
-            // This is a workaround - we'll try to get some real metrics
-            // by checking if gtag is working and use that as an indicator
-            window.gtag('event', 'visitor_count_request', {
-              custom_parameter: 'checking_ga_connectivity'
-            });
-            
-            // Use a more conservative approach based on actual GA implementation
-            const gaStartDate = new Date('2024-08-18'); // Real GA implementation date (today)
-            const now = new Date();
-            const daysSinceImplementation = Math.floor((now.getTime() - gaStartDate.getTime()) / (1000 * 60 * 60 * 24));
-            
-            // Very conservative real growth estimation
-            gaVisitors = Math.max(1, daysSinceImplementation * 2); // 2 visitors per day minimum
-            console.log(`📊 Using conservative GA estimation: ${gaVisitors} visitors`);
-          } catch (gtagError) {
-            console.warn('gtag integration failed:', gtagError);
+            // Try to increment and get current count from CountAPI
+            const hitResponse = await fetch('https://api.countapi.xyz/hit/perhitsiksha.org/visitors');
+            if (hitResponse.ok) {
+              const hitData = await hitResponse.json();
+              if (hitData.value) {
+                realVisitors = hitData.value;
+                console.log(`✅ CountAPI hit registered: ${realVisitors} total visitors`);
+              }
+            }
+          } catch (hitError) {
+            console.warn('CountAPI hit failed:', hitError);
           }
         }
 
-        // Final fallback if everything fails
-        if (gaVisitors === 0) {
-          gaVisitors = 1; // At least count the current visitor
-          console.log('🔄 Using minimal fallback count');
-        }
-
-        // Cache the result for a short time to avoid too many API calls
-        const cacheKey = 'ga_visitor_cache';
-        const cacheTimeKey = 'ga_visitor_cache_time';
-        const cacheValidityMinutes = 15; // 15-minute cache
+        // Cache the result for 10 minutes to avoid too many API calls
+        const cacheKey = 'visitor_count_cache';
+        const cacheTimeKey = 'visitor_count_time';
+        const cacheValidityMinutes = 10;
         
         const cachedTime = localStorage.getItem(cacheTimeKey);
         const now = new Date().getTime();
         
-        if (cachedTime && (now - parseInt(cachedTime, 10)) < (cacheValidityMinutes * 60 * 1000)) {
+        // Use cache if it's still valid and we didn't get new data
+        if (realVisitors === 0 && cachedTime && (now - parseInt(cachedTime, 10)) < (cacheValidityMinutes * 60 * 1000)) {
           const cachedCount = localStorage.getItem(cacheKey);
           if (cachedCount) {
-            gaVisitors = parseInt(cachedCount, 10);
-            console.log('📋 Using cached GA data');
+            realVisitors = parseInt(cachedCount, 10);
+            console.log('📋 Using cached visitor count');
           }
-        } else {
-          localStorage.setItem(cacheKey, gaVisitors.toString());
+        } else if (realVisitors > 0) {
+          // Cache new data
+          localStorage.setItem(cacheKey, realVisitors.toString());
           localStorage.setItem(cacheTimeKey, now.toString());
         }
 
+        // Final fallback: minimal increment
+        if (realVisitors === 0) {
+          realVisitors = 1;
+          console.log('🔄 Using minimal fallback count');
+        }
+
       } catch (error) {
-        console.error('Failed to fetch real GA data:', error);
-        gaVisitors = 1; // Minimum fallback
+        console.error('All visitor counting services failed:', error);
+        // Try to get cached data as final fallback
+        const cachedCount = localStorage.getItem('visitor_count_cache');
+        realVisitors = cachedCount ? parseInt(cachedCount, 10) : 1;
       }
 
-      const totalCount = baseCount + gaVisitors;
+      const totalCount = baseCount + realVisitors;
       setVisitorCount(totalCount);
       setIsLoading(false);
     };
 
-    // Fetch real data with a loading delay
-    setTimeout(fetchRealGAData, 1000);
+    // Small delay for loading effect
+    setTimeout(fetchVisitorCount, 800);
   }, []);
 
   // Format number with commas for better readability
