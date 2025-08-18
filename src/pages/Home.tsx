@@ -92,6 +92,16 @@ const Home: React.FC = () => {
               regardless of their financial background.
             </p>
             
+            {/* Programs Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              {programs.map((program) => (
+                <Card key={program.id} className="p-4 text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{program.title}</h3>
+                  <p className="text-sm text-gray-600">{program.description}</p>
+                </Card>
+              ))}
+            </div>
+            
             {/* Video Introduction */}
             <div className="max-w-4xl mx-auto">
               <YouTubeEmbed
@@ -100,15 +110,6 @@ const Home: React.FC = () => {
                 lazyLoad={true}
               />
             </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {programs.map((program) => (
-              <Card key={program.id} className="p-4 text-center">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{program.title}</h3>
-                <p className="text-sm text-gray-600">{program.description}</p>
-              </Card>
-            ))}
           </div>
         </div>
       </section>

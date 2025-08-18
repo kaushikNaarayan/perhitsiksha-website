@@ -96,5 +96,55 @@
     "date": "2024-03-20",
     "youtubeId": "gDyZVALHhxU",
     "featured": false
+  },
+  {
+    "id": "11",
+    "title": "Supporting Dreams",
+    "excerpt": "Hirdesh shares his journey as a parent supporting his child's education.",
+    "content": "Hirdesh's dedication to his child's education exemplifies the sacrifices parents make for their children's future. With PerhitSiksha's support, his family was able to overcome financial barriers and pursue quality education.",
+    "category": "Family",
+    "date": "2024-04-01",
+    "youtubeId": "cXHQ-Z-bUMk",
+    "featured": false
+  },
+  {
+    "id": "12",
+    "title": "Believing in Potential",
+    "excerpt": "Manendar Reddy's story of investing in his child's educational future.",
+    "content": "Manendar Reddy's unwavering belief in education and his child's potential led him to seek support from PerhitSiksha. His story reflects the hopes and dreams of countless parents who see education as the key to a better future.",
+    "category": "Family",
+    "date": "2024-03-25",
+    "youtubeId": "sRKa_Gf_PJo",
+    "featured": true
+  },
+  {
+    "id": "13",
+    "title": "A Father's Commitment",
+    "excerpt": "Murali Krishna's inspiring journey supporting his child's educational aspirations.",
+    "content": "Murali Krishna's story demonstrates the lengths parents will go to ensure their children receive quality education. Through PerhitSiksha's assistance, his family's educational dreams became achievable realities.",
+    "category": "Family",
+    "date": "2024-03-18",
+    "youtubeId": "1oQGF3kUtdg",
+    "featured": false
+  },
+  {
+    "id": "14",
+    "title": "Nurturing Success",
+    "excerpt": "Neelima Tanwar's dedication to her child's educational journey.",
+    "content": "Neelima Tanwar's commitment to her child's education showcases the vital role parents play in their children's success. With PerhitSiksha's support, she was able to provide the educational opportunities her child deserved.",
+    "category": "Family",
+    "date": "2024-03-15",
+    "youtubeId": "0YJNKxGY3QQ",
+    "featured": false
+  },
+  {
+    "id": "15",
+    "title": "Dreams Made Possible",
+    "excerpt": "Radhika Kantha shares how PerhitSiksha helped fulfill her family's educational goals.",
+    "content": "Radhika Kantha's story is one of determination and hope. As a parent, she understood the transformative power of education and with PerhitSiksha's support, was able to give her child the opportunities she had always dreamed of providing.",
+    "category": "Family",
+    "date": "2024-03-12",
+    "youtubeId": "1kWdxQqIL7g",
+    "featured": true
   }
 ]

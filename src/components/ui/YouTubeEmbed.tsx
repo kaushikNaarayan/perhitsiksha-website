@@ -9,9 +9,15 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   autoPlay = false,
 }) => {
   const [isLoaded, setIsLoaded] = useState(!lazyLoad);
-  const [imageError, setImageError] = useState(false);
+  const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(0);
   
-  const thumbnailUrl = thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  // Fallback thumbnails in order of preference
+  const thumbnailUrls = thumbnail ? [thumbnail] : [
+    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`
+  ];
+  
   const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}${autoPlay ? '?autoplay=1' : ''}`;
   
   const handlePlay = () => {
@@ -19,7 +25,9 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   };
   
   const handleImageError = () => {
-    setImageError(true);
+    if (currentThumbnailIndex < thumbnailUrls.length - 1) {
+      setCurrentThumbnailIndex(currentThumbnailIndex + 1);
+    }
   };
   
   if (isLoaded) {
@@ -39,9 +47,9 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   return (
     <div className="youtube-embed cursor-pointer group" onClick={handlePlay}>
       <div className="absolute inset-0">
-        {!imageError ? (
+        {currentThumbnailIndex < thumbnailUrls.length ? (
           <img
-            src={thumbnailUrl}
+            src={thumbnailUrls[currentThumbnailIndex]}
             alt={title}
             className="w-full h-full object-cover rounded-lg"
             onError={handleImageError}
