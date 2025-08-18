@@ -79,5 +79,50 @@
     "youtubeId": "gDyZVALHhxU",
     "quote": "My commitment to mentoring through PerhitSiksha reflects the organization's core values of guidance and support. I help shape the next generation of leaders and innovators.",
     "featured": false
+  },
+  {
+    "id": "10",
+    "name": "K Madhuri",
+    "role": "Parent",
+    "location": "India",
+    "youtubeId": "VGxDPY10k4E",
+    "quote": "PerhitSiksha's support has been instrumental in my child's educational journey. Their commitment to helping families like ours is truly remarkable.",
+    "featured": false
+  },
+  {
+    "id": "11",
+    "name": "Uma Shankar",
+    "role": "Parent",
+    "location": "India",
+    "youtubeId": "86HzMPnEe7c",
+    "quote": "Through PerhitSiksha, my child received the educational opportunities I always dreamed of providing. Their support changed our family's future.",
+    "featured": false
+  },
+  {
+    "id": "12",
+    "name": "Sunita Gupta",
+    "role": "Parent",
+    "location": "India",
+    "youtubeId": "S0zH15KHTRE",
+    "quote": "PerhitSiksha's assistance gave my child the chance to pursue higher education. I'm grateful for their belief in our children's potential.",
+    "featured": true
+  },
+  {
+    "id": "13",
+    "name": "Prem Kumar",
+    "role": "Parent",
+    "location": "India",
+    "youtubeId": "uDgrpL_I-HY",
+    "quote": "The support from PerhitSiksha has been life-changing for our family. Education is the key to breaking barriers, and they made it possible.",
+    "featured": false
+  },
+  {
+    "id": "14",
+    "name": "Rajsree Rawat",
+    "role": "Parent",
+    "location": "India",
+    "youtubeId": "UtKlUTgUhs0",
+    "quote": "PerhitSiksha's dedication to helping families overcome educational challenges is inspiring. They truly understand the value of every child's dreams.",
+    "featured": true
   }
 ]
