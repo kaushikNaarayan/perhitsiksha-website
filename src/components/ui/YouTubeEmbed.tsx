@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { YouTubeEmbedProps } from '../../types';
-import { trackVideoPlay } from './GoogleAnalytics';
+import { trackVideoPlay } from '../../utils/analytics';
 
 const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   videoId,

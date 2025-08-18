@@ -19,17 +19,17 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           {
             name: 'Counter.dev',
             url: 'https://api.counter.dev/perhitsiksha.org',
-            parser: (data: any) => data.count || 0
+            parser: (data: { count?: number }) => data.count || 0
           },
           {
             name: 'GoatCounter',
             url: 'https://perhitsiksha.goatcounter.com/counter/visits.json',
-            parser: (data: any) => data.count || 0
+            parser: (data: { count?: number }) => data.count || 0
           },
           {
             name: 'Simple Counter API',
             url: `https://api.countapi.xyz/get/perhitsiksha.org/visits`,
-            parser: (data: any) => data.value || 0
+            parser: (data: { value?: number }) => data.value || 0
           }
         ];
 

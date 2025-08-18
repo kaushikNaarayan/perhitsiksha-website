@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import type { ButtonProps } from '../../types';
-import { trackButtonClick } from './GoogleAnalytics';
+import { trackButtonClick } from '../../utils/analytics';
 
 const Button: React.FC<ButtonProps> = ({
   children,
