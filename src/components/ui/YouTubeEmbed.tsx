@@ -15,7 +15,9 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   const thumbnailUrls = thumbnail ? [thumbnail] : [
     `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
     `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`
+    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/default.jpg`
   ];
   
   const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}${autoPlay ? '?autoplay=1' : ''}`;
@@ -26,7 +28,10 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   
   const handleImageError = () => {
     if (currentThumbnailIndex < thumbnailUrls.length - 1) {
+      console.warn(`YouTube thumbnail failed for video ${videoId}, trying fallback ${currentThumbnailIndex + 1}`);
       setCurrentThumbnailIndex(currentThumbnailIndex + 1);
+    } else {
+      console.error(`All YouTube thumbnails failed for video ${videoId}`);
     }
   };
   

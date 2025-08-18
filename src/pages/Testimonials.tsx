@@ -163,18 +163,12 @@ const Testimonials: React.FC = () => {
             Your support can help write the next chapter of transformation.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <a
-              href="#contribute"
+              href="https://wa.me/918142238633"
               className="btn-secondary"
             >
               Support a Student
-            </a>
-            <a
-              href="/stories"
-              className="bg-transparent hover:bg-white hover:bg-opacity-10 text-white font-semibold px-6 py-3 rounded-lg border-2 border-white transition-colors duration-200 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-500"
-            >
-              Read Success Stories
             </a>
           </div>
         </div>

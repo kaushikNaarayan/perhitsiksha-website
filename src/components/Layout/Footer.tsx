@@ -61,7 +61,12 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a href="#contribute" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <a 
+                  href="https://wa.me/918142238633" 
+                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Support Students
                 </a>
               </li>

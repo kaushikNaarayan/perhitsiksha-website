@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface CelebrityEndorsement {
   id: string;
@@ -14,6 +14,7 @@ interface YouTubeShortsCarouselProps {
 const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorsements }) => {
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const videoRefs = useRef<{ [key: string]: HTMLIFrameElement }>({});
 
   // Duplicate endorsements array for seamless infinite scrolling
   const duplicatedEndorsements = [...endorsements, ...endorsements];
@@ -27,8 +28,22 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorseme
   };
 
   const handleVideoPlay = (videoId: string) => {
-    setPlayingVideo(videoId);
+    // Pause all other videos by setting them to stop state
+    if (playingVideo && playingVideo !== videoId) {
+      // Force re-render of the previous video to show thumbnail
+      setPlayingVideo(null);
+      setTimeout(() => setPlayingVideo(videoId), 50);
+    } else {
+      setPlayingVideo(videoId);
+    }
   };
+
+  // Cleanup when component unmounts
+  useEffect(() => {
+    return () => {
+      setPlayingVideo(null);
+    };
+  }, []);
 
   const getYouTubeShortThumbnail = (videoId: string) => {
     // YouTube Shorts thumbnails - try maxresdefault first, fallback to hqdefault
@@ -73,6 +88,9 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorseme
               {playingVideo === celebrity.videoId ? (
                 // Playing video
                 <iframe
+                  ref={(el) => {
+                    if (el) videoRefs.current[celebrity.videoId] = el;
+                  }}
                   src={getEmbedUrl(celebrity.videoId)}
                   title={`${celebrity.name} endorsement`}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

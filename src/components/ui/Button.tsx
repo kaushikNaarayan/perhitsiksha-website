@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import type { ButtonProps } from '../../types';
 
 const Button: React.FC<ButtonProps> = ({
@@ -28,15 +29,30 @@ const Button: React.FC<ButtonProps> = ({
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
   
   if (href) {
-    return (
-      <a
-        href={href}
-        className={classes}
-        {...props}
-      >
-        {children}
-      </a>
-    );
+    // Check if it's an internal route (starts with /) or external (starts with http)
+    const isInternalLink = href.startsWith('/') && !href.startsWith('//');
+    
+    if (isInternalLink) {
+      return (
+        <Link
+          to={href}
+          className={classes}
+          {...props}
+        >
+          {children}
+        </Link>
+      );
+    } else {
+      return (
+        <a
+          href={href}
+          className={classes}
+          {...props}
+        >
+          {children}
+        </a>
+      );
+    }
   }
   
   return (

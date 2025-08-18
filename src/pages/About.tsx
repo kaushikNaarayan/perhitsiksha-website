@@ -11,7 +11,7 @@ const About: React.FC = () => {
       {/* Hero Section */}
       <Hero
         title="About CLSI"
-        subtitle="Empowering underprivileged students through education since 2009."
+        subtitle="Empowering underprivileged students through education since 2022."
         backgroundImage={aboutHeroBg}
         overlay={false}
       />
@@ -176,8 +176,8 @@ const About: React.FC = () => {
                 2025
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">300 Students</h3>
-                <p className="body-base text-gray-700">Tripled our reach, supporting 300 students and expanding our mentorship programs.</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">200+ Students</h3>
+                <p className="body-base text-gray-700">Significantly expanded our reach, supporting over 200 students and enhancing our mentorship programs.</p>
               </div>
             </div>
           </div>
