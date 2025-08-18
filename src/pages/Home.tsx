@@ -58,24 +58,14 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <Hero
         title="Education for Every Child"
+        primaryCTA={{
+          text: "Become a Contributor",
+          href: "https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
+        }}
         stats={[]}
         backgroundImage={heroBgImage}
         overlay={false}
       />
-
-      {/* CTA Section */}
-      <section className="bg-white py-8">
-        <div className="max-w-7xl mx-auto container-padding text-center">
-          <Button 
-            variant="primary" 
-            size="lg" 
-            href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
-            className="inline-flex items-center px-8 py-4 text-lg font-semibold"
-          >
-            Become a Contributor
-          </Button>
-        </div>
-      </section>
 
       {/* Celebrity Endorsements */}
       <section className="bg-primary-50 py-8 sm:py-12">
