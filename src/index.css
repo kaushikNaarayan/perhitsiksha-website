@@ -106,12 +106,12 @@
   }
 
   .mobile-menu-panel {
-    @apply fixed top-0 left-0 h-full bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out;
+    @apply fixed top-0 right-0 h-full bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out;
     width: 280px;
   }
 
   .mobile-menu-enter {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
 
   .mobile-menu-enter-active {
@@ -123,7 +123,7 @@
   }
 
   .mobile-menu-exit-active {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
   
   .hero-content-box::before {
