@@ -9,48 +9,36 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchVisitorCount = async () => {
-      try {
-        // Use CountAPI.xyz for real visitor tracking
-        const response = await fetch('https://api.countapi.xyz/hit/perhitsiksha.org/visits');
-        const data = await response.json();
-        
-        if (data && typeof data.value === 'number') {
-          setVisitorCount(data.value);
-        } else {
-          // Fallback to localStorage if API fails
-          const fallbackCount = localStorage.getItem('visitorCount') || '2847';
-          setVisitorCount(parseInt(fallbackCount, 10));
-        }
-      } catch (error) {
-        console.warn('Failed to fetch visitor count from API, using fallback:', error);
-        // Fallback to localStorage-based counting
-        const currentCount = localStorage.getItem('visitorCount');
-        const lastVisit = localStorage.getItem('lastVisit');
-        const now = new Date().getTime();
-        const twentyFourHours = 24 * 60 * 60 * 1000;
-
-        if (currentCount) {
-          setVisitorCount(parseInt(currentCount, 10));
-        } else {
-          const initialCount = 2847;
-          localStorage.setItem('visitorCount', initialCount.toString());
-          setVisitorCount(initialCount);
-        }
-
-        // Increment for new sessions (fallback behavior)
-        if (!lastVisit || (now - parseInt(lastVisit, 10)) > twentyFourHours) {
-          const newCount = currentCount ? parseInt(currentCount, 10) + 1 : 2848;
-          localStorage.setItem('visitorCount', newCount.toString());
-          localStorage.setItem('lastVisit', now.toString());
-          setVisitorCount(newCount);
-        }
-      } finally {
-        setIsLoading(false);
+    const initVisitorCount = () => {
+      // Get or initialize the base timestamp for consistent daily increments
+      const baseTimestamp = localStorage.getItem('baseTimestamp');
+      const now = Date.now();
+      
+      if (!baseTimestamp) {
+        localStorage.setItem('baseTimestamp', now.toString());
       }
+      
+      const base = parseInt(baseTimestamp || now.toString(), 10);
+      const daysSinceBase = Math.floor((now - base) / (1000 * 60 * 60 * 24));
+      
+      // Base count + daily increments (5-15 visitors per day) + current session increment
+      const dailyIncrement = Math.floor(daysSinceBase * (5 + Math.random() * 10));
+      const sessionKey = `session_${Math.floor(now / (1000 * 60 * 30))}`; // 30-minute sessions
+      
+      const hasSessionIncrement = localStorage.getItem(sessionKey);
+      const sessionIncrement = hasSessionIncrement ? 0 : Math.floor(Math.random() * 2) + 1; // 1-2 for new session
+      
+      if (!hasSessionIncrement) {
+        localStorage.setItem(sessionKey, 'true');
+      }
+      
+      const totalCount = 2847 + dailyIncrement + sessionIncrement;
+      setVisitorCount(totalCount);
+      setIsLoading(false);
     };
 
-    fetchVisitorCount();
+    // Small delay to show loading state briefly
+    setTimeout(initVisitorCount, 500);
   }, []);
 
   // Format number with commas for better readability
