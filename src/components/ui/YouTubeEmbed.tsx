@@ -11,16 +11,19 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   const [isLoaded, setIsLoaded] = useState(!lazyLoad);
   const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(0);
   
+  // Properly encode video ID for URLs
+  const encodedVideoId = encodeURIComponent(videoId);
+  
   // Fallback thumbnails in order of preference
   const thumbnailUrls = thumbnail ? [thumbnail] : [
-    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-    `https://img.youtube.com/vi/${videoId}/default.jpg`
+    `https://img.youtube.com/vi/${encodedVideoId}/maxresdefault.jpg`,
+    `https://img.youtube.com/vi/${encodedVideoId}/hqdefault.jpg`,
+    `https://img.youtube.com/vi/${encodedVideoId}/sddefault.jpg`,
+    `https://img.youtube.com/vi/${encodedVideoId}/mqdefault.jpg`,
+    `https://img.youtube.com/vi/${encodedVideoId}/default.jpg`
   ];
   
-  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1${autoPlay ? '&autoplay=1' : ''}`;
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${encodedVideoId}?rel=0&modestbranding=1${autoPlay ? '&autoplay=1' : ''}`;
   
   const handlePlay = () => {
     setIsLoaded(true);
