@@ -26,7 +26,7 @@ const Home: React.FC = () => {
     { id: '6', name: 'Venkatesh Prasad', videoId: '5Ft1a0I1LHo', profession: 'Former Cricketer' },
     { id: '7', name: 'Suresh Raina', videoId: 'G3RbOb5t22E', profession: 'Cricketer' },
     { id: '8', name: 'Atul Wassan', videoId: '4Z9V_wbU5mg', profession: 'Cricket Commentator' },
-    { id: '9', name: 'Pullela Gopichand', videoId: 'Bcleh93Fhbc', profession: 'Badminton Coach' }
+    { id: '9', name: 'Pullela Gopichand', videoId: '9Cw2TarHBM8', profession: 'Badminton Coach' }
   ];
 
 
