@@ -80,5 +80,18 @@
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- SPA Redirect Script for GitHub Pages -->
+    <script>
+      // Redirect to index.html with the current path as a query parameter
+      // This allows React Router to handle the routing on the client side
+      const path = window.location.pathname;
+      const search = window.location.search;
+      const hash = window.location.hash;
+      
+      if (path !== '/') {
+        window.location.replace('/' + '?redirect=' + encodeURIComponent(path + search + hash));
+      }
+    </script>
   </body>
 </html>
