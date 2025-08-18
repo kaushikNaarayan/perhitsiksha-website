@@ -14,11 +14,14 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   // Properly encode video ID for URLs
   const encodedVideoId = encodeURIComponent(videoId);
   
-  // Fallback thumbnails in order of preference
+  // Fallback thumbnails in order of preference - try both YouTube thumbnail domains
   const thumbnailUrls = thumbnail ? [thumbnail] : [
     `https://img.youtube.com/vi/${encodedVideoId}/maxresdefault.jpg`,
+    `https://i.ytimg.com/vi/${encodedVideoId}/maxresdefault.jpg`,
     `https://img.youtube.com/vi/${encodedVideoId}/hqdefault.jpg`,
+    `https://i.ytimg.com/vi/${encodedVideoId}/hqdefault.jpg`,
     `https://img.youtube.com/vi/${encodedVideoId}/sddefault.jpg`,
+    `https://i.ytimg.com/vi/${encodedVideoId}/sddefault.jpg`,
     `https://img.youtube.com/vi/${encodedVideoId}/mqdefault.jpg`,
     `https://img.youtube.com/vi/${encodedVideoId}/default.jpg`
   ];
