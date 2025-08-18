@@ -11,22 +11,20 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   const [isLoaded, setIsLoaded] = useState(!lazyLoad);
   const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(0);
   
-  // Properly encode video ID for URLs
-  const encodedVideoId = encodeURIComponent(videoId);
-  
+  // Use video ID directly without encoding for YouTube embeds
   // Fallback thumbnails in order of preference - try both YouTube thumbnail domains
   const thumbnailUrls = thumbnail ? [thumbnail] : [
-    `https://img.youtube.com/vi/${encodedVideoId}/maxresdefault.jpg`,
-    `https://i.ytimg.com/vi/${encodedVideoId}/maxresdefault.jpg`,
-    `https://img.youtube.com/vi/${encodedVideoId}/hqdefault.jpg`,
-    `https://i.ytimg.com/vi/${encodedVideoId}/hqdefault.jpg`,
-    `https://img.youtube.com/vi/${encodedVideoId}/sddefault.jpg`,
-    `https://i.ytimg.com/vi/${encodedVideoId}/sddefault.jpg`,
-    `https://img.youtube.com/vi/${encodedVideoId}/mqdefault.jpg`,
-    `https://img.youtube.com/vi/${encodedVideoId}/default.jpg`
+    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/sddefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/default.jpg`
   ];
   
-  const embedUrl = `https://www.youtube-nocookie.com/embed/${encodedVideoId}?rel=0&modestbranding=1${autoPlay ? '&autoplay=1' : ''}`;
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1${autoPlay ? '&autoplay=1' : ''}`;
   
   const handlePlay = () => {
     setIsLoaded(true);
