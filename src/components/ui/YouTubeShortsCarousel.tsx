@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 
 interface CelebrityEndorsement {
   id: string;
@@ -13,48 +13,17 @@ interface YouTubeShortsCarouselProps {
 
 const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorsements }) => {
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
-  // Continuous smooth auto-scroll effect
-  useEffect(() => {
-    if (!isAutoScrolling || !scrollContainerRef.current) return;
+  // Duplicate endorsements array for seamless infinite scrolling
+  const duplicatedEndorsements = [...endorsements, ...endorsements];
 
-    const container = scrollContainerRef.current;
-    let scrollPosition = 0;
-    const scrollSpeed = 0.5; // pixels per frame
-    
-    const smoothScroll = () => {
-      if (container) {
-        const maxScroll = container.scrollWidth - container.clientWidth;
-        
-        scrollPosition += scrollSpeed;
-        
-        if (scrollPosition >= maxScroll) {
-          scrollPosition = 0; // Reset to beginning
-        }
-        
-        container.scrollLeft = scrollPosition;
-      }
-    };
-
-    const animationFrame = setInterval(smoothScroll, 16); // 60fps
-
-    return () => clearInterval(animationFrame);
-  }, [isAutoScrolling]);
-
-  const scrollLeft = () => {
-    setIsAutoScrolling(false); // Stop auto-scroll on manual interaction
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -280, behavior: 'smooth' });
-    }
+  const handleMouseEnter = () => {
+    setIsPaused(true);
   };
 
-  const scrollRight = () => {
-    setIsAutoScrolling(false); // Stop auto-scroll on manual interaction
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 280, behavior: 'smooth' });
-    }
+  const handleMouseLeave = () => {
+    setIsPaused(false);
   };
 
   const handleVideoPlay = (videoId: string) => {
@@ -71,38 +40,24 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorseme
   };
 
   return (
-    <div className="relative">
-      {/* Navigation Arrows - Hidden on mobile */}
-      <button
-        onClick={scrollLeft}
-        className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full items-center justify-center hover:bg-gray-50 transition-colors"
-        aria-label="Previous videos"
-      >
-        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      <button
-        onClick={scrollRight}
-        className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full items-center justify-center hover:bg-gray-50 transition-colors"
-        aria-label="Next videos"
-      >
-        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
+    <div className="relative overflow-hidden">
       {/* Carousel Container */}
-      <div
-        ref={scrollContainerRef}
-        className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory md:px-12 hide-scrollbar"
+      <div 
+        className="flex gap-4 pb-4"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
-        {endorsements.map((celebrity) => (
-          <div
-            key={celebrity.id}
-            className="flex-none w-64 snap-center"
-          >
+        <div 
+          className={`flex gap-4 ${isPaused ? '' : 'marquee-container'}`}
+          style={{
+            animationPlayState: isPaused ? 'paused' : 'running'
+          }}
+        >
+          {duplicatedEndorsements.map((celebrity, index) => (
+            <div
+              key={`${celebrity.id}-${index}`}
+              className="flex-none w-64 snap-center"
+            >
             {/* Celebrity Info */}
             <div className="pb-3 text-center">
               <h3 className="font-semibold text-gray-900 text-lg mb-1">
@@ -166,6 +121,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({ endorseme
             </div>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );
