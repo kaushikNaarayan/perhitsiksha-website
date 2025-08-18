@@ -9,36 +9,62 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const initVisitorCount = () => {
-      // Get or initialize the base timestamp for consistent daily increments
-      const baseTimestamp = localStorage.getItem('baseTimestamp');
-      const now = Date.now();
-      
-      if (!baseTimestamp) {
-        localStorage.setItem('baseTimestamp', now.toString());
+    const initVisitorCount = async () => {
+      const baseCount = 350; // New base count
+      let gaVisitors = 0;
+
+      try {
+        // Try to get visitor count from Google Analytics
+        // TODO: To use real GA data, implement GA Reporting API v4:
+        // 1. Enable GA Reporting API in Google Cloud Console
+        // 2. Create service account and download credentials
+        // 3. Use googleapis package to fetch real visitor data
+        // 4. Replace simulation below with real API call
+        // For now, we'll simulate GA data with a realistic increment based on actual tracking start
+        const gaStartDate = new Date('2024-01-01'); // Approximate when GA started tracking
+        const now = new Date();
+        const daysSinceGA = Math.floor((now.getTime() - gaStartDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // Simulate realistic GA visitor growth (3-8 visitors per day on average)
+        const avgDailyVisitors = 5.5;
+        const variation = Math.random() * 0.4 - 0.2; // ±20% variation
+        gaVisitors = Math.floor(daysSinceGA * avgDailyVisitors * (1 + variation));
+        
+        // Add today's session increment if it's a new session
+        const sessionKey = `ga_session_${Math.floor(now.getTime() / (1000 * 60 * 30))}`; // 30-minute sessions
+        const hasSessionIncrement = localStorage.getItem(sessionKey);
+        
+        if (!hasSessionIncrement) {
+          gaVisitors += Math.floor(Math.random() * 2) + 1; // 1-2 for new session
+          localStorage.setItem(sessionKey, 'true');
+        }
+
+        // Store the GA count for consistency within the same day
+        const today = new Date().toDateString();
+        const storedToday = localStorage.getItem('gaCountDate');
+        const storedGACount = localStorage.getItem('gaCount');
+
+        if (storedToday === today && storedGACount) {
+          gaVisitors = parseInt(storedGACount, 10);
+        } else {
+          localStorage.setItem('gaCountDate', today);
+          localStorage.setItem('gaCount', gaVisitors.toString());
+        }
+
+      } catch (error) {
+        console.warn('Failed to calculate GA visitor count:', error);
+        // Fallback: use stored count or minimal increment
+        const storedGACount = localStorage.getItem('gaCount');
+        gaVisitors = storedGACount ? parseInt(storedGACount, 10) : 50;
       }
-      
-      const base = parseInt(baseTimestamp || now.toString(), 10);
-      const daysSinceBase = Math.floor((now - base) / (1000 * 60 * 60 * 24));
-      
-      // Base count + daily increments (5-15 visitors per day) + current session increment
-      const dailyIncrement = Math.floor(daysSinceBase * (5 + Math.random() * 10));
-      const sessionKey = `session_${Math.floor(now / (1000 * 60 * 30))}`; // 30-minute sessions
-      
-      const hasSessionIncrement = localStorage.getItem(sessionKey);
-      const sessionIncrement = hasSessionIncrement ? 0 : Math.floor(Math.random() * 2) + 1; // 1-2 for new session
-      
-      if (!hasSessionIncrement) {
-        localStorage.setItem(sessionKey, 'true');
-      }
-      
-      const totalCount = 2847 + dailyIncrement + sessionIncrement;
+
+      const totalCount = baseCount + gaVisitors;
       setVisitorCount(totalCount);
       setIsLoading(false);
     };
 
     // Small delay to show loading state briefly
-    setTimeout(initVisitorCount, 500);
+    setTimeout(initVisitorCount, 800);
   }, []);
 
   // Format number with commas for better readability
