@@ -98,9 +98,32 @@
     max-width: 56rem;
     margin: 0 auto;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  }
+
+  /* Mobile menu slide-in animations */
+  .mobile-menu-backdrop {
+    @apply fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300;
+  }
+
+  .mobile-menu-panel {
+    @apply fixed top-0 left-0 h-full bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out;
+    width: 280px;
+  }
+
+  .mobile-menu-enter {
+    transform: translateX(-100%);
+  }
+
+  .mobile-menu-enter-active {
+    transform: translateX(0);
+  }
+
+  .mobile-menu-exit {
+    transform: translateX(0);
+  }
+
+  .mobile-menu-exit-active {
+    transform: translateX(-100%);
   }
   
   .hero-content-box::before {
