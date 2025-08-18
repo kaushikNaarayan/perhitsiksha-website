@@ -60,7 +60,7 @@ export interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void;
   href?: string;
   disabled?: boolean;
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { YouTubeEmbedProps } from '../../types';
+import { trackVideoPlay } from './GoogleAnalytics';
 
 const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   videoId,
@@ -27,6 +28,8 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1${autoPlay ? '&autoplay=1' : ''}`;
   
   const handlePlay = () => {
+    // Track video play event
+    trackVideoPlay(title, videoId);
     setIsLoaded(true);
   };
   

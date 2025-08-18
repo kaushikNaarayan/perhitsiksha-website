@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import type { ButtonProps } from '../../types';
+import { trackButtonClick } from './GoogleAnalytics';
 
 const Button: React.FC<ButtonProps> = ({
   children,
@@ -28,6 +29,18 @@ const Button: React.FC<ButtonProps> = ({
   
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
   
+  const handleClick = (event: React.MouseEvent) => {
+    // Track button click
+    const buttonText = typeof children === 'string' ? children : 'Button';
+    const location = href || 'Internal Action';
+    trackButtonClick(buttonText, location);
+    
+    // Call original onClick if provided
+    if (onClick) {
+      onClick(event);
+    }
+  };
+  
   if (href) {
     // Check if it's an internal route (starts with /) or external (starts with http)
     const isInternalLink = href.startsWith('/') && !href.startsWith('//');
@@ -37,6 +50,7 @@ const Button: React.FC<ButtonProps> = ({
         <Link
           to={href}
           className={classes}
+          onClick={handleClick}
           {...props}
         >
           {children}
@@ -47,6 +61,7 @@ const Button: React.FC<ButtonProps> = ({
         <a
           href={href}
           className={classes}
+          onClick={handleClick}
           {...props}
         >
           {children}
@@ -57,7 +72,7 @@ const Button: React.FC<ButtonProps> = ({
   
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       disabled={disabled}
       className={classes}
       {...props}

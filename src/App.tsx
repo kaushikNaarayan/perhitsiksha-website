@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Testimonials from './pages/Testimonials';
 import About from './pages/About';
 import Privacy from './pages/Privacy';
+import GoogleAnalytics from './components/ui/GoogleAnalytics';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ function AppRoutes() {
 
   return (
     <Layout>
+      <GoogleAnalytics />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/testimonials" element={<Testimonials />} />
