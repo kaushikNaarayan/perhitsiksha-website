@@ -56,5 +56,45 @@
     "date": "2023-10-15",
     "image": "/images/stories/priya-remote.jpg",
     "featured": false
+  },
+  {
+    "id": "7",
+    "title": "A Father's Dream Realized",
+    "excerpt": "Amit Kashyap shares how PerhitSiksha helped fulfill his dreams for his child's education.",
+    "content": "As a parent, Amit Kashyap had big dreams for his child's education but faced financial constraints. PerhitSiksha's support not only provided the necessary funding but also guidance that helped his family navigate the educational journey. Today, his story inspires other parents who believe in the power of education to transform lives.",
+    "category": "Family",
+    "date": "2024-04-10",
+    "youtubeId": "6DVA-T63h8g",
+    "featured": true
+  },
+  {
+    "id": "8",
+    "title": "A Mother's Journey",
+    "excerpt": "Golagani Laxmi's inspiring story of supporting her child's educational dreams.",
+    "content": "Golagani Laxmi's determination to provide quality education for her child led her to PerhitSiksha. Her story represents countless parents who sacrifice and strive to give their children better opportunities. Through PerhitSiksha's support, her dreams became reality.",
+    "category": "Family",
+    "date": "2024-04-05",
+    "youtubeId": "QX7gPeQx12g",
+    "featured": false
+  },
+  {
+    "id": "9",
+    "title": "Mentoring the Future",
+    "excerpt": "Abhishek Raj shares his experience as a mentor with PerhitSiksha.",
+    "content": "Abhishek Raj's journey as a mentor with PerhitSiksha showcases the transformative power of guidance and support. His dedication to helping students achieve their goals demonstrates how mentorship can change lives and create lasting impact in communities.",
+    "category": "Mentorship",
+    "date": "2024-03-28",
+    "youtubeId": "xNaremGF8Ko",
+    "featured": true
+  },
+  {
+    "id": "10",
+    "title": "Guiding with Purpose",
+    "excerpt": "Prashant Mishra's story of becoming a mentor and making a difference.",
+    "content": "Prashant Mishra's commitment to mentoring through PerhitSiksha reflects the organization's core values of guidance and support. His experience shows how professionals can give back to society by helping shape the next generation of leaders and innovators.",
+    "category": "Mentorship",
+    "date": "2024-03-20",
+    "youtubeId": "gDyZVALHhxU",
+    "featured": false
   }
 ]
