@@ -74,19 +74,19 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <a 
-                  href="mailto:contact@perhitsiksha.org" 
+                  href="mailto:clsi.perhitsiksha@gmail.com" 
                   className="text-gray-300 hover:text-white transition-colors duration-200"
                 >
                   Contact Us
                 </a>
               </li>
               <li>
-                <a 
-                  href="/privacy" 
+                <Link 
+                  to="/privacy" 
                   className="text-gray-300 hover:text-white transition-colors duration-200"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

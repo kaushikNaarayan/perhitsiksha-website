@@ -51,25 +51,25 @@ const About: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                  <p className="body-base text-gray-700">
+                  <p className="body-large text-gray-700">
                     To provide financial aid for education of underprivileged deserving students in a dignified manner without intermediaries.
                   </p>
                 </div>
                 <div className="flex items-start">
                   <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                  <p className="body-base text-gray-700">
+                  <p className="body-large text-gray-700">
                     To mentor, guide and provide support to children academically and emotionally through the course of their educational journey.
                   </p>
                 </div>
                 <div className="flex items-start">
                   <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                  <p className="body-base text-gray-700">
+                  <p className="body-large text-gray-700">
                     To build a transparent, trustworthy and reliable platform driven by collective trust of the Contributors.
                   </p>
                 </div>
                 <div className="flex items-start">
                   <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                  <p className="body-base text-gray-700">
+                  <p className="body-large text-gray-700">
                     To identify and enable promising children from underprivileged backgrounds to rise beyond their socio-economic limitations, through the instrument of education.
                   </p>
                 </div>
@@ -95,7 +95,7 @@ const About: React.FC = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Education First
               </h3>
-              <p className="text-gray-600">
+              <p className="body-base text-gray-700">
                 We believe education is the most powerful tool for social transformation and personal empowerment.
               </p>
             </Card>
@@ -104,7 +104,7 @@ const About: React.FC = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Merit & Need
               </h3>
-              <p className="text-gray-600">
+              <p className="body-base text-gray-700">
                 We support students based on both academic merit and financial need, ensuring sustainable impact.
               </p>
             </Card>
@@ -113,7 +113,7 @@ const About: React.FC = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Holistic Support
               </h3>
-              <p className="text-gray-600">
+              <p className="body-base text-gray-700">
                 Beyond financial aid, we provide mentorship, career guidance, and personal development.
               </p>
             </Card>
@@ -122,7 +122,7 @@ const About: React.FC = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Transparency
               </h3>
-              <p className="text-gray-600">
+              <p className="body-base text-gray-700">
                 We maintain complete transparency in our operations and fund utilization.
               </p>
             </Card>
@@ -147,7 +147,7 @@ const About: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Foundation</h3>
-                <p className="text-gray-600">CLSI was established with a vision to transform lives through education.</p>
+                <p className="body-base text-gray-700">CLSI was established with a vision to transform lives through education.</p>
               </div>
             </div>
             
@@ -157,7 +157,7 @@ const About: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">50 Students</h3>
-                <p className="text-gray-600">Reached our first milestone of supporting 50 deserving students.</p>
+                <p className="body-base text-gray-700">Reached our first milestone of supporting 50 deserving students.</p>
               </div>
             </div>
             
@@ -167,7 +167,7 @@ const About: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">100 Students</h3>
-                <p className="text-gray-600">Doubled our impact by supporting 100 students across multiple states.</p>
+                <p className="body-base text-gray-700">Doubled our impact by supporting 100 students across multiple states.</p>
               </div>
             </div>
             
@@ -177,7 +177,7 @@ const About: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">300 Students</h3>
-                <p className="text-gray-600">Tripled our reach, supporting 300 students and expanding our mentorship programs.</p>
+                <p className="body-base text-gray-700">Tripled our reach, supporting 300 students and expanding our mentorship programs.</p>
               </div>
             </div>
           </div>
@@ -246,8 +246,8 @@ const About: React.FC = () => {
                 <svg className="w-5 h-5 text-primary-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <a href="mailto:contact@perhitsiksha.org" className="text-gray-700 hover:text-primary-500">
-                  contact@perhitsiksha.org
+                <a href="mailto:clsi.perhitsiksha@gmail.com" className="text-gray-700 hover:text-primary-500">
+                  clsi.perhitsiksha@gmail.com
                 </a>
               </div>
               <div className="flex items-center">
