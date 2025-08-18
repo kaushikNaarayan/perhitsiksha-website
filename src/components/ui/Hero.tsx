@@ -58,11 +58,11 @@ const Hero: React.FC<HeroProps> = ({
       {/* Background Image */}
       {backgroundImage && (
         <div 
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 hero-background-image"
           style={{
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: 'center left',
             backgroundRepeat: 'no-repeat',
           }}
         />
@@ -92,7 +92,7 @@ const Hero: React.FC<HeroProps> = ({
           )}
           
           {(primaryCTA || secondaryCTA) && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
               {primaryCTA && (
                 <Button
                   href={primaryCTA.href}

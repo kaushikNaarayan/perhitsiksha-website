@@ -115,6 +115,19 @@
     }
   }
 
+  /* Hero background image responsive positioning */
+  .hero-background-image {
+    /* Mobile: Center the image to keep girl's face visible */
+    background-position: center center !important;
+  }
+
+  @media (min-width: 768px) {
+    .hero-background-image {
+      /* Desktop: Position using rule of thirds - girl's face on left 1/3 */
+      background-position: 33% center !important;
+    }
+  }
+
   /* Mobile menu slide-in animations */
   .mobile-menu-backdrop {
     @apply fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300;
