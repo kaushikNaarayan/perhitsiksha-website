@@ -4,7 +4,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
 import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
-import TestimonialCarousel from '../components/ui/TestimonialCarousel';
+import PeekCarousel from '../components/ui/PeekCarousel';
 import type { Testimonial } from '../types';
 
 // Import data
@@ -124,7 +124,7 @@ const Home: React.FC = () => {
               Hear directly from our students about the impact of education.
             </p>
             
-            <TestimonialCarousel testimonials={voicesTestimonials} />
+            <PeekCarousel testimonials={voicesTestimonials} />
             
             <div className="mt-8">
               <Button href="/testimonials" variant="primary">
