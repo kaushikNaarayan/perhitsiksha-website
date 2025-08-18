@@ -6,6 +6,7 @@ import Testimonials from './pages/Testimonials';
 import About from './pages/About';
 import Privacy from './pages/Privacy';
 import GoogleAnalytics from './components/ui/GoogleAnalytics';
+import ScrollToTop from './components/ui/ScrollToTop';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ function AppRoutes() {
 
   return (
     <Layout>
+      <ScrollToTop />
       <GoogleAnalytics />
       <Routes>
         <Route path="/" element={<Home />} />

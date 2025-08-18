@@ -184,7 +184,7 @@ const About: React.FC = () => {
 
       {/* Our Journey */}
       <section className="bg-gray-50 section-padding">
-        <div className="max-w-6xl mx-auto container-padding">
+        <div className="max-w-4xl mx-auto container-padding">
           <div className="text-center mb-16">
             <h2 className="heading-2 mb-4">Our Journey</h2>
             <p className="body-large text-gray-600">
@@ -193,64 +193,101 @@ const About: React.FC = () => {
           </div>
 
           <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-primary-200 hidden lg:block"></div>
+            {/* Timeline line - vertical for both mobile and desktop */}
+            <div className="absolute left-8 md:left-12 top-0 bottom-0 w-1 bg-gradient-to-b from-primary-300 via-primary-500 to-primary-600"></div>
             
-            <div className="space-y-12">
-              {/* 2022 */}
-              <div className="relative flex items-center lg:justify-center">
-                <div className="flex items-center w-full lg:w-1/2 lg:pr-8">
-                  <div className="w-16 h-16 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-6 flex-shrink-0 lg:order-2 lg:ml-6 lg:mr-0">
-                    2022
+            <div className="space-y-8">
+              {/* 2022 - Foundation */}
+              <div className="relative flex items-start">
+                <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-full shadow-lg flex-shrink-0">
+                  <div className="text-center">
+                    <div className="text-sm md:text-base font-bold">2022</div>
                   </div>
-                  <Card className="p-6 flex-1 lg:order-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Foundation</h3>
-                    <p className="text-gray-700">CLSI was established with a vision to transform lives through education.</p>
+                </div>
+                <div className="ml-6 md:ml-8 flex-1">
+                  <Card className="p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div className="flex items-center mb-3">
+                      <div className="w-3 h-3 bg-primary-500 rounded-full mr-3"></div>
+                      <h3 className="text-xl font-bold text-gray-900">Foundation</h3>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      CLSI was established with a vision to transform lives through education and create lasting impact in communities.
+                    </p>
                   </Card>
                 </div>
-                <div className="absolute left-1/2 w-4 h-4 bg-primary-500 rounded-full transform -translate-x-1/2 hidden lg:block"></div>
               </div>
               
-              {/* 2023 */}
-              <div className="relative flex items-center lg:justify-center">
-                <div className="flex items-center w-full lg:w-1/2 lg:pl-8 lg:ml-auto">
-                  <div className="w-16 h-16 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-6 flex-shrink-0">
-                    2023
+              {/* 2023 - First Milestone */}
+              <div className="relative flex items-start">
+                <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-full shadow-lg flex-shrink-0">
+                  <div className="text-center">
+                    <div className="text-sm md:text-base font-bold">2023</div>
                   </div>
-                  <Card className="p-6 flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">50 Students</h3>
-                    <p className="text-gray-700">Reached our first milestone of supporting 50 deserving students.</p>
+                </div>
+                <div className="ml-6 md:ml-8 flex-1">
+                  <Card className="p-6 shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-primary-400">
+                    <div className="flex items-center mb-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                      <h3 className="text-xl font-bold text-gray-900">50 Students</h3>
+                      <span className="ml-2 text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">Milestone</span>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      Reached our first major milestone of supporting 50 deserving students, establishing our foundation for growth.
+                    </p>
                   </Card>
                 </div>
-                <div className="absolute left-1/2 w-4 h-4 bg-primary-500 rounded-full transform -translate-x-1/2 hidden lg:block"></div>
               </div>
               
-              {/* 2024 */}
-              <div className="relative flex items-center lg:justify-center">
-                <div className="flex items-center w-full lg:w-1/2 lg:pr-8">
-                  <div className="w-16 h-16 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-6 flex-shrink-0 lg:order-2 lg:ml-6 lg:mr-0">
-                    2024
+              {/* 2024 - Expansion */}
+              <div className="relative flex items-start">
+                <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-full shadow-lg flex-shrink-0">
+                  <div className="text-center">
+                    <div className="text-sm md:text-base font-bold">2024</div>
                   </div>
-                  <Card className="p-6 flex-1 lg:order-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">100 Students</h3>
-                    <p className="text-gray-700">Doubled our impact by supporting 100 students across multiple states.</p>
+                </div>
+                <div className="ml-6 md:ml-8 flex-1">
+                  <Card className="p-6 shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-blue-400">
+                    <div className="flex items-center mb-3">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                      <h3 className="text-xl font-bold text-gray-900">100 Students</h3>
+                      <span className="ml-2 text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">Growth</span>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      Doubled our impact by supporting 100 students across multiple states, expanding our geographical reach.
+                    </p>
                   </Card>
                 </div>
-                <div className="absolute left-1/2 w-4 h-4 bg-primary-500 rounded-full transform -translate-x-1/2 hidden lg:block"></div>
               </div>
               
-              {/* 2025 */}
-              <div className="relative flex items-center lg:justify-center">
-                <div className="flex items-center w-full lg:w-1/2 lg:pl-8 lg:ml-auto">
-                  <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm mr-6 flex-shrink-0 shadow-lg">
-                    2025
+              {/* 2025 - Future Vision */}
+              <div className="relative flex items-start">
+                <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary-600 to-primary-700 text-white rounded-full shadow-xl flex-shrink-0 ring-4 ring-primary-200">
+                  <div className="text-center">
+                    <div className="text-sm md:text-base font-bold">2025</div>
                   </div>
-                  <Card className="p-6 flex-1 border-primary-200 shadow-md">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">200+ Students</h3>
-                    <p className="text-gray-700">Significantly expanded our reach, supporting over 200 students and enhancing our mentorship programs.</p>
+                </div>
+                <div className="ml-6 md:ml-8 flex-1">
+                  <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-l-4 border-purple-400 bg-gradient-to-br from-white to-purple-50">
+                    <div className="flex items-center mb-3">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                      <h3 className="text-xl font-bold text-gray-900">200+ Students</h3>
+                      <span className="ml-2 text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full">Vision</span>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      Significantly expanding our reach to support over 200 students while enhancing our mentorship programs and community impact.
+                    </p>
                   </Card>
                 </div>
-                <div className="absolute left-1/2 w-4 h-4 bg-primary-600 rounded-full transform -translate-x-1/2 hidden lg:block"></div>
+              </div>
+            </div>
+            
+            {/* Timeline end indicator */}
+            <div className="relative flex items-start mt-8">
+              <div className="relative z-10 flex items-center justify-center w-8 h-8 bg-primary-300 rounded-full shadow-sm flex-shrink-0 ml-4 md:ml-6">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+              <div className="ml-6 md:ml-8 flex-1">
+                <p className="text-sm text-gray-500 italic">Our journey continues...</p>
               </div>
             </div>
           </div>
