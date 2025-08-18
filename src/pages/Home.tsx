@@ -61,6 +61,7 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <Hero
         title="Education for Every Child"
+        subtitle="Support our mission to democratise education"
         primaryCTA={{
           text: "Become a Contributor",
           href: "https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
@@ -75,7 +76,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-6">
             <p className="body-large max-w-2xl mx-auto">
-              Celebrities who support our mission to democratise education
+              Our Supporters
             </p>
           </div>
           <YouTubeShortsCarousel endorsements={celebrityEndorsements} />
