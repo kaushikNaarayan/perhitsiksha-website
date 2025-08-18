@@ -48,8 +48,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
         onClick={onClose}
       />
       
-      {/* Modal Content */}
-      <div className="relative w-full max-w-4xl mx-4 bg-black rounded-lg overflow-hidden shadow-2xl">
+      {/* Modal Content - Optimized for portrait videos */}
+      <div className="relative w-full max-w-md mx-4 bg-black rounded-lg overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between bg-gray-900 px-4 py-3">
           <div>
@@ -79,8 +79,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
           </button>
         </div>
 
-        {/* Video Container */}
-        <div className="relative bg-black" style={{ aspectRatio: '16/9' }}>
+        {/* Video Container - Portrait aspect ratio for mobile/short videos */}
+        <div className="relative bg-black flex justify-center" style={{ aspectRatio: '9/16', maxHeight: '80vh' }}>
           <iframe
             src={embedUrl}
             title={title}

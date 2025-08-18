@@ -74,7 +74,7 @@ const Header: React.FC = () => {
           <div className="hidden md:block">
             <a
               href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
-              className="btn-primary"
+              className="shimmer-btn bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 inline-block"
             >
               Contribute
             </a>
@@ -84,7 +84,7 @@ const Header: React.FC = () => {
           <div className="md:hidden flex items-center space-x-3">
             <a
               href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
-              className="btn-primary text-sm px-4 py-2"
+              className="shimmer-btn bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 inline-block"
             >
               Contribute
             </a>

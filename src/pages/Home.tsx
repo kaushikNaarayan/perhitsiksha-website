@@ -3,7 +3,7 @@ import Hero from '../components/ui/Hero';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
-import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
+import EnhancedCarousel from '../components/ui/EnhancedCarousel';
 import type { Testimonial } from '../types';
 
 // Import data
@@ -30,9 +30,9 @@ const Home: React.FC = () => {
 
 
   useEffect(() => {
-    // Load featured testimonial with video
-    const featuredTest = (testimonialsData as Testimonial[]).find(t => t.featured && t.youtubeId);
-    setFeaturedTestimonial(featuredTest || null);
+    // Load featured testimonial with video - use Kodamanchili Keerthi for Voices of Change
+    const voicesOfChangeTestimonial = (testimonialsData as Testimonial[]).find(t => t.id === "2");
+    setFeaturedTestimonial(voicesOfChangeTestimonial || null);
   }, []);
 
   const programs = [
@@ -63,6 +63,19 @@ const Home: React.FC = () => {
         overlay={false}
       />
 
+      {/* CTA Section */}
+      <section className="bg-white py-8">
+        <div className="max-w-7xl mx-auto container-padding text-center">
+          <Button 
+            variant="primary" 
+            size="lg" 
+            href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
+            className="inline-flex items-center px-8 py-4 text-lg font-semibold"
+          >
+            Become a Contributor
+          </Button>
+        </div>
+      </section>
 
       {/* Celebrity Endorsements */}
       <section className="bg-primary-50 py-8 sm:py-12">
@@ -72,7 +85,7 @@ const Home: React.FC = () => {
               Celebrities who support our mission to democratise education
             </p>
           </div>
-          <YouTubeShortsCarousel endorsements={celebrityEndorsements} />
+          <EnhancedCarousel endorsements={celebrityEndorsements} />
         </div>
       </section>
 
@@ -99,7 +112,7 @@ const Home: React.FC = () => {
             {/* Video Introduction */}
             <div className="max-w-4xl mx-auto">
               <YouTubeEmbed
-                videoId="-slFir-pGh0"
+                videoId="uDgrpL_I-HY"
                 title="PerhitSiksha - Empowering Education"
                 lazyLoad={true}
               />
@@ -148,9 +161,8 @@ const Home: React.FC = () => {
       <section id="contribute" className="bg-primary-500 text-white section-padding">
         <div className="max-w-4xl mx-auto container-padding text-center">
           <h2 className="heading-2 mb-4">Join Our Mission</h2>
-          <p className="body-large mb-8">
-            Every contribution, no matter how small, makes a difference in a student's life. 
-            Help us empower the next generation through education.
+          <p className="text-lg sm:text-xl text-white leading-relaxed mb-8">
+            Your contribution, however modest, significantly impacts a student's journey. Join us in empowering the next generation through the gift of education.
           </p>
           
           <div className="flex justify-center">
