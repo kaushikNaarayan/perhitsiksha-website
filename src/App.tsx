@@ -7,7 +7,7 @@ import Privacy from './pages/Privacy';
 
 function App() {
   return (
-    <Router basename="/perhitsiksha-website">
+    <Router>
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
