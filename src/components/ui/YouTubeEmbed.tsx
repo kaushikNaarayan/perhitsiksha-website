@@ -84,8 +84,8 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
         )}
         
         {/* Overlay with play button */}
-        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center group-hover:bg-opacity-30 transition-all duration-200">
-          <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+        <div className="absolute inset-0 bg-black bg-opacity-10 flex items-center justify-center group-hover:bg-opacity-20 transition-all duration-200">
+          <div className="w-16 h-16 bg-white bg-opacity-95 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-lg">
             <svg 
               className="w-8 h-8 text-gray-800 ml-1" 
               fill="currentColor" 
