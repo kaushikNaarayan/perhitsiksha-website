@@ -165,7 +165,7 @@ const Testimonials: React.FC = () => {
           
           <div className="flex justify-center">
             <a
-              href="https://wa.me/918142238633"
+              href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
               className="btn-secondary"
             >
               Support a Student

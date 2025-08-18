@@ -154,7 +154,7 @@ const Home: React.FC = () => {
           </p>
           
           <div className="flex justify-center">
-            <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-primary-500" href="https://wa.me/918142238633">
+            <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-primary-500" href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute.">
               Become a Contributor
             </Button>
           </div>
