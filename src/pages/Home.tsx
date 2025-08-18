@@ -4,17 +4,15 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
 import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
-import type { Story, Testimonial } from '../types';
+import type { Testimonial } from '../types';
 
 // Import data
-import storiesData from '../data/stories.json';
 import testimonialsData from '../data/testimonials.json';
 
 // Import images
 import heroBgImage from '../assets/images/hero-bg.png';
 
 const Home: React.FC = () => {
-  const [featuredStories, setFeaturedStories] = useState<Story[]>([]);
   const [featuredTestimonial, setFeaturedTestimonial] = useState<Testimonial | null>(null);
 
   // Celebrity endorsements data for carousel
@@ -32,10 +30,6 @@ const Home: React.FC = () => {
 
 
   useEffect(() => {
-    // Load featured stories
-    const featured = (storiesData as Story[]).filter(story => story.featured).slice(0, 3);
-    setFeaturedStories(featured);
-
     // Load featured testimonial with video
     const featuredTest = (testimonialsData as Testimonial[]).find(t => t.featured && t.youtubeId);
     setFeaturedTestimonial(featuredTest || null);
@@ -114,58 +108,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Stories */}
-      <section className="bg-white section-padding">
-        <div className="max-w-7xl mx-auto container-padding">
-          <div className="text-center mb-12">
-            <h2 className="heading-2 mb-4">Success Stories</h2>
-            <p className="body-large">
-              Real stories of transformation and hope from our community.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredStories.map((story) => (
-              <Card key={story.id} className="hover-lift">
-                {story.image && (
-                  <div className="aspect-4-3 bg-gray-200">
-                    <img
-                      src={story.image}
-                      alt={story.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="p-6">
-                  <div className="flex items-center mb-3">
-                    <span className="inline-block px-3 py-1 text-xs font-medium bg-primary-100 text-primary-800 rounded-full">
-                      {story.category}
-                    </span>
-                    <span className="text-sm text-gray-500 ml-auto">
-                      {new Date(story.date).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    {story.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    {story.excerpt}
-                  </p>
-                  <Button variant="outline" size="sm">
-                    Read More
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-          
-          <div className="text-center mt-8">
-            <a href="/stories" className="text-primary-500 hover:text-primary-600 font-medium">
-              View All Stories →
-            </a>
-          </div>
-        </div>
-      </section>
 
       {/* Featured Video Testimonial */}
       {featuredTestimonial && (
