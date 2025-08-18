@@ -51,7 +51,7 @@ const Header: React.FC = () => {
           {/* CTA Button */}
           <div className="hidden md:block">
             <a
-              href="#contribute"
+              href="https://wa.me/918142238633"
               className="btn-primary"
             >
               Support a Student
@@ -109,7 +109,7 @@ const Header: React.FC = () => {
               ))}
               <div className="pt-2">
                 <a
-                  href="#contribute"
+                  href="https://wa.me/918142238633"
                   className="btn-primary w-full text-center"
                   onClick={() => setIsMenuOpen(false)}
                 >

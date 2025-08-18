@@ -95,7 +95,7 @@ const Home: React.FC = () => {
             {/* Video Introduction */}
             <div className="max-w-4xl mx-auto">
               <YouTubeEmbed
-                videoId="c1fM-oB6FVw"
+                videoId="-slFir-pGh0"
                 title="PerhitSiksha - Empowering Education"
                 lazyLoad={true}
               />
@@ -211,8 +211,8 @@ const Home: React.FC = () => {
           </p>
           
           <div className="flex justify-center">
-            <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-primary-500">
-              Become a Mentor
+            <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-primary-500" href="https://wa.me/918142238633">
+              Become a Contributor
             </Button>
           </div>
         </div>
