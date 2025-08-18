@@ -13,7 +13,7 @@ const About: React.FC = () => {
         title="About CLSI"
         subtitle="Empowering underprivileged students through education since 2022."
         backgroundImage={aboutHeroBg}
-        overlay={false}
+        overlay={true}
       />
 
       {/* About Section */}

@@ -3,7 +3,8 @@ import Hero from '../components/ui/Hero';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
-import EnhancedCarousel from '../components/ui/EnhancedCarousel';
+import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
+import TestimonialCarousel from '../components/ui/TestimonialCarousel';
 import type { Testimonial } from '../types';
 
 // Import data
@@ -13,7 +14,7 @@ import testimonialsData from '../data/testimonials.json';
 import heroBgImage from '../assets/images/hero-bg.png';
 
 const Home: React.FC = () => {
-  const [featuredTestimonial, setFeaturedTestimonial] = useState<Testimonial | null>(null);
+  const [voicesTestimonials, setVoicesTestimonials] = useState<Testimonial[]>([]);
 
   // Celebrity endorsements data for carousel
   const celebrityEndorsements = [
@@ -30,9 +31,11 @@ const Home: React.FC = () => {
 
 
   useEffect(() => {
-    // Load featured testimonial with video - use Kodamanchili Keerthi for Voices of Change
-    const voicesOfChangeTestimonial = (testimonialsData as Testimonial[]).find(t => t.id === "2");
-    setFeaturedTestimonial(voicesOfChangeTestimonial || null);
+    // Load student testimonials for Voices of Change carousel
+    const studentTestimonials = (testimonialsData as Testimonial[]).filter(t => 
+      t.role === "Student" && t.youtubeId
+    );
+    setVoicesTestimonials(studentTestimonials);
   }, []);
 
   const programs = [
@@ -75,7 +78,7 @@ const Home: React.FC = () => {
               Celebrities who support our mission to democratise education
             </p>
           </div>
-          <EnhancedCarousel endorsements={celebrityEndorsements} />
+          <YouTubeShortsCarousel endorsements={celebrityEndorsements} />
         </div>
       </section>
 
@@ -102,8 +105,8 @@ const Home: React.FC = () => {
             {/* Video Introduction */}
             <div className="max-w-4xl mx-auto">
               <YouTubeEmbed
-                videoId="uDgrpL_I-HY"
-                title="PerhitSiksha - Empowering Education"
+                videoId="Z37rsfqWu6E"
+                title="PerhitSiksha - What We Do"
                 lazyLoad={true}
               />
             </div>
@@ -112,31 +115,16 @@ const Home: React.FC = () => {
       </section>
 
 
-      {/* Featured Video Testimonial */}
-      {featuredTestimonial && (
+      {/* Voices of Change Testimonial Carousel */}
+      {voicesTestimonials.length > 0 && (
         <section className="bg-primary-50 section-padding">
-          <div className="max-w-4xl mx-auto container-padding text-center">
+          <div className="max-w-6xl mx-auto container-padding text-center">
             <h2 className="heading-2 mb-4">Voices of Change</h2>
             <p className="body-large mb-8">
-              Hear directly from our community about the impact of education.
+              Hear directly from our students about the impact of education.
             </p>
             
-            <div className="max-w-2xl mx-auto mb-6">
-              <YouTubeEmbed
-                videoId={featuredTestimonial.youtubeId!}
-                title={`${featuredTestimonial.name} - ${featuredTestimonial.role}`}
-                lazyLoad={true}
-              />
-            </div>
-            
-            <div className="text-center">
-              <blockquote className="text-lg italic text-gray-700 mb-4">
-                "{featuredTestimonial.quote}"
-              </blockquote>
-              <div className="text-sm text-gray-600">
-                <strong>{featuredTestimonial.name}</strong> • {featuredTestimonial.role} • {featuredTestimonial.location}
-              </div>
-            </div>
+            <TestimonialCarousel testimonials={voicesTestimonials} />
             
             <div className="mt-8">
               <Button href="/testimonials" variant="primary">

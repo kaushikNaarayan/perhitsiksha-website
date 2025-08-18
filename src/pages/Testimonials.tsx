@@ -44,7 +44,7 @@ const Testimonials: React.FC = () => {
         title="Voices of Change"
         subtitle="Hear directly from our community about how education transforms lives and creates lasting impact."
         backgroundImage={testimonialsHeroBg}
-        overlay={false}
+        overlay={true}
       />
 
       {/* Filters */}

@@ -20,7 +20,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
     `https://img.youtube.com/vi/${videoId}/default.jpg`
   ];
   
-  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}${autoPlay ? '?autoplay=1' : ''}`;
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1${autoPlay ? '&autoplay=1' : ''}`;
   
   const handlePlay = () => {
     setIsLoaded(true);
@@ -43,7 +43,10 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
           title={title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          loading="lazy"
           className="w-full h-full"
+          width="560"
+          height="315"
         />
       </div>
     );
