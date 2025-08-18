@@ -6,7 +6,7 @@ import About from './pages/About';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/perhitsiksha-website">
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />

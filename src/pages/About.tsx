@@ -130,6 +130,106 @@ const About: React.FC = () => {
         </div>
       </section>
 
+      {/* Our Journey */}
+      <section className="bg-gray-50 section-padding">
+        <div className="max-w-4xl mx-auto container-padding">
+          <div className="text-center mb-12">
+            <h2 className="heading-2 mb-4">Our Journey</h2>
+            <p className="body-large">
+              Key milestones in our mission to democratize education.
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            <div className="flex items-center">
+              <div className="w-20 h-20 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold text-lg mr-6">
+                2022
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Foundation</h3>
+                <p className="text-gray-600">CLSI was established with a vision to transform lives through education.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <div className="w-20 h-20 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold text-lg mr-6">
+                2023
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">50 Students</h3>
+                <p className="text-gray-600">Reached our first milestone of supporting 50 deserving students.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <div className="w-20 h-20 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold text-lg mr-6">
+                2024
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">100 Students</h3>
+                <p className="text-gray-600">Doubled our impact by supporting 100 students across multiple states.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <div className="w-20 h-20 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold text-lg mr-6">
+                2025
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">300 Students</h3>
+                <p className="text-gray-600">Tripled our reach, supporting 300 students and expanding our mentorship programs.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Team */}
+      <section className="bg-white section-padding">
+        <div className="max-w-7xl mx-auto container-padding">
+          <div className="text-center mb-12">
+            <h2 className="heading-2 mb-4">Our Team</h2>
+            <p className="body-large">
+              Dedicated individuals working towards educational equity.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <Card className="text-center p-6">
+              <div className="w-24 h-24 mx-auto bg-primary-100 rounded-full mb-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary-600">SR</span>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Sanjay Rathi</h3>
+              <p className="text-primary-500 font-medium">Founder</p>
+            </Card>
+            
+            <Card className="text-center p-6">
+              <div className="w-24 h-24 mx-auto bg-primary-100 rounded-full mb-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary-600">JP</span>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Jitendra Patel</h3>
+              <p className="text-primary-500 font-medium">Program Director</p>
+            </Card>
+            
+            <Card className="text-center p-6">
+              <div className="w-24 h-24 mx-auto bg-primary-100 rounded-full mb-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary-600">PMA</span>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Priya Manu Arora</h3>
+              <p className="text-primary-500 font-medium">Program Director</p>
+            </Card>
+            
+            <Card className="text-center p-6">
+              <div className="w-24 h-24 mx-auto bg-primary-100 rounded-full mb-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary-600">AS</span>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Akansha Srivastav</h3>
+              <p className="text-primary-500 font-medium">Community Outreach</p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Contact */}
       <section className="bg-gray-50 section-padding">
         <div className="max-w-4xl mx-auto container-padding">
