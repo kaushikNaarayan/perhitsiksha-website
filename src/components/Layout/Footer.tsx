@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://facebook.com/perhitsiksha"
+                href="https://www.facebook.com/CGST.Lucknow.Social.Initiatives/"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
                 aria-label="Follow us on Facebook"
               >
@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
                 </svg>
               </a>
               <a
-                href="https://youtube.com/perhitsiksha"
+                href="https://www.youtube.com/@clsi-perhitsiksha"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
                 aria-label="Subscribe to our YouTube channel"
               >
