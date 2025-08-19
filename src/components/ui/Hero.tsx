@@ -86,13 +86,13 @@ const Hero: React.FC<HeroProps> = ({
           </h1>
           
           {subtitle && (
-            <p className={`body-large mb-8 max-w-2xl mx-auto ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}>
+            <p className={`body-large mb-6 max-w-2xl mx-auto ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}>
               {subtitle}
             </p>
           )}
           
           {(primaryCTA || secondaryCTA) && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
               {primaryCTA && (
                 <Button
                   href={primaryCTA.href}
@@ -118,7 +118,7 @@ const Hero: React.FC<HeroProps> = ({
 
           {/* Social Icons */}
           {primaryCTA && (
-            <div className="flex justify-center space-x-6 mt-6">
+            <div className="flex justify-center space-x-6 mt-4">
               <a
                 href="https://www.facebook.com/CGST.Lucknow.Social.Initiatives/"
                 className={`${backgroundImage ? 'text-gray-200 hover:text-white' : 'text-gray-700 hover:text-primary-500'} transition-colors duration-200`}
