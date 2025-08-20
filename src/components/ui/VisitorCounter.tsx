@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import { config } from '../../config/environment';
 
 interface VisitorCounterProps {
@@ -46,8 +52,73 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   // Configuration from environment - must be declared first
   const { counter, features } = config;
 
+  // Structured logging utility
+  const logger = useMemo(
+    () => ({
+      info: (event: string, data?: Record<string, unknown>) => {
+        if (features.enableDebugLogs || features.enableTestMode) {
+          console.log(`[VisitorCounter] ${event}`, data || '');
+        }
+      },
+      warn: (event: string, data?: Record<string, unknown>) => {
+        if (
+          features.enableDebugLogs ||
+          config.features.enablePerformanceMonitoring
+        ) {
+          console.warn(`[VisitorCounter] ${event}`, data || '');
+        }
+        // In production, this could integrate with error tracking services
+        // Example: Sentry.captureMessage(`counter_${event}`, 'warning', { extra: data });
+      },
+      error: (event: string, data?: Record<string, unknown>) => {
+        if (
+          features.enableDebugLogs ||
+          config.features.enablePerformanceMonitoring
+        ) {
+          console.error(`[VisitorCounter] ${event}`, data || '');
+        }
+        // In production, this could integrate with error tracking services
+        // Example: Sentry.captureException(new Error(event), { extra: data });
+      },
+      metrics: (event: string, data: Record<string, unknown>) => {
+        if (features.enableDebugLogs) {
+          console.log(`📊 [VisitorCounter] ${event}`, data);
+        }
+        // In production, this could integrate with analytics services
+        // Example: analytics.track(`counter_${event}`, data);
+      },
+    }),
+    [features.enableDebugLogs, features.enableTestMode]
+  );
+
+  // Enhanced error classification
+  const classifyError = useCallback((error: Error): string => {
+    // Specific error name mapping
+    if (error.name === 'AbortError') return 'timeout';
+    if (error.name === 'TypeError') return 'network_error';
+    if (error.name === 'SyntaxError') return 'json_parse_error';
+
+    // Message-based classification
+    const message = error.message.toLowerCase();
+    if (message.includes('network')) return 'network_error';
+    if (message.includes('fetch')) return 'fetch_error';
+    if (message.includes('timeout')) return 'timeout';
+    if (message.includes('http')) return 'http_error';
+    if (message.includes('cors')) return 'cors_error';
+    if (message.includes('json')) return 'json_error';
+    if (message.includes('quota')) return 'storage_error';
+
+    // HTTP status code patterns
+    if (message.includes('404')) return 'not_found';
+    if (message.includes('401') || message.includes('403')) return 'auth_error';
+    if (message.includes('500')) return 'server_error';
+    if (message.includes('429')) return 'rate_limit';
+
+    return 'unknown_error';
+  }, []);
+
   // Cache utilities with timestamp validation
-  const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  const CACHE_TTL = counter.cacheTTL;
   const CACHE_KEY = 'counter_api_cache';
 
   const validateCachedData = useCallback(
@@ -99,14 +170,37 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           ttl: CACHE_TTL,
         };
         localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
-      } catch (error) {
-        // localStorage might be full or disabled
-        if (features.enableDebugLogs) {
-          console.warn('Failed to cache counter data:', error);
+      } catch (error: unknown) {
+        // Handle localStorage quota exceeded or disabled
+        if (error instanceof Error && error.name === 'QuotaExceededError') {
+          try {
+            // Clear old cache and retry
+            localStorage.removeItem('counter_performance_metrics');
+            localStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({
+                count,
+                timestamp: Date.now(),
+                ttl: CACHE_TTL,
+              })
+            );
+            logger.warn('cache_quota_exceeded', {
+              action: 'cleared_metrics_retried',
+            });
+          } catch {
+            // Still failing, localStorage might be disabled
+            logger.warn('cache_unavailable', {
+              reason: 'localStorage_disabled',
+            });
+          }
+        } else {
+          logger.warn('cache_write_failed', {
+            error: error instanceof Error ? error.message : 'unknown',
+          });
         }
       }
     },
-    [CACHE_KEY, CACHE_TTL, features.enableDebugLogs]
+    [CACHE_KEY, CACHE_TTL, logger]
   );
 
   // Performance metrics tracking
@@ -144,47 +238,68 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           allMetrics.splice(0, allMetrics.length - 100);
         }
 
-        localStorage.setItem(metricsKey, JSON.stringify(allMetrics));
+        try {
+          localStorage.setItem(metricsKey, JSON.stringify(allMetrics));
+        } catch (storageError: unknown) {
+          if (
+            storageError instanceof Error &&
+            storageError.name === 'QuotaExceededError'
+          ) {
+            // Clear old metrics and retry with smaller dataset
+            const reducedMetrics = allMetrics.slice(-50); // Keep only last 50
+            try {
+              localStorage.setItem(metricsKey, JSON.stringify(reducedMetrics));
+              logger.warn('metrics_quota_exceeded', {
+                action: 'reduced_to_50_entries',
+              });
+            } catch {
+              // Still failing, disable metrics storage
+              localStorage.removeItem(metricsKey);
+              logger.warn('metrics_storage_unavailable', {
+                action: 'disabled',
+              });
+            }
+          }
+        }
 
         // Log metrics in development/staging
-        if (features.enableDebugLogs) {
-          console.log('📊 Counter Performance Metrics:', {
-            responseTime: `${metrics.apiResponseTime}ms`,
-            cacheHit: metrics.cacheHit ? '✅ Cache Hit' : '❌ Cache Miss',
-            success: metrics.success ? '✅ Success' : '❌ Failed',
-            errorType: metrics.errorType || 'None',
-            workspace: metrics.workspace,
-          });
-        }
+        logger.metrics('performance_data', {
+          responseTime: `${metrics.apiResponseTime}ms`,
+          cacheHit: metrics.cacheHit ? '✅ Cache Hit' : '❌ Cache Miss',
+          success: metrics.success ? '✅ Success' : '❌ Failed',
+          errorType: metrics.errorType || 'None',
+          workspace: metrics.workspace,
+        });
 
         // In production, this could integrate with analytics services
         if (config.features.enablePerformanceMonitoring) {
           // Example: Send to analytics service
           // analytics.track('counter_performance', metrics);
 
-          // For now, we'll use a simple console log that can be monitored
+          // Monitor for slow responses and failures
           if (metrics.success && metrics.apiResponseTime > 3000) {
-            console.warn(
-              'Slow counter API response:',
-              `${metrics.apiResponseTime}ms`
-            );
+            logger.warn('api_response_slow', {
+              responseTime: `${metrics.apiResponseTime}ms`,
+              workspace: metrics.workspace,
+            });
           }
 
-          if (!metrics.success && metrics.errorType !== 'AbortError') {
-            console.error('Counter API failure:', {
-              error: metrics.errorType,
+          if (!metrics.success && metrics.errorType !== 'timeout') {
+            logger.error('api_request_failed', {
+              errorType: metrics.errorType,
               workspace: metrics.workspace,
+              responseTime: `${metrics.apiResponseTime}ms`,
             });
           }
         }
       } catch (error) {
         // Don't let metrics tracking break the main functionality
-        if (features.enableDebugLogs) {
-          console.warn('Failed to track performance metrics:', error);
-        }
+        logger.warn('metrics_tracking_failed', {
+          error: error instanceof Error ? error.message : 'unknown',
+        });
       }
     },
-    [features.enableDebugLogs]
+    [logger]
   );
 
   // Create stable references for configuration
@@ -210,11 +325,9 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
 
       // Early return for missing workspace
       if (!workspace) {
-        if (features.enableDebugLogs) {
-          console.error(
-            'Counter API: Missing VITE_COUNTER_WORKSPACE environment variable'
-          );
-        }
+        logger.error('workspace_missing', {
+          message: 'VITE_COUNTER_WORKSPACE environment variable not configured',
+        });
         setViewCount(baseCount + 1);
         setIsLoading(false);
         return;
@@ -282,22 +395,18 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           workspace,
         });
 
-        if (features.enableDebugLogs || features.enableTestMode) {
-          console.log('Counter API success:', {
-            workspace,
-            apiCount: currentCount,
-            totalViews,
-            responseTime: `${responseTime}ms`,
-          });
-        }
+        logger.info('api_success', {
+          workspace,
+          apiCount: currentCount,
+          totalViews,
+          responseTime: `${responseTime}ms`,
+        });
       } catch (error) {
         // Check if the request was aborted (component unmounted or timeout)
         if (controller.signal.aborted) {
-          if (features.enableDebugLogs || features.enableTestMode) {
-            console.log(
-              'Counter API request aborted (component unmounted or timeout)'
-            );
-          }
+          logger.info('api_request_aborted', {
+            reason: 'component_unmounted_or_timeout',
+          });
           return; // Don't update state if component was unmounted
         }
 
@@ -322,14 +431,12 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           apiResponseTime: responseTime,
           cacheHit: usedCache,
           success: false,
-          errorType: error.name || 'UnknownError',
+          errorType: classifyError(error as Error),
           timestamp: Date.now(),
           workspace,
         });
 
-        if (features.enableDebugLogs || features.enableTestMode) {
-          console.error('Counter API failed:', errorContext);
-        }
+        logger.error('api_failed', errorContext);
 
         if (usedCache) {
           setViewCount(baseCount + cachedCount);
@@ -345,12 +452,12 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
       }
     },
     [
-      features.enableDebugLogs,
-      features.enableTestMode,
       setCachedData,
       validateCachedData,
       CACHE_KEY,
       trackPerformance,
+      classifyError,
+      logger,
     ]
   );
 

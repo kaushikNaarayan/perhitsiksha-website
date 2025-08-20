@@ -29,15 +29,20 @@ global.fetch = mockFetch;
 
 describe('VisitorCounter', () => {
   beforeEach(() => {
+    // Clear all mocks completely
     localStorageMock.getItem.mockClear();
     localStorageMock.setItem.mockClear();
     localStorageMock.removeItem.mockClear();
-    mockFetch.mockReset(); // Use reset instead of clear
+    mockFetch.mockClear();
 
-    // Clear all localStorage mocks to prevent cross-test pollution
+    // Reset to default behavior - no cached data
     localStorageMock.getItem.mockReturnValue(null);
 
-    // Don't set a default mock - let each test set its own
+    // Reset fetch to throw by default - each test must explicitly mock success
+    mockFetch.mockRejectedValue(new Error('No mock configured'));
+
+    // Clear any timers from previous tests
+    vi.clearAllTimers();
   });
 
   afterEach(() => {
@@ -53,8 +58,8 @@ describe('VisitorCounter', () => {
   });
 
   it('displays view count after loading', async () => {
-    // Mock successful API response
-    mockFetch.mockResolvedValue({
+    // Mock successful API response - override default error
+    mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
       json: () =>
@@ -116,13 +121,13 @@ describe('VisitorCounter', () => {
   });
 
   it('handles API timeout correctly', async () => {
-    // Mock a timeout scenario
-    const error = new Error('AbortError');
+    // Mock a timeout scenario - override default
+    const error = new Error('Request timeout');
     error.name = 'AbortError';
-    mockFetch.mockRejectedValue(error);
+    mockFetch.mockRejectedValueOnce(error);
 
     // Mock localStorage to return cached data in new JSON format
-    localStorageMock.getItem.mockReturnValue(
+    localStorageMock.getItem.mockReturnValueOnce(
       '{"count":15,"timestamp":' + Date.now() + ',"ttl":300000}'
     );
 
@@ -135,14 +140,17 @@ describe('VisitorCounter', () => {
       },
       { timeout: 3000 }
     );
+
+    // Verify localStorage was called
+    expect(localStorageMock.getItem).toHaveBeenCalledWith('counter_api_cache');
   });
 
   it('handles API failure with fallback', async () => {
-    // Mock API failure
-    mockFetch.mockRejectedValue(new Error('Network error'));
+    // Mock API failure - override default
+    mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
     // Mock localStorage fallback in new JSON format
-    localStorageMock.getItem.mockReturnValue(
+    localStorageMock.getItem.mockReturnValueOnce(
       '{"count":20,"timestamp":' + Date.now() + ',"ttl":300000}'
     );
 
@@ -163,8 +171,8 @@ describe('VisitorCounter', () => {
   it('handles component unmounting during API call', async () => {
     let resolvePromise: (value: unknown) => void;
 
-    // Mock a delayed API response
-    mockFetch.mockReturnValue(
+    // Mock a delayed API response - override default error
+    mockFetch.mockReturnValueOnce(
       new Promise(resolve => {
         resolvePromise = resolve;
       })
@@ -179,7 +187,7 @@ describe('VisitorCounter', () => {
 
     // Now resolve the API call
     act(() => {
-      resolvePromise({
+      resolvePromise!({
         ok: true,
         status: 200,
         json: () =>
@@ -205,6 +213,9 @@ describe('VisitorCounter', () => {
       writable: true,
     });
 
+    // Ensure no cached data interferes
+    localStorageMock.getItem.mockReturnValue(null);
+
     render(<VisitorCounter />);
 
     await waitFor(
@@ -215,7 +226,7 @@ describe('VisitorCounter', () => {
       { timeout: 1000 }
     );
 
-    // Should not have called fetch
+    // Should not have called fetch since workspace is missing
     expect(mockFetch).not.toHaveBeenCalled();
 
     // Restore original env
@@ -226,11 +237,11 @@ describe('VisitorCounter', () => {
   });
 
   it('handles invalid localStorage data gracefully', async () => {
-    // Mock API failure
-    mockFetch.mockRejectedValue(new Error('Network error'));
+    // Mock API failure - override default
+    mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
     // Mock invalid localStorage data
-    localStorageMock.getItem.mockReturnValue('invalid-number');
+    localStorageMock.getItem.mockReturnValueOnce('invalid-number');
 
     render(<VisitorCounter />);
 
@@ -241,11 +252,14 @@ describe('VisitorCounter', () => {
       },
       { timeout: 3000 }
     );
+
+    // Should have attempted to parse invalid data
+    expect(localStorageMock.getItem).toHaveBeenCalledWith('counter_api_cache');
   });
 
   it('stores successful API response in localStorage', async () => {
-    // Mock successful API response
-    mockFetch.mockResolvedValue({
+    // Mock successful API response - override default error
+    mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
       json: () =>

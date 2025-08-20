@@ -15,6 +15,13 @@ const environmentSchema = z.object({
     .refine(val => val === undefined || (!isNaN(val) && val >= 0), {
       message: 'Base count must be a non-negative number',
     }),
+  VITE_COUNTER_CACHE_TTL: z
+    .string()
+    .optional()
+    .transform(val => (val ? parseInt(val, 10) : undefined))
+    .refine(val => val === undefined || (!isNaN(val) && val > 0), {
+      message: 'Cache TTL must be a positive number (milliseconds)',
+    }),
 });
 
 // Type inference from schema
@@ -63,12 +70,32 @@ const getBaseCount = (): number => {
   }
 };
 
+// Environment-specific cache TTL
+const getCacheTTL = (): number => {
+  if (env.VITE_COUNTER_CACHE_TTL !== undefined) {
+    return env.VITE_COUNTER_CACHE_TTL;
+  }
+
+  // Environment-specific defaults (in milliseconds)
+  switch (env.VITE_ENVIRONMENT) {
+    case 'production':
+      return 10 * 60 * 1000; // 10 minutes for production
+    case 'staging':
+      return 5 * 60 * 1000; // 5 minutes for staging
+    case 'development':
+      return 2 * 60 * 1000; // 2 minutes for development
+    default:
+      return 5 * 60 * 1000;
+  }
+};
+
 // Environment-specific configurations
 export const config = {
   counter: {
     workspace: env.VITE_COUNTER_WORKSPACE,
     baseUrl: env.VITE_API_BASE_URL,
     baseCount: getBaseCount(),
+    cacheTTL: getCacheTTL(),
   },
   analytics: {
     measurementId: env.VITE_GA_MEASUREMENT_ID,
