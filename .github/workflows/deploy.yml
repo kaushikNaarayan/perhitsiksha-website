@@ -42,6 +42,8 @@ jobs:
         VITE_COUNTER_WORKSPACE: ${{ secrets.PROD_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: production
         VITE_COUNTER_BASE_COUNT: "350"
+        VITE_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.PROD_SUPABASE_ANON_KEY }}
       run: npm run test -- --run
       
     - name: Run linting
@@ -56,6 +58,8 @@ jobs:
         VITE_ENVIRONMENT: production
         VITE_COUNTER_BASE_COUNT: "350"
         VITE_GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+        VITE_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.PROD_SUPABASE_ANON_KEY }}
       run: npm run build
       
     - name: Deployment readiness check
@@ -91,6 +95,8 @@ jobs:
         VITE_ENVIRONMENT: production
         VITE_COUNTER_BASE_COUNT: "350"
         VITE_GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+        VITE_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.PROD_SUPABASE_ANON_KEY }}
       run: npm run build
       
     - name: Setup Pages
@@ -148,9 +154,16 @@ jobs:
         fi
         echo "Health check passed!"
         
-    - name: Counter API verification
+    - name: Database connectivity verification
       run: |
-        echo "Verifying Counter API integration..."
-        # Test counter API endpoint
-        curl -f "https://api.counterapi.dev/v2/perhitsiksha/perhitsiksha-visits" || echo "Counter API check failed but not critical"
-        echo "Counter API verification completed"
+        echo "Verifying database connectivity..."
+        # Test Supabase connectivity
+        if [ -n "${{ secrets.PROD_SUPABASE_URL }}" ]; then
+          echo "Supabase configured - visitor counter will use persistent database"
+          # Basic health check for Supabase (no auth required)
+          curl -f "${{ secrets.PROD_SUPABASE_URL }}/rest/v1/" -H "apikey: ${{ secrets.PROD_SUPABASE_ANON_KEY }}" || echo "Supabase health check failed but deployment continues"
+        else
+          echo "Supabase not configured - visitor counter will use fallback Counter API"
+          curl -f "https://api.counterapi.dev/v2/perhitsiksha/perhitsiksha-visits" || echo "Counter API check failed but not critical"
+        fi
+        echo "Database connectivity verification completed"
