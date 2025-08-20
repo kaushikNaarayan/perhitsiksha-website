@@ -319,90 +319,6 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
     };
   }, [counter.workspace, counter.baseUrl, counter.baseCount]);
 
-  // Supabase page view function
-  const fetchSupabaseViewCount = useCallback(
-    async (controller: AbortController) => {
-      const startTime = Date.now();
-
-      try {
-        // Check if request was aborted before starting
-        if (controller.signal.aborted) {
-          logger.info('api_request_aborted', {
-            reason: 'component_unmounted_before_start',
-          });
-          return;
-        }
-
-        // Increment page views (atomic operation)
-        const result = await pageViewService.incrementPageViews('home');
-
-        if (!result) {
-          throw new Error('Failed to increment page views');
-        }
-
-        const totalViews = result.count;
-        setViewCount(totalViews);
-
-        // Track performance metrics
-        const responseTime = Date.now() - startTime;
-        trackPerformance({
-          apiResponseTime: responseTime,
-          cacheHit: false, // This was a fresh API call
-          success: true,
-          timestamp: Date.now(),
-          workspace: 'supabase',
-        });
-
-        logger.info('supabase_success', {
-          totalViews,
-          responseTime: `${responseTime}ms`,
-          timestamp: new Date().toISOString(),
-        });
-      } catch (error) {
-        // Check if the request was aborted
-        if (controller.signal.aborted) {
-          logger.info('api_request_aborted', {
-            reason: 'component_unmounted_or_timeout',
-          });
-          return;
-        }
-
-        const errorObj =
-          error instanceof Error ? error : new Error(String(error));
-        const responseTime = Date.now() - startTime;
-
-        // Track performance metrics for failed requests
-        trackPerformance({
-          apiResponseTime: responseTime,
-          cacheHit: false,
-          success: false,
-          errorType: classifyError(errorObj),
-          timestamp: Date.now(),
-          workspace: 'supabase',
-        });
-
-        logger.error('supabase_failed', {
-          error: errorObj.message || 'Unknown error',
-          responseTime: `${responseTime}ms`,
-        });
-
-        // Fall back to legacy Counter API
-        logger.info('falling_back_to_counter_api', {
-          reason: 'supabase_error',
-        });
-
-        await fetchLegacyViewCount(controller);
-        return;
-      } finally {
-        // Only update loading state if component is still mounted
-        if (!controller.signal.aborted) {
-          setIsLoading(false);
-        }
-      }
-    },
-    [trackPerformance, classifyError, logger, fetchLegacyViewCount]
-  );
-
   // Legacy Counter API function (for fallback)
   const fetchLegacyViewCount = useCallback(
     async (controller: AbortController) => {
@@ -560,6 +476,90 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
       classifyError,
       logger,
     ]
+  );
+
+  // Supabase page view function
+  const fetchSupabaseViewCount = useCallback(
+    async (controller: AbortController) => {
+      const startTime = Date.now();
+
+      try {
+        // Check if request was aborted before starting
+        if (controller.signal.aborted) {
+          logger.info('api_request_aborted', {
+            reason: 'component_unmounted_before_start',
+          });
+          return;
+        }
+
+        // Increment page views (atomic operation)
+        const result = await pageViewService.incrementPageViews('home');
+
+        if (!result) {
+          throw new Error('Failed to increment page views');
+        }
+
+        const totalViews = result.count;
+        setViewCount(totalViews);
+
+        // Track performance metrics
+        const responseTime = Date.now() - startTime;
+        trackPerformance({
+          apiResponseTime: responseTime,
+          cacheHit: false, // This was a fresh API call
+          success: true,
+          timestamp: Date.now(),
+          workspace: 'supabase',
+        });
+
+        logger.info('supabase_success', {
+          totalViews,
+          responseTime: `${responseTime}ms`,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        // Check if the request was aborted
+        if (controller.signal.aborted) {
+          logger.info('api_request_aborted', {
+            reason: 'component_unmounted_or_timeout',
+          });
+          return;
+        }
+
+        const errorObj =
+          error instanceof Error ? error : new Error(String(error));
+        const responseTime = Date.now() - startTime;
+
+        // Track performance metrics for failed requests
+        trackPerformance({
+          apiResponseTime: responseTime,
+          cacheHit: false,
+          success: false,
+          errorType: classifyError(errorObj),
+          timestamp: Date.now(),
+          workspace: 'supabase',
+        });
+
+        logger.error('supabase_failed', {
+          error: errorObj.message || 'Unknown error',
+          responseTime: `${responseTime}ms`,
+        });
+
+        // Fall back to legacy Counter API
+        logger.info('falling_back_to_counter_api', {
+          reason: 'supabase_error',
+        });
+
+        await fetchLegacyViewCount(controller);
+        return;
+      } finally {
+        // Only update loading state if component is still mounted
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [trackPerformance, classifyError, logger, fetchLegacyViewCount]
   );
 
   // Main fetch function that chooses between Supabase and legacy
