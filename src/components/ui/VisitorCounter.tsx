@@ -410,16 +410,20 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           return; // Don't update state if component was unmounted
         }
 
-        const isTimeout = error.name === 'AbortError';
+        const errorObj =
+          error instanceof Error ? error : new Error(String(error));
+        const isTimeout = errorObj.name === 'AbortError';
         const responseTime = Date.now() - startTime;
 
         const errorContext = {
-          error: error.message || 'Unknown error',
+          error: errorObj.message || 'Unknown error',
           workspace,
           apiUrl: `${baseUrl}/${workspace}/perhitsiksha-visits/up`,
           isTimeout,
           responseTime: `${responseTime}ms`,
-          ...(error.cause && { cause: error.cause }),
+          ...(errorObj.cause && typeof errorObj.cause === 'object'
+            ? { cause: errorObj.cause }
+            : {}),
         };
 
         // Try to use stored data as fallback with timestamp validation
@@ -431,7 +435,7 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           apiResponseTime: responseTime,
           cacheHit: usedCache,
           success: false,
-          errorType: classifyError(error as Error),
+          errorType: classifyError(errorObj),
           timestamp: Date.now(),
           workspace,
         });
