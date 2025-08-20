@@ -11,10 +11,10 @@ interface CelebrityCarouselProps {
   className?: string;
 }
 
-const CelebrityCarousel: React.FC<CelebrityCarouselProps> = ({ 
-  celebrities, 
+const CelebrityCarousel: React.FC<CelebrityCarouselProps> = ({
+  celebrities,
   interval = 2000,
-  className = ''
+  className = '',
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -24,11 +24,9 @@ const CelebrityCarousel: React.FC<CelebrityCarouselProps> = ({
 
     const timer = setInterval(() => {
       setIsFlipping(true);
-      
+
       setTimeout(() => {
-        setCurrentIndex((prevIndex) => 
-          (prevIndex + 1) % celebrities.length
-        );
+        setCurrentIndex(prevIndex => (prevIndex + 1) % celebrities.length);
         setIsFlipping(false);
       }, 150); // Half of flip duration
     }, interval);
@@ -42,13 +40,13 @@ const CelebrityCarousel: React.FC<CelebrityCarouselProps> = ({
 
   return (
     <div className={`flex items-center justify-center gap-2 ${className}`}>
-      <span 
+      <span
         className={`inline-block bg-primary-500 text-white font-bold px-3 py-1 rounded-md transition-transform duration-300 ${
           isFlipping ? 'transform rotateX-180' : ''
         }`}
         style={{
           transformStyle: 'preserve-3d',
-          transform: isFlipping ? 'rotateX(90deg)' : 'rotateX(0deg)'
+          transform: isFlipping ? 'rotateX(90deg)' : 'rotateX(0deg)',
         }}
       >
         {currentCelebrity.name}

@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Format code
+npm run format:check
+
+# Lint code
+npm run lint
+
+# Type check
+npx tsc --noEmit
+
+# Run tests
+VITE_COUNTER_WORKSPACE=perhitsiksha VITE_ENVIRONMENT=development npm run test -- --run
+
+echo "✅ Pre-commit checks passed!"

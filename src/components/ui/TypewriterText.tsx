@@ -6,10 +6,10 @@ interface TypewriterTextProps {
   speed?: number;
 }
 
-const TypewriterText: React.FC<TypewriterTextProps> = ({ 
-  text, 
-  className = '', 
-  speed = 75 
+const TypewriterText: React.FC<TypewriterTextProps> = ({
+  text,
+  className = '',
+  speed = 75,
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
@@ -35,7 +35,7 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({
   return (
     <span className={className}>
       {displayedText}
-      <span 
+      <span
         className={`inline-block w-0.5 h-8 bg-current ml-1 ${
           isComplete ? 'animate-pulse' : 'opacity-100'
         }`}

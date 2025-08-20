@@ -12,7 +12,9 @@ const Hero: React.FC<HeroProps> = ({
   backgroundImage,
   overlay = true,
 }) => {
-  const [animatedStats, setAnimatedStats] = useState<Record<number, number>>({});
+  const [animatedStats, setAnimatedStats] = useState<Record<number, number>>(
+    {}
+  );
   const [isVisible, setIsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
@@ -57,7 +59,7 @@ const Hero: React.FC<HeroProps> = ({
     <section className="relative min-h-[60vh] flex items-center justify-center">
       {/* Background Image */}
       {backgroundImage && (
-        <div 
+        <div
           className="absolute inset-0 z-0 hero-background-image"
           style={{
             backgroundImage: `url(${backgroundImage})`,
@@ -67,30 +69,36 @@ const Hero: React.FC<HeroProps> = ({
           }}
         />
       )}
-      
+
       {/* Overlay */}
       {overlay && (
         <div className="absolute inset-0 bg-black bg-opacity-40 z-10" />
       )}
-      
+
       {/* Content */}
       <div className="relative z-20 text-center">
         {/* Semi-transparent text background for readability */}
-        <div className={`${backgroundImage ? 'hero-content-box' : 'max-w-4xl mx-auto container-padding'}`}>
-          <h1 className={`heading-1 mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}>
-            <TypewriterText 
-              text={title} 
+        <div
+          className={`${backgroundImage ? 'hero-content-box' : 'max-w-4xl mx-auto container-padding'}`}
+        >
+          <h1
+            className={`heading-1 mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
+          >
+            <TypewriterText
+              text={title}
               className={backgroundImage ? 'text-white' : 'text-gray-900'}
               speed={75}
             />
           </h1>
-          
+
           {subtitle && (
-            <p className={`body-large mb-6 max-w-2xl mx-auto ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}>
+            <p
+              className={`body-large mb-6 max-w-2xl mx-auto ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}
+            >
               {subtitle}
             </p>
           )}
-          
+
           {(primaryCTA || secondaryCTA) && (
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
               {primaryCTA && (
@@ -103,11 +111,11 @@ const Hero: React.FC<HeroProps> = ({
                   {primaryCTA.text}
                 </Button>
               )}
-              
+
               {secondaryCTA && (
                 <Button
                   href={secondaryCTA.href}
-                  variant={backgroundImage ? "secondary" : "outline"}
+                  variant={backgroundImage ? 'secondary' : 'outline'}
                   size="lg"
                 >
                   {secondaryCTA.text}
@@ -126,8 +134,12 @@ const Hero: React.FC<HeroProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                <svg
+                  className="w-6 h-6"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
               </a>
               <a
@@ -137,8 +149,12 @@ const Hero: React.FC<HeroProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                <svg
+                  className="w-6 h-6"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                 </svg>
               </a>
             </div>
@@ -146,13 +162,22 @@ const Hero: React.FC<HeroProps> = ({
 
           {/* Impact Stats */}
           {stats && (
-            <div ref={statsRef} className={`grid grid-cols-1 ${stats.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-6 mt-8 pt-6`}>
+            <div
+              ref={statsRef}
+              className={`grid grid-cols-1 ${stats.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-6 mt-8 pt-6`}
+            >
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div className={`text-2xl md:text-3xl lg:text-4xl font-bold mb-1 ${backgroundImage ? 'text-white' : 'text-primary-500'}`}>
-                    {stat.prefix || ''}{(animatedStats[index] || 0).toLocaleString()}{stat.suffix || ''}
+                  <div
+                    className={`text-2xl md:text-3xl lg:text-4xl font-bold mb-1 ${backgroundImage ? 'text-white' : 'text-primary-500'}`}
+                  >
+                    {stat.prefix || ''}
+                    {(animatedStats[index] || 0).toLocaleString()}
+                    {stat.suffix || ''}
                   </div>
-                  <div className={`text-sm md:text-base font-medium ${backgroundImage ? 'text-gray-200' : 'text-gray-600'}`}>
+                  <div
+                    className={`text-sm md:text-base font-medium ${backgroundImage ? 'text-gray-200' : 'text-gray-600'}`}
+                  >
                     {stat.label}
                   </div>
                 </div>

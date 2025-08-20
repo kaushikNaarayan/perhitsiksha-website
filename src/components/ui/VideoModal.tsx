@@ -43,18 +43,20 @@ const VideoModal: React.FC<VideoModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black bg-opacity-80 transition-opacity"
         onClick={onClose}
       />
-      
+
       {/* Modal Content - Optimized for portrait videos */}
       <div className="relative w-full max-w-md mx-4 bg-black rounded-lg overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between bg-gray-900 px-4 py-3">
           <div>
             {celebrityName && (
-              <h3 className="text-white text-lg font-semibold">{celebrityName}</h3>
+              <h3 className="text-white text-lg font-semibold">
+                {celebrityName}
+              </h3>
             )}
             <p className="text-gray-300 text-sm">{title}</p>
           </div>
@@ -63,24 +65,27 @@ const VideoModal: React.FC<VideoModalProps> = ({
             className="text-gray-400 hover:text-white transition-colors p-1 rounded"
             aria-label="Close video"
           >
-            <svg 
-              className="w-6 h-6" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M6 18L18 6M6 6l12 12" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
               />
             </svg>
           </button>
         </div>
 
         {/* Video Container - Portrait aspect ratio for mobile/short videos */}
-        <div className="relative bg-black flex justify-center" style={{ aspectRatio: '9/16', maxHeight: '80vh' }}>
+        <div
+          className="relative bg-black flex justify-center"
+          style={{ aspectRatio: '9/16', maxHeight: '80vh' }}
+        >
           <iframe
             src={embedUrl}
             title={title}

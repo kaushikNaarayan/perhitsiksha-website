@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Main bundle (JS)",
+    "path": "dist/assets/index-*.js",
+    "limit": "400 KB",
+    "gzip": true,
+    "webpack": false
+  },
+  {
+    "name": "All assets",
+    "path": "dist/**/*",
+    "limit": "8 MB",
+    "webpack": false
+  }
+]
