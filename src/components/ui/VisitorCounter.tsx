@@ -4,114 +4,118 @@ interface VisitorCounterProps {
   className?: string;
 }
 
+interface CounterResponse {
+  code: string;
+  data: {
+    id: number;
+    name: string;
+    slug: string;
+    up_count: number;
+    down_count: number;
+    created_at: string;
+    updated_at: string;
+    workspace_id: number;
+    workspace_slug: string;
+    team_id: number;
+    user_id: number;
+    description: string;
+  };
+  message?: string;
+}
+
 const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   const [visitorCount, setVisitorCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Configuration from environment variables
+  const WORKSPACE = import.meta.env.VITE_COUNTER_WORKSPACE;
+  const BASE_COUNT = 350; // Historical visitors before counter implementation
+  const API_BASE_URL = 'https://api.counterapi.dev/v2';
+
   useEffect(() => {
     const fetchVisitorCount = async () => {
-      const baseCount = 350; // Base count
-      let realVisitors = 0;
+      // Validate required environment variables
+      if (!WORKSPACE) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Counter API: Missing VITE_COUNTER_WORKSPACE environment variable');
+        }
+        setVisitorCount(BASE_COUNT + 1);
+        setIsLoading(false);
+        return;
+      }
+
+      const headers = {
+        'Accept': 'application/json'
+      };
+
+      const cacheKey = 'counter_api_cache';
+      const cacheTimeKey = 'counter_api_time';
+      const cacheValidityMinutes = 10;
 
       try {
-        // Try lightweight visitor counter services used by other sites
-        const counterServices = [
-          {
-            name: 'Counter.dev',
-            url: 'https://api.counter.dev/perhitsiksha.org',
-            parser: (data: { count?: number }) => data.count || 0
-          },
-          {
-            name: 'GoatCounter',
-            url: 'https://perhitsiksha.goatcounter.com/counter/visits.json',
-            parser: (data: { count?: number }) => data.count || 0
-          },
-          {
-            name: 'Simple Counter API',
-            url: `https://api.countapi.xyz/get/perhitsiksha.org/visits`,
-            parser: (data: { value?: number }) => data.value || 0
-          }
-        ];
-
-        for (const service of counterServices) {
-          try {
-            console.log(`🔄 Trying ${service.name}...`);
-            const response = await fetch(service.url, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json',
-              }
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              const count = service.parser(data);
-              
-              if (count && count > 0) {
-                realVisitors = count;
-                console.log(`✅ ${service.name} success: ${realVisitors} visitors`);
-                break;
-              }
-            }
-          } catch (serviceError) {
-            console.warn(`${service.name} failed:`, serviceError);
-            continue;
-          }
-        }
-
-        // If no lightweight service worked, try to register a hit and get count
-        if (realVisitors === 0) {
-          try {
-            // Try to increment and get current count from CountAPI
-            const hitResponse = await fetch('https://api.countapi.xyz/hit/perhitsiksha.org/visitors');
-            if (hitResponse.ok) {
-              const hitData = await hitResponse.json();
-              if (hitData.value) {
-                realVisitors = hitData.value;
-                console.log(`✅ CountAPI hit registered: ${realVisitors} total visitors`);
-              }
-            }
-          } catch (hitError) {
-            console.warn('CountAPI hit failed:', hitError);
-          }
-        }
-
-        // Cache the result for 10 minutes to avoid too many API calls
-        const cacheKey = 'visitor_count_cache';
-        const cacheTimeKey = 'visitor_count_time';
-        const cacheValidityMinutes = 10;
-        
+        // Check cache first
         const cachedTime = localStorage.getItem(cacheTimeKey);
-        const now = new Date().getTime();
+        const now = Date.now();
         
-        // Use cache if it's still valid and we didn't get new data
-        if (realVisitors === 0 && cachedTime && (now - parseInt(cachedTime, 10)) < (cacheValidityMinutes * 60 * 1000)) {
+        if (cachedTime && (now - parseInt(cachedTime, 10)) < (cacheValidityMinutes * 60 * 1000)) {
           const cachedCount = localStorage.getItem(cacheKey);
           if (cachedCount) {
-            realVisitors = parseInt(cachedCount, 10);
-            console.log('📋 Using cached visitor count');
+            const parsedCount = parseInt(cachedCount, 10);
+            setVisitorCount(BASE_COUNT + parsedCount);
+            setIsLoading(false);
+            return;
           }
-        } else if (realVisitors > 0) {
-          // Cache new data
-          localStorage.setItem(cacheKey, realVisitors.toString());
-          localStorage.setItem(cacheTimeKey, now.toString());
         }
 
-        // Final fallback: minimal increment
-        if (realVisitors === 0) {
-          realVisitors = 1;
-          console.log('🔄 Using minimal fallback count');
+        // Increment the counter (register this visit) and get count in one call
+        const incrementResponse = await fetch(
+          `${API_BASE_URL}/${WORKSPACE}/perhitsiksha-visits/up`,
+          {
+            method: 'GET',
+            headers
+          }
+        );
+
+        if (!incrementResponse.ok) {
+          throw new Error(`Counter increment failed: ${incrementResponse.status} ${incrementResponse.statusText}`);
+        }
+
+        const incrementData: CounterResponse = await incrementResponse.json();
+        
+        // Use the count from increment response (no need for second API call)
+        const currentCount = incrementData.data.up_count;
+
+        // Cache the result
+        localStorage.setItem(cacheKey, currentCount.toString());
+        localStorage.setItem(cacheTimeKey, now.toString());
+
+        // Calculate total visitors (base count + API count)
+        const totalVisitors = BASE_COUNT + currentCount;
+        setVisitorCount(totalVisitors);
+
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Counter API success:', {
+            apiCount: currentCount,
+            totalVisitors
+          });
         }
 
       } catch (error) {
-        console.error('All visitor counting services failed:', error);
-        // Try to get cached data as final fallback
-        const cachedCount = localStorage.getItem('visitor_count_cache');
-        realVisitors = cachedCount ? parseInt(cachedCount, 10) : 1;
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Counter API failed:', error);
+        }
+        
+        // Try to use cached data as fallback
+        const cachedCount = localStorage.getItem(cacheKey);
+        if (cachedCount) {
+          const parsedCount = parseInt(cachedCount, 10);
+          setVisitorCount(BASE_COUNT + parsedCount);
+        } else {
+          // Ultimate fallback
+          setVisitorCount(BASE_COUNT + 1);
+        }
       }
 
-      const totalCount = baseCount + realVisitors;
-      setVisitorCount(totalCount);
       setIsLoading(false);
     };
 
