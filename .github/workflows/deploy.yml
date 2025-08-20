@@ -39,8 +39,9 @@ jobs:
       
     - name: Run tests
       env:
-        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_COUNTER_WORKSPACE: ${{ secrets.PROD_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: production
+        VITE_COUNTER_BASE_COUNT: "350"
       run: npm run test -- --run
       
     - name: Run linting
@@ -51,8 +52,9 @@ jobs:
       
     - name: Test build
       env:
-        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_COUNTER_WORKSPACE: ${{ secrets.PROD_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: production
+        VITE_COUNTER_BASE_COUNT: "350"
         VITE_GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
       run: npm run build
       
@@ -85,8 +87,9 @@ jobs:
       
     - name: Build for production
       env:
-        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_COUNTER_WORKSPACE: ${{ secrets.PROD_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: production
+        VITE_COUNTER_BASE_COUNT: "350"
         VITE_GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
       run: npm run build
       
