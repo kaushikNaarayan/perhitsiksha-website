@@ -61,7 +61,7 @@ const StatsCounter: React.FC<StatsCounterProps> = ({
     <div ref={counterRef} className={`text-center ${className}`}>
       <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-500 mb-1">
         {prefix}
-        {count.toLocaleString()}
+        {(count ?? 0).toLocaleString()}
         {suffix}
       </div>
       <div className="text-sm md:text-base text-gray-600 font-medium">

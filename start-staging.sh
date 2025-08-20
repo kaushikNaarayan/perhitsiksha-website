@@ -40,9 +40,29 @@ EOF
     echo "✅ Tunnel setup complete!"
 fi
 
-# Build and start local server
-echo "🔨 Building project..."
-npm run build > /dev/null 2>&1
+# Build and start local server with environment variables
+echo "🔨 Building project with Supabase configuration..."
+
+# Load environment variables from .env.staging
+if [ -f ".env.staging" ]; then
+    echo "📄 Loading staging environment variables..."
+    export $(cat .env.staging | grep -v '^#' | grep -v '^$' | xargs)
+else
+    echo "⚠️  .env.staging file not found, using manual configuration..."
+    # Manually set essential variables for staging
+    export VITE_ENVIRONMENT=staging
+    export VITE_SUPABASE_URL=https://sxocorkwwbtuqpexfmdt.supabase.co
+    export VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4b2Nvcmt3d2J0dXFwZXhmbWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3MTI3NDQsImV4cCI6MjA3MTI4ODc0NH0.SMkeC7WSZACXQBaT9cbxy3JfTi0bjHO97MLV_eaZYCI
+    export VITE_COUNTER_WORKSPACE=perhitsiksha
+    export VITE_API_BASE_URL=https://api.counterapi.dev/v2
+fi
+
+echo "Environment: ${VITE_ENVIRONMENT}"
+echo "Supabase URL: ${VITE_SUPABASE_URL:0:30}..."
+echo "Supabase enabled: $([ -n "$VITE_SUPABASE_URL" ] && echo "✅ Yes" || echo "❌ No")"
+
+# Build with environment variables
+npm run build
 
 echo "🖥️  Starting local server on port 8000..."
 cd dist

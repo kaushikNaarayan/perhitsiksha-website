@@ -172,7 +172,7 @@ const Hero: React.FC<HeroProps> = ({
                     className={`text-2xl md:text-3xl lg:text-4xl font-bold mb-1 ${backgroundImage ? 'text-white' : 'text-primary-500'}`}
                   >
                     {stat.prefix || ''}
-                    {(animatedStats[index] || 0).toLocaleString()}
+                    {(Number(animatedStats[index]) || 0).toLocaleString()}
                     {stat.suffix || ''}
                   </div>
                   <div

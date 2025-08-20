@@ -605,7 +605,11 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   }, [fetchViewCount, logger]);
 
   // Format number with commas for better readability
-  const formatNumber = (num: number): string => {
+  const formatNumber = (num: number | undefined | null): string => {
+    // Handle undefined, null, or NaN values
+    if (num == null || isNaN(num)) {
+      return '0';
+    }
     return num.toLocaleString();
   };
 

@@ -75,7 +75,12 @@ export class PageViewService {
         throw error;
       }
 
-      return data;
+      // RPC functions return arrays, extract first element
+      if (data && Array.isArray(data) && data.length > 0) {
+        return data[0];
+      }
+
+      return null;
     } catch (error) {
       console.error('Error incrementing page views:', error);
       throw error;
