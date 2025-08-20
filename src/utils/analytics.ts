@@ -1,7 +1,12 @@
 import ReactGA from 'react-ga4';
 
 // Utility functions for tracking events
-export const trackEvent = (action: string, category = 'User Interaction', label?: string, value?: number) => {
+export const trackEvent = (
+  action: string,
+  category = 'User Interaction',
+  label?: string,
+  value?: number
+) => {
   ReactGA.event({
     action,
     category,
@@ -23,5 +28,9 @@ export const trackWhatsAppClick = (context: string) => {
 };
 
 export const trackTestimonialView = (testimonialName: string, role: string) => {
-  trackEvent('testimonial_view', 'Testimonials', `${testimonialName} - ${role}`);
+  trackEvent(
+    'testimonial_view',
+    'Testimonials',
+    `${testimonialName} - ${role}`
+  );
 };

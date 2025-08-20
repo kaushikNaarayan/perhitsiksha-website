@@ -1,0 +1,97 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these staging deployments to complete.
+concurrency:
+  group: "pages-staging"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy-staging:
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      env:
+        VITE_COUNTER_WORKSPACE: perhitsiksha-staging
+        VITE_ENVIRONMENT: staging
+      run: npm run test -- --run
+      
+    - name: Build for staging
+      env:
+        VITE_COUNTER_WORKSPACE: perhitsiksha-staging
+        VITE_ENVIRONMENT: staging
+        # Add staging-specific GA ID if available
+        # VITE_GA_MEASUREMENT_ID: ${{ secrets.GA_STAGING_ID }}
+      run: npm run build
+      
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist'
+        
+    - name: Deploy to GitHub Pages (Staging)
+      id: deployment
+      uses: actions/deploy-pages@v4
+      
+    - name: Run smoke tests
+      run: |
+        echo "Running smoke tests against staging..."
+        # Wait for deployment to be ready
+        sleep 30
+        # Basic health check
+        curl -f ${{ steps.deployment.outputs.page_url }} || exit 1
+        echo "Staging deployment successful!"
+        
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "Staging deployment failed!"
+        # Could integrate with Slack, Discord, etc.
+        
+  lighthouse:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy-staging
+    if: success()
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Run Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v9
+      with:
+        urls: |
+          ${{ needs.build-and-deploy-staging.outputs.page_url }}
+        budgetPath: './lighthouse-budget.json'
+        uploadArtifacts: true
+        temporaryPublicStorage: true

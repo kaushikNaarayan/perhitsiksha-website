@@ -1,0 +1,123 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+# Allow only one concurrent validation per PR
+concurrency:
+  group: pr-validate-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run ESLint
+      run: npm run lint
+      
+    - name: Run TypeScript check
+      run: npx tsc --noEmit
+      
+    - name: Run tests
+      env:
+        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_ENVIRONMENT: development
+      run: npm run test:coverage
+      
+    - name: Upload test coverage
+      uses: codecov/codecov-action@v3
+      if: always()
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
+        
+    - name: Build project
+      env:
+        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_ENVIRONMENT: staging
+      run: npm run build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts-pr-${{ github.event.pull_request.number }}
+        path: dist/
+        retention-days: 7
+        
+  size-check:
+    runs-on: ubuntu-latest
+    needs: validate
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build for size check
+      env:
+        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_ENVIRONMENT: production
+      run: npm run build
+      
+    - name: Check bundle size
+      uses: andresz1/size-limit-action@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        package_manager: npm
+        
+  accessibility-check:
+    runs-on: ubuntu-latest
+    needs: validate
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build project
+      env:
+        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_ENVIRONMENT: staging
+      run: npm run build
+      
+    - name: Serve built files
+      run: npx vite preview --port 3000 &
+      
+    - name: Wait for server
+      run: npx wait-on http://localhost:3000
+      
+    - name: Run accessibility tests
+      run: |
+        npm install -g @axe-core/cli
+        axe http://localhost:3000 --exit

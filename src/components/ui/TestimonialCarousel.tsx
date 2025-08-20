@@ -6,7 +6,9 @@ interface TestimonialCarouselProps {
   testimonials: Testimonial[];
 }
 
-const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials }) => {
+const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
+  testimonials,
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -20,18 +22,20 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
       const slideWidth = carouselRef.current.scrollWidth / testimonials.length;
       carouselRef.current.scrollTo({
         left: slideWidth * index,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
 
   const nextSlide = () => {
-    const newIndex = currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1;
+    const newIndex =
+      currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1;
     goToSlide(newIndex);
   };
 
   const prevSlide = () => {
-    const newIndex = currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1;
+    const newIndex =
+      currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1;
     goToSlide(newIndex);
   };
 
@@ -45,7 +49,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
@@ -61,7 +65,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
     <div className="relative">
       {/* Mobile View - Peek Carousel */}
       <div className="md:hidden">
-        <div 
+        <div
           ref={carouselRef}
           className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4"
           onTouchStart={handleTouchStart}
@@ -74,12 +78,9 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
         >
           {/* Add peek space at start */}
           <div className="flex-none w-6"></div>
-          
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className="flex-none w-80 snap-center"
-            >
+
+          {testimonials.map(testimonial => (
+            <div key={testimonial.id} className="flex-none w-80 snap-center">
               {/* Video Container */}
               <div className="mb-4">
                 <YouTubeEmbed
@@ -88,19 +89,20 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
                   lazyLoad={true}
                 />
               </div>
-              
+
               {/* Testimonial Info */}
               <div className="text-center">
                 <blockquote className="text-base italic text-gray-700 mb-3">
                   "{testimonial.quote}"
                 </blockquote>
                 <div className="text-sm text-gray-600">
-                  <strong>{testimonial.name}</strong> • {testimonial.role} • {testimonial.location}
+                  <strong>{testimonial.name}</strong> • {testimonial.role} •{' '}
+                  {testimonial.location}
                 </div>
               </div>
             </div>
           ))}
-          
+
           {/* Add peek space at end */}
           <div className="flex-none w-6"></div>
         </div>
@@ -115,13 +117,15 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
             lazyLoad={true}
           />
         </div>
-        
+
         <div className="text-center mb-6">
           <blockquote className="text-lg italic text-gray-700 mb-4">
             "{testimonials[currentIndex].quote}"
           </blockquote>
           <div className="text-sm text-gray-600">
-            <strong>{testimonials[currentIndex].name}</strong> • {testimonials[currentIndex].role} • {testimonials[currentIndex].location}
+            <strong>{testimonials[currentIndex].name}</strong> •{' '}
+            {testimonials[currentIndex].role} •{' '}
+            {testimonials[currentIndex].location}
           </div>
         </div>
 
@@ -132,11 +136,21 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
             aria-label="Previous testimonial"
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          
+
           <div className="flex space-x-2">
             {testimonials.map((_, index) => (
               <button
@@ -151,14 +165,24 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
               />
             ))}
           </div>
-          
+
           <button
             onClick={nextSlide}
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
             aria-label="Next testimonial"
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>

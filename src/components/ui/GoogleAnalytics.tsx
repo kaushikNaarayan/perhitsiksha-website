@@ -14,9 +14,9 @@ const GoogleAnalytics = () => {
 
   useEffect(() => {
     // Track page views on route changes
-    ReactGA.send({ 
-      hitType: "pageview", 
-      page: location.pathname + location.search 
+    ReactGA.send({
+      hitType: 'pageview',
+      page: location.pathname + location.search,
     });
   }, [location]);
 

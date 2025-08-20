@@ -7,7 +7,15 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "size": "size-limit",
+    "prepare": "husky"
   },
   "dependencies": {
     "@google-analytics/data": "^5.2.0",
@@ -15,23 +23,38 @@
     "react-dom": "^19.1.1",
     "react-ga4": "^2.1.0",
     "react-icons": "^5.5.0",
-    "react-router-dom": "^7.8.1"
+    "react-router-dom": "^7.8.1",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.33.0",
+    "@size-limit/preset-big-lib": "^11.2.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@testing-library/jest-dom": "^6.7.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
+    "msw": "^2.10.5",
     "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "size-limit": "^11.2.0",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "vitest": "^3.2.4"
   }
 }

@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from 'react-router-dom';
 import { useEffect } from 'react';
 import Layout from './components/Layout/Layout';
 import Home from './pages/Home';
@@ -15,7 +20,7 @@ function AppRoutes() {
     // Handle redirect from 404.html for GitHub Pages SPA routing
     const urlParams = new URLSearchParams(window.location.search);
     const redirect = urlParams.get('redirect');
-    
+
     if (redirect) {
       // Remove the redirect parameter and navigate to the intended route
       const decodedPath = decodeURIComponent(redirect);
