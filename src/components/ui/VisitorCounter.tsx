@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { config } from '../../config/environment';
 
 interface VisitorCounterProps {
@@ -24,35 +24,201 @@ interface CounterResponse {
   message?: string;
 }
 
+interface CachedCounterData {
+  count: number;
+  timestamp: number;
+  ttl: number; // Time to live in milliseconds
+}
+
+interface PerformanceMetrics {
+  apiResponseTime: number;
+  cacheHit: boolean;
+  errorType?: string;
+  success: boolean;
+  timestamp: number;
+  workspace: string;
+}
+
 const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   const [viewCount, setViewCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Configuration from environment
+  // Configuration from environment - must be declared first
   const { counter, features } = config;
-  const {
-    workspace: WORKSPACE,
-    baseUrl: API_BASE_URL,
-    baseCount: BASE_COUNT,
-  } = counter;
 
-  useEffect(() => {
-    // Early return for missing workspace
-    if (!WORKSPACE) {
-      if (features.enableDebugLogs) {
-        console.error(
-          'Counter API: Missing VITE_COUNTER_WORKSPACE environment variable'
-        );
+  // Cache utilities with timestamp validation
+  const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  const CACHE_KEY = 'counter_api_cache';
+
+  const validateCachedData = useCallback(
+    (stored: string | null): number | null => {
+      if (!stored) return null;
+
+      try {
+        // Try parsing as new format with timestamp
+        const cached: CachedCounterData = JSON.parse(stored);
+        if (typeof cached === 'object' && 'timestamp' in cached) {
+          const now = Date.now();
+          if (now - cached.timestamp > cached.ttl) {
+            // Cache expired, remove it
+            localStorage.removeItem(CACHE_KEY);
+            return null;
+          }
+          return cached.count;
+        }
+
+        // Fallback: try parsing as old format (plain number string)
+        const count = parseInt(stored, 10);
+        if (!isNaN(count)) {
+          // Convert old format to new format
+          const newCached: CachedCounterData = {
+            count,
+            timestamp: Date.now(),
+            ttl: CACHE_TTL,
+          };
+          localStorage.setItem(CACHE_KEY, JSON.stringify(newCached));
+          return count;
+        }
+
+        return null;
+      } catch {
+        // Invalid JSON, remove corrupted cache
+        localStorage.removeItem(CACHE_KEY);
+        return null;
       }
-      setViewCount(BASE_COUNT + 1);
-      setIsLoading(false);
-      return;
-    }
+    },
+    [CACHE_KEY, CACHE_TTL]
+  );
 
-    // Create abort controller for cleanup on unmount
-    const controller = new AbortController();
+  const setCachedData = useCallback(
+    (count: number): void => {
+      try {
+        const cached: CachedCounterData = {
+          count,
+          timestamp: Date.now(),
+          ttl: CACHE_TTL,
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
+      } catch (error) {
+        // localStorage might be full or disabled
+        if (features.enableDebugLogs) {
+          console.warn('Failed to cache counter data:', error);
+        }
+      }
+    },
+    [CACHE_KEY, CACHE_TTL, features.enableDebugLogs]
+  );
 
-    const fetchViewCount = async () => {
+  // Performance metrics tracking
+  const trackPerformance = useCallback(
+    (metrics: PerformanceMetrics) => {
+      if (
+        !config.performance.trackApiCalls &&
+        !config.performance.trackErrorRate
+      ) {
+        return;
+      }
+
+      try {
+        // Store metrics for potential analytics reporting
+        const metricsKey = 'counter_performance_metrics';
+        const existingMetrics = localStorage.getItem(metricsKey);
+        let allMetrics: PerformanceMetrics[] = [];
+
+        try {
+          allMetrics = existingMetrics ? JSON.parse(existingMetrics) : [];
+          // Ensure it's actually an array
+          if (!Array.isArray(allMetrics)) {
+            allMetrics = [];
+          }
+        } catch {
+          // Invalid JSON, start fresh
+          allMetrics = [];
+        }
+
+        // Add new metrics
+        allMetrics.push(metrics);
+
+        // Keep only last 100 metrics to prevent storage bloat
+        if (allMetrics.length > 100) {
+          allMetrics.splice(0, allMetrics.length - 100);
+        }
+
+        localStorage.setItem(metricsKey, JSON.stringify(allMetrics));
+
+        // Log metrics in development/staging
+        if (features.enableDebugLogs) {
+          console.log('📊 Counter Performance Metrics:', {
+            responseTime: `${metrics.apiResponseTime}ms`,
+            cacheHit: metrics.cacheHit ? '✅ Cache Hit' : '❌ Cache Miss',
+            success: metrics.success ? '✅ Success' : '❌ Failed',
+            errorType: metrics.errorType || 'None',
+            workspace: metrics.workspace,
+          });
+        }
+
+        // In production, this could integrate with analytics services
+        if (config.features.enablePerformanceMonitoring) {
+          // Example: Send to analytics service
+          // analytics.track('counter_performance', metrics);
+
+          // For now, we'll use a simple console log that can be monitored
+          if (metrics.success && metrics.apiResponseTime > 3000) {
+            console.warn(
+              'Slow counter API response:',
+              `${metrics.apiResponseTime}ms`
+            );
+          }
+
+          if (!metrics.success && metrics.errorType !== 'AbortError') {
+            console.error('Counter API failure:', {
+              error: metrics.errorType,
+              workspace: metrics.workspace,
+            });
+          }
+        }
+      } catch (error) {
+        // Don't let metrics tracking break the main functionality
+        if (features.enableDebugLogs) {
+          console.warn('Failed to track performance metrics:', error);
+        }
+      }
+    },
+    [features.enableDebugLogs]
+  );
+
+  // Create stable references for configuration
+  const configRef = useRef({
+    workspace: counter.workspace,
+    baseUrl: counter.baseUrl,
+    baseCount: counter.baseCount,
+  });
+
+  // Update config ref only when actual values change
+  useEffect(() => {
+    configRef.current = {
+      workspace: counter.workspace,
+      baseUrl: counter.baseUrl,
+      baseCount: counter.baseCount,
+    };
+  }, [counter.workspace, counter.baseUrl, counter.baseCount]);
+
+  // Memoized fetch function with stable dependencies
+  const fetchViewCount = useCallback(
+    async (controller: AbortController) => {
+      const { workspace, baseUrl, baseCount } = configRef.current;
+
+      // Early return for missing workspace
+      if (!workspace) {
+        if (features.enableDebugLogs) {
+          console.error(
+            'Counter API: Missing VITE_COUNTER_WORKSPACE environment variable'
+          );
+        }
+        setViewCount(baseCount + 1);
+        setIsLoading(false);
+        return;
+      }
       const startTime = Date.now();
 
       const headers = {
@@ -61,7 +227,6 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         Pragma: 'no-cache',
       };
 
-      const cacheKey = 'counter_api_cache';
       const requestTimeout = 5000; // 5 second timeout
 
       try {
@@ -72,7 +237,7 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
 
         // Increment the counter on every page view
         const incrementResponse = await fetch(
-          `${API_BASE_URL}/${WORKSPACE}/perhitsiksha-visits/up`,
+          `${baseUrl}/${workspace}/perhitsiksha-visits/up`,
           {
             method: 'GET',
             headers,
@@ -100,19 +265,29 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         // Use the count from increment response (no need for second API call)
         const currentCount = incrementData.data.up_count;
 
-        // Store the result for fallback use
-        localStorage.setItem(cacheKey, currentCount.toString());
+        // Store the result for fallback use with timestamp
+        setCachedData(currentCount);
 
         // Calculate total views (base count + API count)
-        const totalViews = BASE_COUNT + currentCount;
+        const totalViews = baseCount + currentCount;
         setViewCount(totalViews);
+
+        // Track performance metrics
+        const responseTime = Date.now() - startTime;
+        trackPerformance({
+          apiResponseTime: responseTime,
+          cacheHit: false, // This was a fresh API call
+          success: true,
+          timestamp: Date.now(),
+          workspace,
+        });
 
         if (features.enableDebugLogs || features.enableTestMode) {
           console.log('Counter API success:', {
-            workspace: WORKSPACE,
+            workspace,
             apiCount: currentCount,
             totalViews,
-            responseTime: `${Date.now() - startTime}ms`,
+            responseTime: `${responseTime}ms`,
           });
         }
       } catch (error) {
@@ -127,27 +302,40 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         }
 
         const isTimeout = error.name === 'AbortError';
+        const responseTime = Date.now() - startTime;
+
         const errorContext = {
           error: error.message || 'Unknown error',
-          workspace: WORKSPACE,
-          apiUrl: `${API_BASE_URL}/${WORKSPACE}/perhitsiksha-visits/up`,
+          workspace,
+          apiUrl: `${baseUrl}/${workspace}/perhitsiksha-visits/up`,
           isTimeout,
-          responseTime: `${Date.now() - startTime}ms`,
+          responseTime: `${responseTime}ms`,
           ...(error.cause && { cause: error.cause }),
         };
+
+        // Try to use stored data as fallback with timestamp validation
+        const cachedCount = validateCachedData(localStorage.getItem(CACHE_KEY));
+        const usedCache = cachedCount !== null;
+
+        // Track performance metrics for failed requests
+        trackPerformance({
+          apiResponseTime: responseTime,
+          cacheHit: usedCache,
+          success: false,
+          errorType: error.name || 'UnknownError',
+          timestamp: Date.now(),
+          workspace,
+        });
 
         if (features.enableDebugLogs || features.enableTestMode) {
           console.error('Counter API failed:', errorContext);
         }
 
-        // Try to use stored data as fallback
-        const storedCount = localStorage.getItem(cacheKey);
-        if (storedCount && !isNaN(parseInt(storedCount, 10))) {
-          const parsedCount = parseInt(storedCount, 10);
-          setViewCount(BASE_COUNT + parsedCount);
+        if (usedCache) {
+          setViewCount(baseCount + cachedCount);
         } else {
           // Ultimate fallback
-          setViewCount(BASE_COUNT + 1);
+          setViewCount(baseCount + 1);
         }
       } finally {
         // Only update loading state if component is still mounted
@@ -155,22 +343,30 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           setIsLoading(false);
         }
       }
-    };
+    },
+    [
+      features.enableDebugLogs,
+      features.enableTestMode,
+      setCachedData,
+      validateCachedData,
+      CACHE_KEY,
+      trackPerformance,
+    ]
+  );
+
+  // Main effect for fetching data - stable dependencies
+  useEffect(() => {
+    // Create abort controller for cleanup on unmount
+    const controller = new AbortController();
 
     // Execute immediately for fastest response
-    fetchViewCount();
+    fetchViewCount(controller);
 
     // Cleanup function to abort request if component unmounts
     return () => {
       controller.abort();
     };
-  }, [
-    WORKSPACE,
-    API_BASE_URL,
-    BASE_COUNT,
-    features.enableDebugLogs,
-    features.enableTestMode,
-  ]);
+  }, [fetchViewCount]);
 
   // Format number with commas for better readability
   const formatNumber = (num: number): string => {

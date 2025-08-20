@@ -31,7 +31,11 @@ describe('VisitorCounter', () => {
   beforeEach(() => {
     localStorageMock.getItem.mockClear();
     localStorageMock.setItem.mockClear();
+    localStorageMock.removeItem.mockClear();
     mockFetch.mockReset(); // Use reset instead of clear
+
+    // Clear all localStorage mocks to prevent cross-test pollution
+    localStorageMock.getItem.mockReturnValue(null);
 
     // Don't set a default mock - let each test set its own
   });
@@ -117,7 +121,10 @@ describe('VisitorCounter', () => {
     error.name = 'AbortError';
     mockFetch.mockRejectedValue(error);
 
-    localStorageMock.getItem.mockReturnValue('15');
+    // Mock localStorage to return cached data in new JSON format
+    localStorageMock.getItem.mockReturnValue(
+      '{"count":15,"timestamp":' + Date.now() + ',"ttl":300000}'
+    );
 
     render(<VisitorCounter />);
 
@@ -134,8 +141,10 @@ describe('VisitorCounter', () => {
     // Mock API failure
     mockFetch.mockRejectedValue(new Error('Network error'));
 
-    // Mock localStorage fallback
-    localStorageMock.getItem.mockReturnValue('20');
+    // Mock localStorage fallback in new JSON format
+    localStorageMock.getItem.mockReturnValue(
+      '{"count":20,"timestamp":' + Date.now() + ',"ttl":300000}'
+    );
 
     render(<VisitorCounter />);
 
@@ -257,10 +266,10 @@ describe('VisitorCounter', () => {
       { timeout: 3000 }
     );
 
-    // Should have stored the count in localStorage
+    // Should have stored the count in localStorage with new JSON format
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
       'counter_api_cache',
-      '25'
+      expect.stringMatching(/"count":25/)
     );
   });
 });

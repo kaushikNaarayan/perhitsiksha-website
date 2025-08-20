@@ -85,6 +85,13 @@ export const config = {
     enableDebugLogs: isDevelopment || isStaging,
     enablePerformanceMonitoring: isProduction,
   },
+  performance: {
+    // Performance monitoring configuration
+    trackApiCalls: isProduction || isStaging,
+    trackCacheHitRate: isProduction || isStaging,
+    trackErrorRate: true,
+    reportInterval: 60000, // 1 minute in milliseconds
+  },
 } as const;
 
 // Development helpers
