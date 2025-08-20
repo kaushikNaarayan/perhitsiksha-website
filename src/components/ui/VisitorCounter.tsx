@@ -28,7 +28,6 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Configuration from environment variables
-  const API_KEY = import.meta.env.VITE_COUNTER_API_KEY;
   const WORKSPACE = import.meta.env.VITE_COUNTER_WORKSPACE;
   const BASE_COUNT = 350; // Historical visitors before counter implementation
   const API_BASE_URL = 'https://api.counterapi.dev/v2';
@@ -36,14 +35,9 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   useEffect(() => {
     const fetchVisitorCount = async () => {
       // Validate required environment variables
-      const requiredEnvVars = { API_KEY, WORKSPACE };
-      const missingVars = Object.entries(requiredEnvVars)
-        .filter(([, value]) => !value)
-        .map(([key]) => key);
-
-      if (missingVars.length > 0) {
+      if (!WORKSPACE) {
         if (process.env.NODE_ENV === 'development') {
-          console.error(`Counter API: Missing environment variables: ${missingVars.join(', ')}`);
+          console.error('Counter API: Missing VITE_COUNTER_WORKSPACE environment variable');
         }
         setVisitorCount(BASE_COUNT + 1);
         setIsLoading(false);
@@ -51,8 +45,6 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
       }
 
       const headers = {
-        'Authorization': `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
         'Accept': 'application/json'
       };
 
