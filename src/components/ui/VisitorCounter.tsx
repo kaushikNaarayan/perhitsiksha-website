@@ -35,9 +35,16 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
 
   useEffect(() => {
     const fetchVisitorCount = async () => {
-      // Check if environment variables are configured
-      if (!API_KEY || !WORKSPACE) {
-        console.error('Counter API configuration missing. Please check environment variables.');
+      // Validate required environment variables
+      const requiredEnvVars = { API_KEY, WORKSPACE };
+      const missingVars = Object.entries(requiredEnvVars)
+        .filter(([, value]) => !value)
+        .map(([key]) => key);
+
+      if (missingVars.length > 0) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`Counter API: Missing environment variables: ${missingVars.join(', ')}`);
+        }
         setVisitorCount(BASE_COUNT + 1);
         setIsLoading(false);
         return;
@@ -64,13 +71,11 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
             const parsedCount = parseInt(cachedCount, 10);
             setVisitorCount(BASE_COUNT + parsedCount);
             setIsLoading(false);
-            console.log('📋 Using cached Counter API data:', parsedCount);
             return;
           }
         }
 
-        // Step 1: Increment the counter (register this visit)
-        console.log('🔄 Incrementing Counter API...');
+        // Increment the counter (register this visit) and get count in one call
         const incrementResponse = await fetch(
           `${API_BASE_URL}/${WORKSPACE}/perhitsiksha-visits/up`,
           {
@@ -84,24 +89,9 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         }
 
         const incrementData: CounterResponse = await incrementResponse.json();
-        console.log('✅ Counter incremented successfully:', incrementData.data.up_count);
-
-        // Step 2: Get the current counter value
-        console.log('🔄 Fetching Counter API value...');
-        const getResponse = await fetch(
-          `${API_BASE_URL}/${WORKSPACE}/perhitsiksha-visits`,
-          {
-            method: 'GET',
-            headers
-          }
-        );
-
-        if (!getResponse.ok) {
-          throw new Error(`Counter fetch failed: ${getResponse.status} ${getResponse.statusText}`);
-        }
-
-        const getData: CounterResponse = await getResponse.json();
-        const currentCount = getData.data.up_count;
+        
+        // Use the count from increment response (no need for second API call)
+        const currentCount = incrementData.data.up_count;
 
         // Cache the result
         localStorage.setItem(cacheKey, currentCount.toString());
@@ -111,25 +101,26 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         const totalVisitors = BASE_COUNT + currentCount;
         setVisitorCount(totalVisitors);
 
-        console.log('✅ Counter API success:', {
-          apiCount: currentCount,
-          baseCount: BASE_COUNT,
-          totalVisitors
-        });
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Counter API success:', {
+            apiCount: currentCount,
+            totalVisitors
+          });
+        }
 
       } catch (error) {
-        console.error('Counter API failed:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Counter API failed:', error);
+        }
         
         // Try to use cached data as fallback
         const cachedCount = localStorage.getItem(cacheKey);
         if (cachedCount) {
           const parsedCount = parseInt(cachedCount, 10);
           setVisitorCount(BASE_COUNT + parsedCount);
-          console.log('📋 Using cached data due to API error:', parsedCount);
         } else {
           // Ultimate fallback
           setVisitorCount(BASE_COUNT + 1);
-          console.log('🔄 Using fallback count due to API error');
         }
       }
 
