@@ -35,8 +35,9 @@ jobs:
       
     - name: Run tests
       env:
-        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_COUNTER_WORKSPACE: ${{ secrets.DEV_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: development
+        VITE_COUNTER_BASE_COUNT: "10"
       run: npm run test:coverage
       
     - name: Upload test coverage
@@ -48,8 +49,9 @@ jobs:
         
     - name: Build project
       env:
-        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_COUNTER_WORKSPACE: ${{ secrets.DEV_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: staging
+        VITE_COUNTER_BASE_COUNT: "100"
       run: npm run build
       
     - name: Upload build artifacts
@@ -107,8 +109,9 @@ jobs:
       
     - name: Build project
       env:
-        VITE_COUNTER_WORKSPACE: perhitsiksha
+        VITE_COUNTER_WORKSPACE: ${{ secrets.DEV_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: staging
+        VITE_COUNTER_BASE_COUNT: "100"
       run: npm run build
       
     - name: Serve built files

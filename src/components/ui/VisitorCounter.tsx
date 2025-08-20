@@ -48,6 +48,10 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
       setIsLoading(false);
       return;
     }
+
+    // Create abort controller for cleanup on unmount
+    const controller = new AbortController();
+
     const fetchViewCount = async () => {
       const startTime = Date.now();
 
@@ -61,9 +65,10 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
       const requestTimeout = 5000; // 5 second timeout
 
       try {
-        // Create abort controller for timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), requestTimeout);
+        // Set up timeout that aborts the request
+        const timeoutId = setTimeout(() => {
+          controller.abort();
+        }, requestTimeout);
 
         // Increment the counter on every page view
         const incrementResponse = await fetch(
@@ -78,11 +83,15 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         clearTimeout(timeoutId);
 
         if (!incrementResponse.ok) {
-          const errorText = await incrementResponse
-            .text()
-            .catch(() => 'Unknown error');
+          let errorText = 'Network error';
+          try {
+            errorText = await incrementResponse.text();
+          } catch {
+            errorText = `HTTP ${incrementResponse.status}`;
+          }
+
           throw new Error(
-            `Counter increment failed: ${incrementResponse.status} ${incrementResponse.statusText} - ${errorText}`
+            `Counter API request failed: ${incrementResponse.status} ${incrementResponse.statusText}. ${errorText}`
           );
         }
 
@@ -107,35 +116,54 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           });
         }
       } catch (error) {
+        // Check if the request was aborted (component unmounted or timeout)
+        if (controller.signal.aborted) {
+          if (features.enableDebugLogs || features.enableTestMode) {
+            console.log(
+              'Counter API request aborted (component unmounted or timeout)'
+            );
+          }
+          return; // Don't update state if component was unmounted
+        }
+
         const isTimeout = error.name === 'AbortError';
-        const errorMessage = isTimeout ? 'Request timeout' : error.message;
+        const errorContext = {
+          error: error.message || 'Unknown error',
+          workspace: WORKSPACE,
+          apiUrl: `${API_BASE_URL}/${WORKSPACE}/perhitsiksha-visits/up`,
+          isTimeout,
+          responseTime: `${Date.now() - startTime}ms`,
+          ...(error.cause && { cause: error.cause }),
+        };
 
         if (features.enableDebugLogs || features.enableTestMode) {
-          console.error('Counter API failed:', {
-            error: errorMessage,
-            workspace: WORKSPACE,
-            apiUrl: `${API_BASE_URL}/${WORKSPACE}/perhitsiksha-visits/up`,
-            isTimeout,
-            responseTime: `${Date.now() - startTime}ms`,
-          });
+          console.error('Counter API failed:', errorContext);
         }
 
         // Try to use stored data as fallback
         const storedCount = localStorage.getItem(cacheKey);
-        if (storedCount) {
+        if (storedCount && !isNaN(parseInt(storedCount, 10))) {
           const parsedCount = parseInt(storedCount, 10);
           setViewCount(BASE_COUNT + parsedCount);
         } else {
           // Ultimate fallback
           setViewCount(BASE_COUNT + 1);
         }
+      } finally {
+        // Only update loading state if component is still mounted
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       }
-
-      setIsLoading(false);
     };
 
     // Execute immediately for fastest response
     fetchViewCount();
+
+    // Cleanup function to abort request if component unmounts
+    return () => {
+      controller.abort();
+    };
   }, [
     WORKSPACE,
     API_BASE_URL,
