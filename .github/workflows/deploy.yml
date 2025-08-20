@@ -38,6 +38,8 @@ jobs:
       run: npm ci
       
     - name: Build
+      env:
+        VITE_COUNTER_WORKSPACE: perhitsiksha
       run: npm run build
       
     - name: Setup Pages
