@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import { config } from '../../config/environment';
+import { pageViewService } from '../../services/supabase';
 
 interface VisitorCounterProps {
   className?: string;
@@ -318,8 +319,92 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
     };
   }, [counter.workspace, counter.baseUrl, counter.baseCount]);
 
-  // Memoized fetch function with stable dependencies
-  const fetchViewCount = useCallback(
+  // Supabase page view function
+  const fetchSupabaseViewCount = useCallback(
+    async (controller: AbortController) => {
+      const startTime = Date.now();
+
+      try {
+        // Check if request was aborted before starting
+        if (controller.signal.aborted) {
+          logger.info('api_request_aborted', {
+            reason: 'component_unmounted_before_start',
+          });
+          return;
+        }
+
+        // Increment page views (atomic operation)
+        const result = await pageViewService.incrementPageViews('home');
+
+        if (!result) {
+          throw new Error('Failed to increment page views');
+        }
+
+        const totalViews = result.count;
+        setViewCount(totalViews);
+
+        // Track performance metrics
+        const responseTime = Date.now() - startTime;
+        trackPerformance({
+          apiResponseTime: responseTime,
+          cacheHit: false, // This was a fresh API call
+          success: true,
+          timestamp: Date.now(),
+          workspace: 'supabase',
+        });
+
+        logger.info('supabase_success', {
+          totalViews,
+          responseTime: `${responseTime}ms`,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        // Check if the request was aborted
+        if (controller.signal.aborted) {
+          logger.info('api_request_aborted', {
+            reason: 'component_unmounted_or_timeout',
+          });
+          return;
+        }
+
+        const errorObj =
+          error instanceof Error ? error : new Error(String(error));
+        const responseTime = Date.now() - startTime;
+
+        // Track performance metrics for failed requests
+        trackPerformance({
+          apiResponseTime: responseTime,
+          cacheHit: false,
+          success: false,
+          errorType: classifyError(errorObj),
+          timestamp: Date.now(),
+          workspace: 'supabase',
+        });
+
+        logger.error('supabase_failed', {
+          error: errorObj.message || 'Unknown error',
+          responseTime: `${responseTime}ms`,
+        });
+
+        // Fall back to legacy Counter API
+        logger.info('falling_back_to_counter_api', {
+          reason: 'supabase_error',
+        });
+
+        await fetchLegacyViewCount(controller);
+        return;
+      } finally {
+        // Only update loading state if component is still mounted
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [trackPerformance, classifyError, logger, fetchLegacyViewCount]
+  );
+
+  // Legacy Counter API function (for fallback)
+  const fetchLegacyViewCount = useCallback(
     async (controller: AbortController) => {
       const { workspace, baseUrl, baseCount } = configRef.current;
 
@@ -400,6 +485,8 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
           apiCount: currentCount,
           totalViews,
           responseTime: `${responseTime}ms`,
+          apiUrl: `${baseUrl}/${workspace}/perhitsiksha-visits/up`,
+          timestamp: new Date().toISOString(),
         });
       } catch (error) {
         // Check if the request was aborted (component unmounted or timeout)
@@ -444,9 +531,19 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
 
         if (usedCache) {
           setViewCount(baseCount + cachedCount);
+          logger.info('using_cached_data', {
+            cachedCount,
+            totalViews: baseCount + cachedCount,
+            workspace,
+          });
         } else {
           // Ultimate fallback
           setViewCount(baseCount + 1);
+          logger.info('using_fallback_data', {
+            fallbackCount: 1,
+            totalViews: baseCount + 1,
+            workspace,
+          });
         }
       } finally {
         // Only update loading state if component is still mounted
@@ -465,10 +562,38 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
     ]
   );
 
+  // Main fetch function that chooses between Supabase and legacy
+  const fetchViewCount = useCallback(
+    async (controller: AbortController) => {
+      if (config.features.useSupabase) {
+        logger.info('using_supabase', {
+          supabaseEnabled: config.supabase.enabled,
+          timestamp: new Date().toISOString(),
+        });
+        await fetchSupabaseViewCount(controller);
+      } else {
+        logger.info('using_legacy_counter', {
+          workspace: configRef.current.workspace,
+          timestamp: new Date().toISOString(),
+        });
+        await fetchLegacyViewCount(controller);
+      }
+    },
+    [fetchSupabaseViewCount, fetchLegacyViewCount, logger]
+  );
+
   // Main effect for fetching data - stable dependencies
   useEffect(() => {
     // Create abort controller for cleanup on unmount
     const controller = new AbortController();
+
+    // Debug log for staging
+    logger.info('component_initialized', {
+      workspace: configRef.current.workspace,
+      baseCount: configRef.current.baseCount,
+      environment: config.app.environment,
+      timestamp: new Date().toISOString(),
+    });
 
     // Execute immediately for fastest response
     fetchViewCount(controller);
@@ -477,7 +602,7 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
     return () => {
       controller.abort();
     };
-  }, [fetchViewCount]);
+  }, [fetchViewCount, logger]);
 
   // Format number with commas for better readability
   const formatNumber = (num: number): string => {
