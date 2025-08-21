@@ -50,7 +50,8 @@ jobs:
       env:
         VITE_COUNTER_WORKSPACE: ${{ secrets.STAGING_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: staging
-        VITE_COUNTER_BASE_COUNT: "100"
+        VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         VITE_GA_MEASUREMENT_ID: ${{ secrets.GA_STAGING_ID }}
       run: npm run build
       

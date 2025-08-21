@@ -307,7 +307,6 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   const configRef = useRef({
     workspace: counter.workspace,
     baseUrl: counter.baseUrl,
-    baseCount: counter.baseCount,
   });
 
   // Update config ref only when actual values change
@@ -315,21 +314,20 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
     configRef.current = {
       workspace: counter.workspace,
       baseUrl: counter.baseUrl,
-      baseCount: counter.baseCount,
     };
-  }, [counter.workspace, counter.baseUrl, counter.baseCount]);
+  }, [counter.workspace, counter.baseUrl]);
 
   // Legacy Counter API function (for fallback)
   const fetchLegacyViewCount = useCallback(
     async (controller: AbortController) => {
-      const { workspace, baseUrl, baseCount } = configRef.current;
+      const { workspace, baseUrl } = configRef.current;
 
       // Early return for missing workspace
       if (!workspace) {
         logger.error('workspace_missing', {
           message: 'VITE_COUNTER_WORKSPACE environment variable not configured',
         });
-        setViewCount(baseCount + 1);
+        setViewCount(1);
         setIsLoading(false);
         return;
       }
@@ -382,9 +380,8 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         // Store the result for fallback use with timestamp
         setCachedData(currentCount);
 
-        // Calculate total views (base count + API count)
-        const totalViews = baseCount + currentCount;
-        setViewCount(totalViews);
+        // Use API count directly (no base count needed)
+        setViewCount(currentCount);
 
         // Track performance metrics
         const responseTime = Date.now() - startTime;
@@ -399,7 +396,7 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         logger.info('api_success', {
           workspace,
           apiCount: currentCount,
-          totalViews,
+          totalViews: currentCount,
           responseTime: `${responseTime}ms`,
           apiUrl: `${baseUrl}/${workspace}/perhitsiksha-visits/up`,
           timestamp: new Date().toISOString(),
@@ -446,18 +443,18 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         logger.error('api_failed', errorContext);
 
         if (usedCache) {
-          setViewCount(baseCount + cachedCount);
+          setViewCount(cachedCount);
           logger.info('using_cached_data', {
             cachedCount,
-            totalViews: baseCount + cachedCount,
+            totalViews: cachedCount,
             workspace,
           });
         } else {
           // Ultimate fallback
-          setViewCount(baseCount + 1);
+          setViewCount(1);
           logger.info('using_fallback_data', {
             fallbackCount: 1,
-            totalViews: baseCount + 1,
+            totalViews: 1,
             workspace,
           });
         }
@@ -590,7 +587,6 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
     // Debug log for staging
     logger.info('component_initialized', {
       workspace: configRef.current.workspace,
-      baseCount: configRef.current.baseCount,
       environment: config.app.environment,
       timestamp: new Date().toISOString(),
     });
