@@ -5,7 +5,6 @@ import VisitorCounter from '../ui/VisitorCounter';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showMobileHeader, setShowMobileHeader] = useState(false);
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -31,39 +30,6 @@ const Header: React.FC = () => {
     };
   }, [isMenuOpen]);
 
-  // Scroll detection for mobile header visibility only
-  useEffect(() => {
-    const handleScroll = () => {
-      // Only hide/show header on mobile devices
-      const isMobile = window.innerWidth < 768;
-      if (isMobile) {
-        // Show header when scrolled past a small threshold
-        setShowMobileHeader(window.scrollY > 50);
-      }
-    };
-
-    // Handle resize to reset state on screen size changes
-    const handleResize = () => {
-      const isMobile = window.innerWidth < 768;
-      if (!isMobile) {
-        setShowMobileHeader(true); // Always show on desktop
-      } else {
-        setShowMobileHeader(window.scrollY > 50);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleResize);
-
-    // Initial check
-    handleResize();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/testimonials', label: 'Testimonials' },
@@ -71,13 +37,7 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header
-      className={`bg-white shadow-sm sticky top-0 z-50 transition-transform duration-300 md:translate-y-0 ${
-        showMobileHeader
-          ? 'translate-y-0'
-          : '-translate-y-full md:translate-y-0'
-      }`}
-    >
+    <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto container-padding">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Visitor Counter */}
@@ -86,9 +46,9 @@ const Header: React.FC = () => {
               <img
                 src={logoImage}
                 alt="CLSI Perhitsiksha Logo"
-                className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover"
+                className="w-8 h-8 md:w-12 md:h-12 rounded-lg object-cover"
               />
-              <span className="text-xl font-bold text-gray-900">
+              <span className="text-lg md:text-xl font-bold text-gray-900">
                 CLSI Perhitsiksha
               </span>
             </Link>
