@@ -5,6 +5,7 @@ import VisitorCounter from '../ui/VisitorCounter';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showBranding, setShowBranding] = useState(false);
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -30,6 +31,18 @@ const Header: React.FC = () => {
     };
   }, [isMenuOpen]);
 
+  // Scroll detection for header branding visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show branding when scrolled past 60% of viewport height (Hero section)
+      const scrollThreshold = window.innerHeight * 0.6;
+      setShowBranding(window.scrollY > scrollThreshold);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/testimonials', label: 'Testimonials' },
@@ -46,9 +59,15 @@ const Header: React.FC = () => {
               <img
                 src={logoImage}
                 alt="CLSI Perhitsiksha Logo"
-                className="w-8 h-8 rounded-lg object-cover"
+                className={`w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover transition-opacity duration-300 ${
+                  showBranding ? 'opacity-100' : 'opacity-0'
+                }`}
               />
-              <span className="text-xl font-bold text-gray-900">
+              <span
+                className={`text-xl font-bold text-gray-900 transition-opacity duration-300 ${
+                  showBranding ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
                 CLSI Perhitsiksha
               </span>
             </Link>
@@ -82,15 +101,8 @@ const Header: React.FC = () => {
             </a>
           </div>
 
-          {/* Mobile CTA Button and Menu */}
-          <div className="md:hidden flex items-center space-x-3">
-            <a
-              href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
-              className="bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-full text-xs font-medium transition-colors duration-200 inline-block"
-            >
-              Contribute
-            </a>
-
+          {/* Mobile Menu */}
+          <div className="md:hidden flex items-center">
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
