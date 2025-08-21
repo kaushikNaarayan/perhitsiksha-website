@@ -50,8 +50,8 @@ jobs:
       env:
         VITE_COUNTER_WORKSPACE: ${{ secrets.STAGING_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: staging
-        VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        VITE_SUPABASE_URL: https://sxocorkwwbtuqpexfmdt.supabase.co
+        VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4b2Nvcmt3d2J0dXFwZXhmbWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3MTI3NDQsImV4cCI6MjA3MTI4ODc0NH0.SMkeC7WSZACXQBaT9cbxy3JfTi0bjHO97MLV_eaZYCI
         VITE_GA_MEASUREMENT_ID: ${{ secrets.GA_STAGING_ID }}
       run: npm run build
       
