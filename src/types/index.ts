@@ -75,6 +75,7 @@ export interface CardProps {
 export interface HeroProps {
   title: string;
   subtitle?: string;
+  showLogo?: boolean;
   primaryCTA?: {
     text: string;
     href: string;

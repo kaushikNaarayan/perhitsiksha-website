@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { HeroProps } from '../../types';
 import Button from './Button';
 import TypewriterText from './TypewriterText';
+import logoImage from '../../assets/images/logo.jpg';
 
 const Hero: React.FC<HeroProps> = ({
   title,
   subtitle,
+  showLogo = false,
   primaryCTA,
   secondaryCTA,
   stats,
@@ -81,8 +83,19 @@ const Hero: React.FC<HeroProps> = ({
         <div
           className={`${backgroundImage ? 'hero-content-box' : 'max-w-4xl mx-auto container-padding'}`}
         >
+          {/* Logo Section */}
+          {showLogo && (
+            <div className="mb-6 flex justify-center">
+              <img
+                src={logoImage}
+                alt="CLSI Perhitsiksha Logo"
+                className="w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-2xl object-cover shadow-lg"
+              />
+            </div>
+          )}
+
           <h1
-            className={`heading-1 mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
+            className={`${showLogo ? 'heading-2' : 'heading-1'} mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
           >
             <TypewriterText
               text={title}

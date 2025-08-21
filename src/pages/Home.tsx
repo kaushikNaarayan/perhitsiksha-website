@@ -109,8 +109,9 @@ const Home: React.FC = () => {
     <div>
       {/* Hero Section */}
       <Hero
-        title="Education for Every Child"
+        title="CLSI Perhitsiksha"
         subtitle="Empowering underprivileged students through financial aid, mentorship, and career guidance to complete their education and transform their lives."
+        showLogo={true}
         primaryCTA={{
           text: 'Become a Contributor',
           href: 'https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute.',

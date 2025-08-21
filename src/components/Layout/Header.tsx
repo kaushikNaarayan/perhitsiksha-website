@@ -45,11 +45,11 @@ const Header: React.FC = () => {
             <Link to="/" className="flex items-center space-x-2">
               <img
                 src={logoImage}
-                alt="PerhitSiksha Logo"
+                alt="CLSI Perhitsiksha Logo"
                 className="w-8 h-8 rounded-lg object-cover"
               />
               <span className="text-xl font-bold text-gray-900">
-                PerhitSiksha
+                CLSI Perhitsiksha
               </span>
             </Link>
             <VisitorCounter className="hidden sm:flex" />
@@ -131,11 +131,11 @@ const Header: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <img
                       src={logoImage}
-                      alt="PerhitSiksha Logo"
+                      alt="CLSI Perhitsiksha Logo"
                       className="w-6 h-6 rounded-lg object-cover"
                     />
                     <span className="text-lg font-bold text-gray-900">
-                      PerhitSiksha
+                      CLSI Perhitsiksha
                     </span>
                   </div>
                   <button
