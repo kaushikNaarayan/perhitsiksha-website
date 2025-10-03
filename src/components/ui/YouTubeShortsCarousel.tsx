@@ -15,11 +15,12 @@ interface YouTubeShortsCarouselProps {
 const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   endorsements,
 }) => {
-  const [translateX, setTranslateX] = useState(0);
-  const [velocity, setVelocity] = useState(-1); // Pixels per frame (negative = left)
-  const targetVelocityRef = useRef(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const targetVelocityRef = useRef(-1);
+  const velocityRef = useRef(-1);
+  const positionRef = useRef(0);
   const lastTimeRef = useRef<number>(Date.now());
+  const halfWidthRef = useRef(0);
 
   const [modalVideo, setModalVideo] = useState<{
     isOpen: boolean;
@@ -39,42 +40,57 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   // Manual animation loop with smooth velocity changes
   useEffect(() => {
     let animationFrameId: number;
-    const containerWidth = containerRef.current?.scrollWidth || 0;
-    const halfWidth = containerWidth / 2;
+
+    // Calculate container width with retry logic
+    const calculateWidth = () => {
+      const containerWidth = containerRef.current?.scrollWidth || 0;
+      if (containerWidth === 0) {
+        // Retry after a frame if width is 0
+        requestAnimationFrame(calculateWidth);
+        return;
+      }
+      halfWidthRef.current = containerWidth / 2;
+      // Start animation once we have width
+      animationFrameId = requestAnimationFrame(animate);
+    };
 
     const animate = () => {
       const now = Date.now();
-      const deltaTime = (now - lastTimeRef.current) / 16.67; // Normalize to 60fps
+      const deltaTime = Math.min(now - lastTimeRef.current, 33.33) / 16.67; // Cap at 2 frames
       lastTimeRef.current = now;
 
-      // Smooth velocity transition
-      setVelocity(current => {
-        const diff = targetVelocityRef.current - current;
-        if (Math.abs(diff) < 0.01) {
-          return targetVelocityRef.current;
-        }
-        return current + diff * 0.08; // Smooth easing
-      });
+      // Smooth velocity transition (using refs to avoid re-renders)
+      const velocityDiff = targetVelocityRef.current - velocityRef.current;
+      if (Math.abs(velocityDiff) >= 0.01) {
+        velocityRef.current += velocityDiff * 0.08;
+      } else {
+        velocityRef.current = targetVelocityRef.current;
+      }
 
-      // Update position
-      setTranslateX(current => {
-        const newPos = current + velocity * deltaTime;
-        // Loop when we've scrolled 50% (seamless infinite scroll)
-        if (newPos <= -halfWidth) {
-          return 0;
-        }
-        return newPos;
-      });
+      // Update position (using refs)
+      positionRef.current += velocityRef.current * deltaTime;
+
+      // Loop when we've scrolled 50% (seamless infinite scroll)
+      if (positionRef.current <= -halfWidthRef.current) {
+        positionRef.current = 0;
+      }
+
+      // Direct DOM manipulation for better performance
+      if (containerRef.current) {
+        containerRef.current.style.transform = `translateX(${positionRef.current}px)`;
+      }
 
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    animationFrameId = requestAnimationFrame(animate);
+    calculateWidth();
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     };
-  }, [velocity]);
+  }, []); // Empty deps - only run once
 
   const handleMouseEnter = () => {
     targetVelocityRef.current = 0; // Slow to complete halt
@@ -123,7 +139,6 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
           ref={containerRef}
           className="flex gap-4"
           style={{
-            transform: `translateX(${translateX}px)`,
             willChange: 'transform',
           }}
         >
