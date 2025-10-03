@@ -264,25 +264,15 @@
 
 /* Smooth marquee animation for celebrity carousel */
 @keyframes marquee {
-  0% {
+  from {
     transform: translateX(0);
   }
-  100% {
+  to {
     transform: translateX(-50%);
   }
 }
 
 .marquee-container {
   animation: marquee 30s linear infinite;
-}
-
-.marquee-container:hover {
-  animation-play-state: paused;
-}
-
-/* Fast marquee for mobile */
-@media (max-width: 768px) {
-  .marquee-container {
-    animation: marquee 20s linear infinite;
-  }
+  will-change: transform;
 }

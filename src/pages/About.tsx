@@ -35,10 +35,10 @@ const About: React.FC = () => {
           <div className="text-center mb-16">
             <h2 className="heading-2 mb-6">Who We Are</h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Perhit Siksha (now CLSI) is a forum
-              dedicated to breaking the cycle of poverty through education.
-              Since 2022, we've been transforming the lives of deserving
-              underprivileged children across India.
+              Perhit Siksha (now CLSI) is a forum dedicated to breaking the
+              cycle of poverty through education. Since 2022, we've been
+              transforming the lives of deserving underprivileged children
+              across India.
             </p>
           </div>
 
