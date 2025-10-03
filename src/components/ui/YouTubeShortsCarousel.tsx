@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import VideoModal from './VideoModal';
 
 interface CelebrityEndorsement {
@@ -15,7 +15,12 @@ interface YouTubeShortsCarouselProps {
 const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   endorsements,
 }) => {
-  const [isPaused, setIsPaused] = useState(false);
+  const [translateX, setTranslateX] = useState(0);
+  const [velocity, setVelocity] = useState(-1); // Pixels per frame (negative = left)
+  const targetVelocityRef = useRef(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastTimeRef = useRef<number>(Date.now());
+
   const [modalVideo, setModalVideo] = useState<{
     isOpen: boolean;
     videoId: string;
@@ -31,12 +36,52 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   // Duplicate endorsements array for seamless infinite scrolling
   const duplicatedEndorsements = [...endorsements, ...endorsements];
 
+  // Manual animation loop with smooth velocity changes
+  useEffect(() => {
+    let animationFrameId: number;
+    const containerWidth = containerRef.current?.scrollWidth || 0;
+    const halfWidth = containerWidth / 2;
+
+    const animate = () => {
+      const now = Date.now();
+      const deltaTime = (now - lastTimeRef.current) / 16.67; // Normalize to 60fps
+      lastTimeRef.current = now;
+
+      // Smooth velocity transition
+      setVelocity(current => {
+        const diff = targetVelocityRef.current - current;
+        if (Math.abs(diff) < 0.01) {
+          return targetVelocityRef.current;
+        }
+        return current + diff * 0.08; // Smooth easing
+      });
+
+      // Update position
+      setTranslateX(current => {
+        const newPos = current + velocity * deltaTime;
+        // Loop when we've scrolled 50% (seamless infinite scroll)
+        if (newPos <= -halfWidth) {
+          return 0;
+        }
+        return newPos;
+      });
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [velocity]);
+
   const handleMouseEnter = () => {
-    setIsPaused(true);
+    targetVelocityRef.current = 0; // Slow to complete halt
   };
 
   const handleMouseLeave = () => {
-    setIsPaused(false);
+    targetVelocityRef.current = -1; // Back to normal speed
   };
 
   const handleVideoPlay = (celebrity: CelebrityEndorsement) => {
@@ -47,7 +92,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       celebrityName: celebrity.name,
     });
     // Pause carousel when modal opens
-    setIsPaused(true);
+    targetVelocityRef.current = 0;
   };
 
   const handleModalClose = () => {
@@ -58,7 +103,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       celebrityName: '',
     });
     // Resume carousel when modal closes
-    setIsPaused(false);
+    targetVelocityRef.current = -1;
   };
 
   const getYouTubeShortThumbnail = (videoId: string) => {
@@ -75,16 +120,15 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
         onMouseLeave={handleMouseLeave}
       >
         <div
-          className={`flex gap-4 ${isPaused ? '' : 'marquee-container'}`}
+          ref={containerRef}
+          className="flex gap-4"
           style={{
-            animationPlayState: isPaused ? 'paused' : 'running',
+            transform: `translateX(${translateX}px)`,
+            willChange: 'transform',
           }}
         >
           {duplicatedEndorsements.map((celebrity, index) => (
-            <div
-              key={`${celebrity.id}-${index}`}
-              className="flex-none w-64 snap-center"
-            >
+            <div key={`${celebrity.id}-${index}`} className="flex-none w-64">
               {/* Celebrity Info */}
               <div className="pb-3 text-center">
                 <h3 className="font-semibold text-gray-900 text-lg mb-1">
