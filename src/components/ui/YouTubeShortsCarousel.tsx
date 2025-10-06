@@ -12,12 +12,19 @@ interface YouTubeShortsCarouselProps {
   endorsements: CelebrityEndorsement[];
 }
 
+// Carousel interaction constants
+const MAX_MOMENTUM_VELOCITY = 10; // Maximum velocity for momentum scrolling
+const GHOST_CLICK_THRESHOLD = 5; // Minimum drag distance (px) to prevent click
+const MOMENTUM_DECAY_RATE = 0.95; // Decay factor for smooth deceleration
+const AUTO_SCROLL_VELOCITY = -1; // Default auto-scroll speed
+const VELOCITY_THRESHOLD = 0.5; // Minimum velocity to apply momentum
+
 const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   endorsements,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const targetVelocityRef = useRef(-1);
-  const velocityRef = useRef(-1);
+  const targetVelocityRef = useRef(AUTO_SCROLL_VELOCITY);
+  const velocityRef = useRef(AUTO_SCROLL_VELOCITY);
   const positionRef = useRef(0);
   const lastTimeRef = useRef<number>(Date.now());
   const halfWidthRef = useRef(0);
@@ -73,7 +80,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
 
       // Apply momentum deceleration if not dragging
       if (!isDraggingRef.current && Math.abs(momentumRef.current) > 0.01) {
-        momentumRef.current *= 0.95; // Decay factor for smooth deceleration
+        momentumRef.current *= MOMENTUM_DECAY_RATE;
         positionRef.current += momentumRef.current * deltaTime;
       } else if (!isDraggingRef.current) {
         momentumRef.current = 0;
@@ -119,7 +126,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   };
 
   const handleMouseLeave = () => {
-    targetVelocityRef.current = -1; // Back to normal speed
+    targetVelocityRef.current = AUTO_SCROLL_VELOCITY;
   };
 
   // Drag handlers
@@ -165,15 +172,15 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
 
     // Apply momentum based on drag velocity
     const velocityMagnitude = Math.abs(dragVelocityRef.current);
-    if (velocityMagnitude > 0.5) {
+    if (velocityMagnitude > VELOCITY_THRESHOLD) {
       // Apply momentum with capping to prevent too fast scrolling
       momentumRef.current = Math.max(
-        Math.min(dragVelocityRef.current, 10),
-        -10
+        Math.min(dragVelocityRef.current, MAX_MOMENTUM_VELOCITY),
+        -MAX_MOMENTUM_VELOCITY
       );
     } else {
       // Resume auto-scroll if no significant momentum
-      targetVelocityRef.current = -1;
+      targetVelocityRef.current = AUTO_SCROLL_VELOCITY;
     }
 
     dragVelocityRef.current = 0;
@@ -233,9 +240,24 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
     };
   }, []);
 
+  // Keyboard navigation support
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      // Scroll right (opposite of visual direction)
+      positionRef.current += 100;
+      momentumRef.current = 5;
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      // Scroll left
+      positionRef.current -= 100;
+      momentumRef.current = -5;
+    }
+  };
+
   const handleVideoPlay = (celebrity: CelebrityEndorsement) => {
     // Prevent video modal from opening if user was dragging
-    if (dragDistanceRef.current > 5) {
+    if (dragDistanceRef.current > GHOST_CLICK_THRESHOLD) {
       dragDistanceRef.current = 0;
       return;
     }
@@ -258,7 +280,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       celebrityName: '',
     });
     // Resume carousel when modal closes
-    targetVelocityRef.current = -1;
+    targetVelocityRef.current = AUTO_SCROLL_VELOCITY;
   };
 
   const getYouTubeShortThumbnail = (videoId: string) => {
@@ -270,7 +292,11 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
     <div className="relative overflow-hidden select-none">
       {/* Carousel Container */}
       <div
-        className="flex gap-4 pb-4"
+        role="region"
+        aria-label="Celebrity endorsements carousel - drag to scroll or use arrow keys"
+        aria-roledescription="carousel"
+        tabIndex={0}
+        className="flex gap-4 pb-4 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onMouseDown={handleMouseDown}
@@ -279,6 +305,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onKeyDown={handleKeyDown}
         style={{ cursor: cursorState }}
       >
         <div
@@ -315,13 +342,15 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                     alt={`${celebrity.name} endorsement`}
                     className="w-full h-full object-cover"
                     onError={e => {
-                      // Fallback to hqdefault if sddefault fails
+                      // Fallback chain: sddefault → hqdefault → default → prevent further errors
                       const target = e.target as HTMLImageElement;
                       if (target.src.includes('sddefault')) {
                         target.src = `https://img.youtube.com/vi/${celebrity.videoId}/hqdefault.jpg`;
                       } else if (target.src.includes('hqdefault')) {
-                        // Final fallback
                         target.src = `https://img.youtube.com/vi/${celebrity.videoId}/default.jpg`;
+                      } else {
+                        // Prevent infinite error loop
+                        target.onerror = null;
                       }
                     }}
                   />

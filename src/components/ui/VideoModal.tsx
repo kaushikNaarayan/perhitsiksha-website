@@ -81,7 +81,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
           </button>
         </div>
 
-        {/* Video Container - Flexible height based on 9:16 ratio but allows iframe to control final size */}
+        {/* Video Container - Flexible height with 9:16 portrait aspect ratio */}
+        {/* paddingTop: 177.78% = (16/9) * 100% - maintains 9:16 ratio for YouTube Shorts */}
         <div className="relative bg-black" style={{ paddingTop: '177.78%' }}>
           <iframe
             src={embedUrl}
