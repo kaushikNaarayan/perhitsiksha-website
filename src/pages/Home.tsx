@@ -74,6 +74,24 @@ const Home: React.FC = () => {
       videoId: '9Cw2TarHBM8',
       profession: 'Badminton Coach',
     },
+    {
+      id: '10',
+      name: 'VVS Laxman',
+      videoId: 'dEWv_0c-omo',
+      profession: 'Cricketer',
+    },
+    {
+      id: '11',
+      name: 'Kidambi Srikanth',
+      videoId: 'Z3ps_cG0UjM',
+      profession: 'Badminton Star',
+    },
+    {
+      id: '12',
+      name: 'Mohammad Azharuddin',
+      videoId: 'RAxeVaOgKW0',
+      profession: 'Cricketer',
+    },
   ];
 
   useEffect(() => {

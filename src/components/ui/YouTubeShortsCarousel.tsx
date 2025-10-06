@@ -22,6 +22,18 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   const lastTimeRef = useRef<number>(Date.now());
   const halfWidthRef = useRef(0);
 
+  // Drag state refs
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragStartPositionRef = useRef(0);
+  const dragVelocityRef = useRef(0);
+  const lastDragXRef = useRef(0);
+  const lastDragTimeRef = useRef(0);
+  const dragDistanceRef = useRef(0);
+  const momentumRef = useRef(0);
+
+  const [cursorState, setCursorState] = useState<'grab' | 'grabbing'>('grab');
+
   const [modalVideo, setModalVideo] = useState<{
     isOpen: boolean;
     videoId: string;
@@ -59,20 +71,30 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       const deltaTime = Math.min(now - lastTimeRef.current, 33.33) / 16.67; // Cap at 2 frames
       lastTimeRef.current = now;
 
-      // Smooth velocity transition (using refs to avoid re-renders)
-      const velocityDiff = targetVelocityRef.current - velocityRef.current;
-      if (Math.abs(velocityDiff) >= 0.01) {
-        velocityRef.current += velocityDiff * 0.08;
-      } else {
-        velocityRef.current = targetVelocityRef.current;
-      }
+      // Apply momentum deceleration if not dragging
+      if (!isDraggingRef.current && Math.abs(momentumRef.current) > 0.01) {
+        momentumRef.current *= 0.95; // Decay factor for smooth deceleration
+        positionRef.current += momentumRef.current * deltaTime;
+      } else if (!isDraggingRef.current) {
+        momentumRef.current = 0;
 
-      // Update position (using refs)
-      positionRef.current += velocityRef.current * deltaTime;
+        // Smooth velocity transition for auto-scroll (using refs to avoid re-renders)
+        const velocityDiff = targetVelocityRef.current - velocityRef.current;
+        if (Math.abs(velocityDiff) >= 0.01) {
+          velocityRef.current += velocityDiff * 0.08;
+        } else {
+          velocityRef.current = targetVelocityRef.current;
+        }
+
+        // Update position with auto-scroll velocity
+        positionRef.current += velocityRef.current * deltaTime;
+      }
 
       // Loop when we've scrolled 50% (seamless infinite scroll)
       if (positionRef.current <= -halfWidthRef.current) {
         positionRef.current = 0;
+      } else if (positionRef.current > 0) {
+        positionRef.current = -halfWidthRef.current;
       }
 
       // Direct DOM manipulation for better performance
@@ -100,7 +122,124 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
     targetVelocityRef.current = -1; // Back to normal speed
   };
 
+  // Drag handlers
+  const handleDragStart = (clientX: number) => {
+    isDraggingRef.current = true;
+    dragStartXRef.current = clientX;
+    dragStartPositionRef.current = positionRef.current;
+    lastDragXRef.current = clientX;
+    lastDragTimeRef.current = Date.now();
+    dragDistanceRef.current = 0;
+    momentumRef.current = 0;
+    setCursorState('grabbing');
+    // Pause auto-scroll
+    targetVelocityRef.current = 0;
+  };
+
+  const handleDragMove = (clientX: number) => {
+    if (!isDraggingRef.current) return;
+
+    const now = Date.now();
+    const deltaX = clientX - lastDragXRef.current;
+    const deltaTime = now - lastDragTimeRef.current;
+
+    // Update position directly during drag
+    const totalDragDistance = clientX - dragStartXRef.current;
+    positionRef.current = dragStartPositionRef.current + totalDragDistance;
+
+    // Calculate velocity for momentum
+    if (deltaTime > 0) {
+      dragVelocityRef.current = deltaX / (deltaTime / 16.67); // Normalize to 60fps
+    }
+
+    lastDragXRef.current = clientX;
+    lastDragTimeRef.current = now;
+    dragDistanceRef.current = Math.abs(totalDragDistance);
+  };
+
+  const handleDragEnd = () => {
+    if (!isDraggingRef.current) return;
+
+    isDraggingRef.current = false;
+    setCursorState('grab');
+
+    // Apply momentum based on drag velocity
+    const velocityMagnitude = Math.abs(dragVelocityRef.current);
+    if (velocityMagnitude > 0.5) {
+      // Apply momentum with capping to prevent too fast scrolling
+      momentumRef.current = Math.max(
+        Math.min(dragVelocityRef.current, 10),
+        -10
+      );
+    } else {
+      // Resume auto-scroll if no significant momentum
+      targetVelocityRef.current = -1;
+    }
+
+    dragVelocityRef.current = 0;
+  };
+
+  // Mouse event handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleDragStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    handleDragMove(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    handleDragEnd();
+  };
+
+  // Touch event handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      handleDragStart(e.touches[0].clientX);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      handleDragMove(e.touches[0].clientX);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    handleDragEnd();
+  };
+
+  // Global mouse handlers (for when mouse leaves carousel)
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (isDraggingRef.current) {
+        handleDragMove(e.clientX);
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      if (isDraggingRef.current) {
+        handleDragEnd();
+      }
+    };
+
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, []);
+
   const handleVideoPlay = (celebrity: CelebrityEndorsement) => {
+    // Prevent video modal from opening if user was dragging
+    if (dragDistanceRef.current > 5) {
+      dragDistanceRef.current = 0;
+      return;
+    }
+
     setModalVideo({
       isOpen: true,
       videoId: celebrity.videoId,
@@ -123,23 +262,31 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   };
 
   const getYouTubeShortThumbnail = (videoId: string) => {
-    // YouTube Shorts thumbnails - try maxresdefault first, fallback to hqdefault
-    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    // YouTube Shorts thumbnails - use sddefault for better Shorts compatibility
+    return `https://img.youtube.com/vi/${videoId}/sddefault.jpg`;
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden select-none">
       {/* Carousel Container */}
       <div
         className="flex gap-4 pb-4"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ cursor: cursorState }}
       >
         <div
           ref={containerRef}
           className="flex gap-4"
           style={{
             willChange: 'transform',
+            userSelect: 'none',
           }}
         >
           {duplicatedEndorsements.map((celebrity, index) => (
@@ -168,9 +315,14 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                     alt={`${celebrity.name} endorsement`}
                     className="w-full h-full object-cover"
                     onError={e => {
-                      // Fallback to hqdefault if maxresdefault fails
+                      // Fallback to hqdefault if sddefault fails
                       const target = e.target as HTMLImageElement;
-                      target.src = `https://img.youtube.com/vi/${celebrity.videoId}/hqdefault.jpg`;
+                      if (target.src.includes('sddefault')) {
+                        target.src = `https://img.youtube.com/vi/${celebrity.videoId}/hqdefault.jpg`;
+                      } else if (target.src.includes('hqdefault')) {
+                        // Final fallback
+                        target.src = `https://img.youtube.com/vi/${celebrity.videoId}/default.jpg`;
+                      }
                     }}
                   />
 
