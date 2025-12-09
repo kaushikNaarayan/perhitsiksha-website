@@ -92,6 +92,24 @@ const Home: React.FC = () => {
       videoId: 'RAxeVaOgKW0',
       profession: 'Cricketer',
     },
+    {
+      id: '13',
+      name: 'Sania Mirza',
+      videoId: 'jzkOt0RYJLI',
+      profession: 'Tennis Player',
+    },
+    {
+      id: '14',
+      name: 'Saina Nehwal',
+      videoId: 'uH5t-gXKhzc',
+      profession: 'Badminton Player',
+    },
+    {
+      id: '15',
+      name: 'Satwiksairaj Rankireddy',
+      videoId: 'U4fnK-_HCXw',
+      profession: 'Badminton Player',
+    },
   ];
 
   useEffect(() => {

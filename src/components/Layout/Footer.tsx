@@ -113,10 +113,23 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 pt-6 text-center">
-          <p className="text-gray-400 text-sm">
-            © {currentYear} PerhitSiksha. All rights reserved.
-          </p>
+        <div className="border-t border-gray-800 pt-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-gray-400 text-sm">
+              © {currentYear} PerhitSiksha. All rights reserved.
+            </p>
+            <p className="text-gray-400 text-sm">
+              Website made by{' '}
+              <a
+                href="https://www.materiallab.io/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors duration-200 font-medium"
+              >
+                Material Lab
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
