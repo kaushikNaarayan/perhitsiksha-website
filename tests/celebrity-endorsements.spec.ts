@@ -75,7 +75,7 @@ test.describe('Celebrity Endorsements', () => {
     await vvsLaxmanContainer.click({ force: true });
 
     // Check if modal opens with correct title
-    const modalTitle = page.locator('text=VVS Laxman supports PerhitSiksha');
+    const modalTitle = page.locator('text=VVS Laxman supports Perhitsiksha');
     await expect(modalTitle).toBeVisible({ timeout: 3000 });
   });
 
@@ -135,7 +135,7 @@ test.describe('Celebrity Endorsements', () => {
       await page.waitForTimeout(300);
 
       // Modal should NOT be visible
-      const modalTitle = page.locator('text=supports PerhitSiksha');
+      const modalTitle = page.locator('text=supports Perhitsiksha');
       await expect(modalTitle).not.toBeVisible();
     }
   });

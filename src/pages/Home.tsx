@@ -146,7 +146,8 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <Hero
         title="CLSI Perhitsiksha"
-        subtitle="Empowering underprivileged students through financial aid, mentorship, and career guidance to complete their education and transform their lives."
+        subheadline="300+ Success Stories. 600+ Global Contributors. One Mission."
+        subtitle="No student should drop out because of a lack of funds. Perhitsiksha Foundation provides a lifeline of financial aid and career guidance to ensure talent never goes to waste."
         showLogo={true}
         primaryCTA={{
           text: 'Become a Contributor',
@@ -193,7 +194,7 @@ const Home: React.FC = () => {
             <div className="max-w-4xl mx-auto">
               <YouTubeEmbed
                 videoId="-slFir-pGh0"
-                title="PerhitSiksha - What We Do"
+                title="Perhitsiksha - What We Do"
                 lazyLoad={true}
               />
             </div>
@@ -220,6 +221,183 @@ const Home: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* Official Registration Announcement */}
+      <section className="bg-white section-padding">
+        <div className="max-w-7xl mx-auto container-padding">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 ring-1 ring-primary-400/20 shadow-xl">
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+
+            <div className="relative z-10 p-8 md:p-12 lg:p-16">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                {/* Certificate Thumbnail */}
+                <div className="lg:col-span-5">
+                  <a
+                    href="https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view?usp=drive_link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block group"
+                  >
+                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                      <img
+                        src="/certificate-of-incorporation.jpg"
+                        alt="Certificate of Incorporation"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                  </a>
+                </div>
+
+                {/* Certificate Details */}
+                <div className="lg:col-span-7">
+                  <h2 className="text-4xl sm:text-5xl lg:text-6xl leading-tight font-bold text-gray-900 mb-4">
+                    Officially Registered
+                  </h2>
+                  <p className="text-lg sm:text-xl text-white/90 max-w-2xl mb-8">
+                    Perhitsiksha Foundation is now officially registered as
+                    Section 8 Company under the Companies Act, 2013, issued by
+                    the Ministry of Corporate Affairs, Central Registration
+                    Centre.
+                  </p>
+
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">
+                            CIN Number
+                          </p>
+                          <p className="text-xs text-white/80 font-mono">
+                            U85500UP2025NPL237759
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">
+                            Date of Incorporation
+                          </p>
+                          <p className="text-xs text-white/80">
+                            December 6, 2025
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">
+                            PAN Number
+                          </p>
+                          <p className="text-xs text-white/80 font-mono">
+                            AAQCP4229F
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">
+                            TAN Number
+                          </p>
+                          <p className="text-xs text-white/80 font-mono">
+                            LKNP13723D
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-4">
+                      <a
+                        href="https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view?usp=drive_link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all bg-white text-primary-600 hover:bg-white/90 shadow-lg hover:shadow-xl"
+                      >
+                        View Full Certificate
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Newsletter/CTA Section */}
       <section

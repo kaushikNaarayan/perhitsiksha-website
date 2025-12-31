@@ -6,6 +6,7 @@ import logoImage from '../../assets/images/logo.jpg';
 
 const Hero: React.FC<HeroProps> = ({
   title,
+  subheadline,
   subtitle,
   showLogo = false,
   primaryCTA,
@@ -95,7 +96,7 @@ const Hero: React.FC<HeroProps> = ({
           )}
 
           <h1
-            className={`${showLogo ? 'heading-2' : 'heading-1'} mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
+            className={`${showLogo ? 'heading-2' : 'heading-1'} mb-4 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
           >
             <TypewriterText
               text={title}
@@ -103,6 +104,14 @@ const Hero: React.FC<HeroProps> = ({
               speed={75}
             />
           </h1>
+
+          {subheadline && (
+            <p
+              className={`text-lg md:text-xl font-semibold mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
+            >
+              {subheadline}
+            </p>
+          )}
 
           {subtitle && (
             <p
@@ -141,7 +150,7 @@ const Hero: React.FC<HeroProps> = ({
           {primaryCTA && (
             <div className="flex justify-center space-x-6 mt-4">
               <a
-                href="https://www.facebook.com/CGST.Lucknow.Social.Initiatives/"
+                href="https://www.facebook.com/share/19uSggzByG/"
                 className={`${backgroundImage ? 'text-gray-200 hover:text-white' : 'text-gray-700 hover:text-primary-500'} transition-colors duration-200`}
                 aria-label="Follow us on Facebook"
                 target="_blank"

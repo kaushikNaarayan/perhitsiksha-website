@@ -62,10 +62,25 @@ npx supabase db reset       # Reset database to migrations
 - `src/pages/` - Page-level components (Home, Testimonials, About, Privacy)
 
 **Key UI Components:**
+- **TickerBanner** - Announcement banner above header
+  - Static centered display on desktop/laptop (≥1024px)
+  - Scrolling ticker animation on mobile/tablet (<1024px)
+  - Hover-pause only works on devices with true hover capability (desktop with mouse)
+  - Content: Registration announcement with link to certificate
 - **Carousels:** `EnhancedCarousel`, `CelebrityCarousel`, `TestimonialCarousel`, `YouTubeShortsCarousel`, `PeekCarousel` - various carousel implementations with drag-to-scroll, autoplay, and accessibility features
 - **VisitorCounter** - Displays page views from Supabase with caching
 - **GoogleAnalytics** - GA4 integration (only enabled in production)
 - **TypewriterText**, **StatsCounter** - Animated text effects
+- **Hero** - Hero section with conditional logo, subheadline, and subtitle support
+  - Supports optional `subheadline` prop (bold, prominent text below title)
+  - Uses `heading-1` class by default, `heading-2` when `showLogo={true}`
+  - Social icons (Facebook, YouTube) rendered when `primaryCTA` is present
+
+**Type System** (`src/types/index.ts`):
+- Domain types: `Testimonial`, `Story`, `Program`, `Stats`, `TeamMember`, `TimelineEvent`
+- Component prop types: `ButtonProps`, `CardProps`, `HeroProps`, `YouTubeEmbedProps`
+- Testimonial roles: `'Student' | 'Parent' | 'Mentor' | 'Contributor'`
+- Story categories: `'Education' | 'Career' | 'Community'`
 
 ### Configuration System
 
@@ -87,10 +102,12 @@ VITE_GA_MEASUREMENT_ID      # Google Analytics (optional)
 
 **Unit Tests (Vitest):**
 - Setup in `src/test/setup.ts` with `@testing-library/react`
+- Uses MSW (Mock Service Worker) for API mocking (Counter API endpoints)
 - Example: `src/components/__tests__/VisitorCounter.test.tsx`
 - Run with `npm run test` in watch mode
 - Run specific test: `npm run test -- ComponentName` or `npm run test -- src/path/to/test.tsx`
 - Test files: `src/**/*.{test,spec}.{ts,tsx}` (co-located with components in `__tests__/`)
+- MSW server instance available globally as `__msw_server__` for test customization
 
 **E2E Tests (Playwright):**
 - Located in `tests/` directory
@@ -161,11 +178,33 @@ Max body line length: 100 chars
 - Avoid `any` - use `unknown` or proper types
 - Component props use explicit interfaces (e.g., `ButtonProps`, `HeroProps`)
 
-### Adding New Pages
+### SEO & Metadata Management
+
+**Structured Data & Meta Tags:**
+- Both `index.html` and `public/404.html` contain identical structured data (JSON-LD)
+- Structured data includes: organization info, contact details, address, social media links
+- Must be kept in sync across both files when updating contact information
+
+**Official Contact Information** (must be consistent across all files):
+- **Phone:** +91 81422 38633 (WhatsApp: `wa.me/918142238633`)
+- **Email:** clsi.perhitsiksha@gmail.com
+- **Address:** H NO. 659 Eldeco Udayan-I, Sec-3 Bangla Bazar, Dilkusha, Lucknow, Uttar Pradesh - 226002
+- **Facebook:** https://www.facebook.com/share/19uSggzByG/
+- **YouTube:** https://www.youtube.com/@clsi-perhitsiksha
+- **Founding Date:** 2009 (in structured data)
+- **Legal Registration:** December 6, 2025 (CIN: U85500UP2025NPL237759)
+
+**SEO Files:**
+- `public/robots.txt` - Allows all crawlers, points to sitemap
+- `public/sitemap.xml` - Lists all pages with priorities and update frequencies
+- Update sitemap's `<lastmod>` dates when making significant content changes
+- Submit sitemap to Google Search Console after deployment
+
+**When Adding New Pages:**
 1. Create component in `src/pages/`
 2. Add route in `src/App.tsx` `<Routes>` block
 3. Update navigation in `src/components/Layout/Header.tsx`
-4. Consider adding to sitemap for SEO
+4. Add URL to `public/sitemap.xml` with appropriate priority and change frequency
 
 ### Working with Supabase
 - Always check `config.supabase.enabled` before using client
@@ -176,30 +215,42 @@ Max body line length: 100 chars
 
 ### Content Management
 
-**Celebrity Endorsements Carousel** (`src/pages/Home.tsx`):
-- Videos stored as hardcoded array in `celebrityEndorsements` (lines 22-95+)
-- Uses YouTube video IDs, not local files
-- To add new celebrity:
-  ```typescript
-  {
-    id: '16',
-    name: 'Celebrity Name',
-    videoId: 'YOUTUBE_VIDEO_ID',  // Extract from youtube.com/watch?v=ID or youtube.com/shorts/ID
-    profession: 'Their Profession',
-  }
-  ```
+**Branding & Naming:**
+- Organization name: **"Perhitsiksha"** (capitalized) for display/branding
+- Lowercase **"perhitsiksha"** used only in technical contexts (emails, URLs, package names)
+- Official legal name: **"Perhitsiksha Foundation"**
+- Legal entity: Section 8 Company under Companies Act, 2013
+- Full legal details available in `src/components/Layout/Footer.tsx`
 
-**Student Testimonials** (`src/data/testimonials.json`):
-- JSON file with testimonial data
-- Videos embedded via `youtubeId` field
-- Filtered by `role: "Student"` for Voices of Change carousel
-- Add new entries directly to JSON array
-
-**Footer Branding** (`src/components/Layout/Footer.tsx`):
-- Material Lab attribution in bottom bar
-- Links to https://www.materiallab.io/
+**Key Content Locations:**
+- **Celebrity Endorsements:** Hardcoded array in `src/pages/Home.tsx` (lines 22-113)
+  - Add new celebrities by appending to the `celebrityEndorsements` array with `id`, `name`, `videoId`, and `profession`
+  - YouTube video IDs extracted from youtube.com/watch?v=ID or youtube.com/shorts/ID
+- **Student Testimonials:** JSON file at `src/data/testimonials.json`
+  - Videos embedded via `youtubeId` field
+  - Filtered by `role: "Student"` for Voices of Change carousel
+- **Ticker Banner:** `src/components/ui/TickerBanner.tsx`
+  - Contains registration announcement
+  - Responsive: static on desktop (≥1024px), scrolling on mobile (<1024px)
+  - Links to certificate on Google Drive
+- **Hero Section:** Title uses TypewriterText, supports optional `subheadline` (bold prominent text), subtitle, and CTAs
+- **Registration Certificate:**
+  - Image: `public/certificate-of-incorporation.jpg` (local file)
+  - PDF: Google Drive link (in ticker banner and Official Registration section)
+  - Details section in `src/pages/Home.tsx` (Official Registration section, lines 225-442)
 
 ### Node.js Version Requirement
 This project requires **Node.js v20+** due to Vite 7 dependency.
 - If using nvm: `nvm use` (reads `.nvmrc` if present)
 - Setup script `./setup.sh` auto-installs Node 20 via nvm
+
+### Icon Library
+- Project uses **`react-icons`** for all icons
+- Common icon sets available: Font Awesome (`react-icons/fa`), Heroicons (`react-icons/hi`), Material Design
+- Example: `import { FaExternalLinkAlt } from 'react-icons/fa';`
+
+### Working with Images
+- Static images stored in `public/` folder are served from root path `/`
+- Example: `public/certificate-of-incorporation.jpg` is referenced as `src="/certificate-of-incorporation.jpg"`
+- For assets imported in components, use `src/assets/images/`
+- Prefer local hosting over external services (e.g., Google Drive) for reliability and performance

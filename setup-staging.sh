@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Cloudflare Tunnel for PerhitSiksha Staging"
+echo "🚀 Setting up Cloudflare Tunnel for Perhitsiksha Staging"
 echo "========================================="
 
 # Check if cloudflared is available

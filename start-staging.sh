@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting PerhitSiksha Staging Environment"
+echo "🚀 Starting Perhitsiksha Staging Environment"
 echo "============================================"
 
 # Check if authenticated

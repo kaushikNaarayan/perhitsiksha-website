@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# PerhitSiksha Website Setup Script
+# Perhitsiksha Website Setup Script
 # This script ensures the correct Node.js version is installed and sets up the development environment
 
 set -e  # Exit on error
 
-echo "🚀 PerhitSiksha Website Setup"
+echo "🚀 Perhitsiksha Website Setup"
 echo "=============================="
 echo ""
 

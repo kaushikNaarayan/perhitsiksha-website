@@ -29,7 +29,7 @@ const Privacy: React.FC = () => {
                 })}
               </p>
               <p>
-                At CLSI (formerly Perhit Siksha), we are committed to protecting
+                At CLSI (formerly Perhitsiksha), we are committed to protecting
                 your privacy and ensuring the security of your personal
                 information. This Privacy Policy explains how we collect, use,
                 disclose, and safeguard your information when you visit our
@@ -215,7 +215,7 @@ const Privacy: React.FC = () => {
               </p>
               <div className="bg-gray-50 p-6 rounded-lg">
                 <p className="font-semibold text-gray-900 mb-2">
-                  CLSI (Formerly Perhit Siksha)
+                  CLSI (Formerly Perhitsiksha)
                 </p>
                 <p className="mb-1">Email: clsi.perhitsiksha@gmail.com</p>
                 <p className="mb-1">Phone: +91 81422 38633</p>

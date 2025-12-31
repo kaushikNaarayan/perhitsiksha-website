@@ -1,4 +1,4 @@
--- PerhitSiksha Page Views Database Setup
+-- Perhitsiksha Page Views Database Setup
 -- Run this in your Supabase SQL Editor
 
 -- Create page_views table

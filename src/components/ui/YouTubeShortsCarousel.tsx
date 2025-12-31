@@ -265,7 +265,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
     setModalVideo({
       isOpen: true,
       videoId: celebrity.videoId,
-      title: `${celebrity.name} supports PerhitSiksha`,
+      title: `${celebrity.name} supports Perhitsiksha`,
       celebrityName: celebrity.name,
     });
     // Pause carousel when modal opens

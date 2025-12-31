@@ -92,7 +92,7 @@ export const config = {
     enabled: isProduction && !!env.VITE_GA_MEASUREMENT_ID,
   },
   app: {
-    name: 'PerhitSiksha',
+    name: 'Perhitsiksha',
     environment: env.VITE_ENVIRONMENT,
     version: import.meta.env.PACKAGE_VERSION || '0.0.0',
   },

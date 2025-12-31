@@ -1,4 +1,4 @@
-// Base types for the PerhitSiksha website
+// Base types for the Perhitsiksha website
 
 export interface Testimonial {
   id: string;
@@ -74,6 +74,7 @@ export interface CardProps {
 
 export interface HeroProps {
   title: string;
+  subheadline?: string;
   subtitle?: string;
   showLogo?: boolean;
   primaryCTA?: {
