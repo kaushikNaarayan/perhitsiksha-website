@@ -16,9 +16,9 @@ jobs:
 
       - name: Push to personal repo
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config credential.helper store
-          echo "https://kaushikNaarayan:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com" > ~/.git-credentials
+          # Clear any existing credential helpers
+          git config --unset-all http.https://github.com/.extraheader || true
+          git config --global credential.helper ""
+          git config --global --add credential.helper "!f() { echo \"username=kaushikNaarayan\"; echo \"password=${{ secrets.PERSONAL_REPO_TOKEN }}\"; }; f"
           git remote add personal https://github.com/kaushikNaarayan/perhitsiksha-website.git
           git push personal main --force
