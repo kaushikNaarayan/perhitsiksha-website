@@ -15,10 +15,10 @@ jobs:
           fetch-depth: 0
 
       - name: Push to personal repo
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_REPO_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add personal https://${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/kaushikNaarayan/perhitsiksha-website.git
+          git config credential.helper store
+          echo "https://kaushikNaarayan:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com" > ~/.git-credentials
+          git remote add personal https://github.com/kaushikNaarayan/perhitsiksha-website.git
           git push personal main --force
