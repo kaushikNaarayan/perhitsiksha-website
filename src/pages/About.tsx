@@ -35,10 +35,9 @@ const About: React.FC = () => {
           <div className="text-center mb-16">
             <h2 className="heading-2 mb-6">Who We Are</h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Perhit Siksha (now CLSI) is a forum dedicated to breaking the
-              cycle of poverty through education. Since 2022, we've been
-              transforming the lives of deserving underprivileged children
-              across India.
+              Perhitsiksha (now CLSI) is a forum dedicated to breaking the cycle
+              of poverty through education. Since 2022, we've been transforming
+              the lives of deserving underprivileged children across India.
             </p>
           </div>
 
@@ -82,13 +81,13 @@ const About: React.FC = () => {
               </h4>
               <div className="grid grid-cols-2 gap-8">
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">200+</div>
+                  <div className="text-4xl font-bold mb-2">300+</div>
                   <div className="text-sm text-primary-100">
                     Students Supported
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">400+</div>
+                  <div className="text-4xl font-bold mb-2">600+</div>
                   <div className="text-sm text-primary-100">Contributors</div>
                 </div>
               </div>

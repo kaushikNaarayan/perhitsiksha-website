@@ -46,7 +46,7 @@ const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
     setModalVideo({
       isOpen: true,
       videoId: celebrity.videoId,
-      title: `${celebrity.name} supports PerhitSiksha`,
+      title: `${celebrity.name} supports Perhitsiksha`,
       celebrityName: celebrity.name,
     });
   };

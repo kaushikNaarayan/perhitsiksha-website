@@ -15,19 +15,31 @@ const Footer: React.FC = () => {
             <div className="flex items-center space-x-2 mb-4">
               <img
                 src={logoImage}
-                alt="PerhitSiksha Logo"
+                alt="Perhitsiksha Logo"
                 className="w-8 h-8 rounded-lg object-cover"
               />
-              <span className="text-xl font-bold">PerhitSiksha</span>
+              <span className="text-xl font-bold">Perhitsiksha Foundation</span>
             </div>
-            <p className="text-gray-300 mb-4 max-w-md">
-              Empowering underprivileged students through financial aid,
-              mentorship, and career guidance to complete their education and
-              transform their lives.
-            </p>
+            <div className="text-gray-300 mb-4 max-w-md text-sm">
+              <p className="mb-1">
+                Registered as a Section 8 Company under the Companies Act, 2013
+              </p>
+              <p className="mb-1">
+                <span className="font-medium">CIN:</span> U85500UP2025NPL237759
+              </p>
+              <p className="mb-1">
+                <span className="font-medium">Date of Incorporation:</span>{' '}
+                December 6, 2025
+              </p>
+              <p>
+                <span className="font-medium">Registered Office:</span> H NO.
+                659 Eldeco Udayan-I, Sec-3 Bangla Bazar, Dilkusha, Lucknow,
+                Uttar Pradesh - 226002
+              </p>
+            </div>
             <div className="flex space-x-4">
               <a
-                href="https://www.facebook.com/CGST.Lucknow.Social.Initiatives/"
+                href="https://www.facebook.com/share/19uSggzByG/"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
                 aria-label="Follow us on Facebook"
               >
@@ -115,8 +127,8 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm">
-              © {currentYear} PerhitSiksha. All rights reserved.
+            <p className="text-gray-400 text-sm text-center sm:text-left">
+              © {currentYear} Perhitsiksha. All rights reserved.
             </p>
             <p className="text-gray-400 text-sm">
               Website made by{' '}

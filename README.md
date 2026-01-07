@@ -1,6 +1,6 @@
-# PerhitSiksha Website
+# Perhitsiksha Website
 
-Modern React + TypeScript + Vite application for the PerhitSiksha nonprofit organization.
+Modern React + TypeScript + Vite application for the Perhitsiksha nonprofit organization.
 
 ## Prerequisites
 

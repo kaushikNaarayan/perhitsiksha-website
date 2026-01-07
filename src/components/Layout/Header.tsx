@@ -174,7 +174,7 @@ const Header: React.FC = () => {
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <div className="flex justify-center space-x-6">
                     <a
-                      href="https://www.facebook.com/CGST.Lucknow.Social.Initiatives/"
+                      href="https://www.facebook.com/share/19uSggzByG/"
                       className="text-gray-700 hover:text-primary-500 transition-colors duration-200"
                       aria-label="Follow us on Facebook"
                       target="_blank"
