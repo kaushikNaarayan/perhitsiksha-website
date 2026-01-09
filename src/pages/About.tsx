@@ -483,60 +483,30 @@ const About: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
             <Card className="text-center p-6 hover:shadow-md transition-all duration-300">
               <div className="w-24 h-24 mx-auto bg-primary-500 rounded-full mb-4 flex items-center justify-center shadow-sm">
-                <span className="text-2xl font-bold text-white">SR</span>
+                <span className="text-2xl font-bold text-white">SS</span>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-1">
-                Sanjay Rathi
+                Shri. Shobhit Sinha
               </h3>
-              <p className="text-primary-600 font-medium mb-2">Founder</p>
+              <p className="text-primary-600 font-medium mb-2">Director</p>
               <p className="text-sm text-gray-600">
-                Visionary leader driving educational transformation
-              </p>
-            </Card>
-
-            <Card className="text-center p-6 hover:shadow-md transition-all duration-300">
-              <div className="w-24 h-24 mx-auto bg-gray-500 rounded-full mb-4 flex items-center justify-center shadow-sm">
-                <span className="text-2xl font-bold text-white">JP</span>
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">
-                Jitendra Patel
-              </h3>
-              <p className="text-gray-600 font-medium mb-2">Program Director</p>
-              <p className="text-sm text-gray-600">
-                Coordinating student support programs
+                Leading educational transformation initiatives
               </p>
             </Card>
 
             <Card className="text-center p-6 hover:shadow-md transition-all duration-300">
               <div className="w-24 h-24 mx-auto bg-primary-500 rounded-full mb-4 flex items-center justify-center shadow-sm">
-                <span className="text-xl font-bold text-white">PMA</span>
+                <span className="text-2xl font-bold text-white">SJ</span>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-1">
-                Priya Manu Arora
+                Ms. Seema Jain
               </h3>
-              <p className="text-primary-600 font-medium mb-2">
-                Program Director
-              </p>
+              <p className="text-primary-600 font-medium mb-2">Director</p>
               <p className="text-sm text-gray-600">
-                Managing educational initiatives
-              </p>
-            </Card>
-
-            <Card className="text-center p-6 hover:shadow-md transition-all duration-300">
-              <div className="w-24 h-24 mx-auto bg-gray-500 rounded-full mb-4 flex items-center justify-center shadow-sm">
-                <span className="text-2xl font-bold text-white">AS</span>
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">
-                Akansha Srivastav
-              </h3>
-              <p className="text-gray-600 font-medium mb-2">
-                Community Outreach
-              </p>
-              <p className="text-sm text-gray-600">
-                Building community connections
+                Driving student support programs
               </p>
             </Card>
           </div>
