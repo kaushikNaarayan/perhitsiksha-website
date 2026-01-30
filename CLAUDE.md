@@ -67,7 +67,14 @@ npx supabase db reset       # Reset database to migrations
   - Scrolling ticker animation on mobile/tablet (<1024px)
   - Hover-pause only works on devices with true hover capability (desktop with mouse)
   - Content: Registration announcement with link to certificate
-- **Carousels:** `EnhancedCarousel`, `CelebrityCarousel`, `TestimonialCarousel`, `YouTubeShortsCarousel`, `PeekCarousel` - various carousel implementations with drag-to-scroll, autoplay, and accessibility features
+- **Carousels:** `EnhancedCarousel`, `CelebrityCarousel`, `TestimonialCarousel`, `YouTubeShortsCarousel`, `PeekCarousel`, `EventsCarousel` - various carousel implementations with drag-to-scroll, autoplay, and accessibility features
+  - **EventsCarousel** - Auto-rotating carousel for Recent Events section
+    - Auto-rotates every 4 seconds (configurable via `autoRotateInterval` prop)
+    - Pauses on hover (desktop), continuous rotation on touch devices
+    - Navigation arrows positioned on image corners
+    - Pagination dots for manual navigation
+    - Responsive layout: single column (<1280px), side-by-side (≥1280px)
+    - Fixed heights on desktop to prevent container jumping between slides
 - **VisitorCounter** - Displays page views from Supabase with caching
 - **GoogleAnalytics** - GA4 integration (only enabled in production)
 - **TypewriterText**, **StatsCounter** - Animated text effects
@@ -149,6 +156,7 @@ Follow conventional commits (enforced by commitlint):
 - `test:` test additions/changes
 - `docs:` documentation
 - `style:` formatting, no code change
+- `revert:` reverts a previous commit
 - `build:`, `ci:`, `chore:`
 
 Max subject length: 100 chars
@@ -157,8 +165,18 @@ Max body line length: 100 chars
 ### Styling Patterns
 - Use Tailwind utility classes for all styling
 - Component-specific styles are inline via className
-- Responsive design: mobile-first with `sm:`, `md:`, `lg:` breakpoints
+- Responsive design: mobile-first with `sm:`, `md:`, `lg:`, `xl:` breakpoints
 - Animations use Tailwind's `transition-*` utilities
+
+**Responsive Breakpoint Guidelines:**
+- **Header Navigation:** Uses `lg:` breakpoint (1024px)
+  - Burger menu for < 1024px (phones & tablets)
+  - Full navigation for ≥ 1024px (laptops & desktops)
+- **EventsCarousel:** Uses `xl:` breakpoint (1280px)
+  - Single column layout for < 1280px (phones & tablets)
+  - Side-by-side layout with fixed heights for ≥ 1280px (large screens)
+- When creating responsive layouts with significant structural changes (grid to flex, column count changes), prefer `xl:` for tablets to avoid overlap issues at 1024px
+- Test responsive behavior at key widths: 375px (mobile), 768px (tablet), 1024px (small laptop), 1280px (desktop)
 
 ### State Management
 - No global state library (Redux/Zustand)
@@ -190,7 +208,7 @@ Max body line length: 100 chars
 - **Email:** clsi.perhitsiksha@gmail.com
 - **Address:** H NO. 659 Eldeco Udayan-I, Sec-3 Bangla Bazar, Dilkusha, Lucknow, Uttar Pradesh - 226002
 - **Facebook:** https://www.facebook.com/share/19uSggzByG/
-- **YouTube:** https://www.youtube.com/@clsi-perhitsiksha
+- **YouTube:** https://www.youtube.com/@PerhitSikshaFoundation
 - **Founding Date:** 2009 (in structured data)
 - **Legal Registration:** December 6, 2025 (CIN: U85500UP2025NPL237759)
 
@@ -229,6 +247,10 @@ Max body line length: 100 chars
 - **Student Testimonials:** JSON file at `src/data/testimonials.json`
   - Videos embedded via `youtubeId` field
   - Filtered by `role: "Student"` for Voices of Change carousel
+- **Recent Events:** Hardcoded array in `src/pages/Home.tsx` (EventsCarousel events prop)
+  - Add new events by appending to the events array with: `id`, `title`, `description`, `date`, `image`, `imageAlt`, `ctaText`, `ctaLink`
+  - Images stored in `public/` folder (referenced as `/filename.jpg`)
+  - Events display in carousel with auto-rotation
 - **Ticker Banner:** `src/components/ui/TickerBanner.tsx`
   - Contains registration announcement
   - Responsive: static on desktop (≥1024px), scrolling on mobile (<1024px)
@@ -237,7 +259,7 @@ Max body line length: 100 chars
 - **Registration Certificate:**
   - Image: `public/certificate-of-incorporation.jpg` (local file)
   - PDF: Google Drive link (in ticker banner and Official Registration section)
-  - Details section in `src/pages/Home.tsx` (Official Registration section, lines 225-442)
+  - Details section in `src/pages/Home.tsx` (Official Registration section)
 
 ### Node.js Version Requirement
 This project requires **Node.js v20+** due to Vite 7 dependency.

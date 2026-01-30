@@ -5,6 +5,7 @@ import Button from '../components/ui/Button';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
 import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
 import PeekCarousel from '../components/ui/PeekCarousel';
+import EventsCarousel from '../components/ui/EventsCarousel';
 import type { Testimonial } from '../types';
 
 // Import data
@@ -221,6 +222,64 @@ const Home: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* Recent Events */}
+      <section className="bg-white section-padding">
+        <div className="max-w-7xl mx-auto container-padding">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
+              OUR LATEST UPDATES & EVENTS
+            </p>
+            <h2 className="heading-2">Recent Events</h2>
+          </div>
+
+          <EventsCarousel
+            events={[
+              {
+                id: '1',
+                title:
+                  'Celebrating Republic Day: A Community Gathering That Brought Dreams to Life',
+                description:
+                  '40 beneficiaries and their families gathered at Janeshwar Mishra Park for an unforgettable Republic Day celebration. From inspiring mentor talks by Smt. Seema Jain to interactive games and patriotic discussions, witness how mentorship builds confidence, community, and a stronger tomorrow.',
+                date: 'Jan 26, 2026',
+                image: '/621323137_870920032237702_8564577282540254316_n.jpg',
+                imageAlt: 'Community gathering at Janeshwar Mishra Park',
+                ctaText: 'Read More on Facebook',
+                ctaLink:
+                  'https://www.facebook.com/PerhitSikshaFoundation/posts/pfbid0HqPXmWLG5VwYeaaanQSZMFtqTdCbcqGo2T3L2KhVLGeGxU6WwyX1yea4kLMAvaHsl',
+              },
+              {
+                id: '2',
+                title:
+                  'A Day of Hope & Learning: Nurturing Young Minds Through Compassionate Mentorship',
+                description:
+                  "Smt. Seema Jain spent a meaningful day with our children across two parks, addressing learning challenges from multiplication to spellings, guiding parents on home support, and witnessing the spark of hope and aspiration in every child's eyes—proof that education transforms lives.",
+                date: 'Nov 16, 2025',
+                image: '/584451194_820643613932011_4459553075992846573_n.jpg',
+                imageAlt: 'Mentorship session at Begum Hazrat Mahal Park',
+                ctaText: 'Read More on Facebook',
+                ctaLink:
+                  'https://www.facebook.com/PerhitSikshaFoundation/posts/pfbid0RvzahSyMk7kWbgdT8sajHMshfv5XszGiciXem21q61yM3Fa9RwZR4M6r6ymojTVpl',
+              },
+              {
+                id: '3',
+                title:
+                  'A Day of Learning, Laughter & Love: Building Bright Futures Through Books',
+                description:
+                  '16 children and their families enjoyed a joyful morning at Begum Hazrat Mahal Park as Ms. Seema Jain distributed Champak magazines, storybooks, and shared wisdom on reading habits. From notebook reviews to free play, witness how mentorship creates confident, curious young minds.',
+                date: 'Apr 13, 2025',
+                image: '/491159143_655271703802537_3584148511478184411_n.jpg',
+                imageAlt:
+                  'Learning day with Champak magazines at Begum Hazrat Mahal Park',
+                ctaText: 'Read More on Facebook',
+                ctaLink:
+                  'https://www.facebook.com/PerhitSikshaFoundation/posts/pfbid02d6AwAUGjfqpK5HipPkekK4ZGL2VPNXR5zdg8TiUjwgoU7g789oRGm8PPR62LHN8ol',
+              },
+            ]}
+            autoRotateInterval={4000}
+          />
+        </div>
+      </section>
 
       {/* Official Registration Announcement */}
       <section className="bg-white section-padding">

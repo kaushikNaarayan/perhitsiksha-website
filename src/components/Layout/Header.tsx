@@ -56,7 +56,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-8">
             {navLinks.map(link => (
               <Link
                 key={link.path}
@@ -73,7 +73,7 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Desktop CTA Button */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <a
               href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
               className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 inline-block"
@@ -83,7 +83,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Mobile Menu */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -112,12 +112,12 @@ const Header: React.FC = () => {
           <>
             {/* Backdrop */}
             <div
-              className="mobile-menu-backdrop md:hidden"
+              className="mobile-menu-backdrop lg:hidden"
               onClick={() => setIsMenuOpen(false)}
             />
 
             {/* Slide-in Panel */}
-            <div className="mobile-menu-panel md:hidden">
+            <div className="mobile-menu-panel lg:hidden">
               <div className="p-6">
                 {/* Close Button */}
                 <div className="flex justify-between items-center mb-8">
@@ -189,7 +189,7 @@ const Header: React.FC = () => {
                       </svg>
                     </a>
                     <a
-                      href="https://www.youtube.com/@clsi-perhitsiksha"
+                      href="https://www.youtube.com/@PerhitSikshaFoundation"
                       className="text-gray-700 hover:text-primary-500 transition-colors duration-200"
                       aria-label="Subscribe to our YouTube channel"
                       target="_blank"

@@ -165,7 +165,7 @@ const Hero: React.FC<HeroProps> = ({
                 </svg>
               </a>
               <a
-                href="https://www.youtube.com/@clsi-perhitsiksha"
+                href="https://www.youtube.com/@PerhitSikshaFoundation"
                 className={`${backgroundImage ? 'text-gray-200 hover:text-white' : 'text-gray-700 hover:text-primary-500'} transition-colors duration-200`}
                 aria-label="Subscribe to our YouTube channel"
                 target="_blank"

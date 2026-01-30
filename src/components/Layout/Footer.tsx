@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
                 </svg>
               </a>
               <a
-                href="https://www.youtube.com/@clsi-perhitsiksha"
+                href="https://www.youtube.com/@PerhitSikshaFoundation"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
                 aria-label="Subscribe to our YouTube channel"
               >
