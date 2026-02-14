@@ -1,0 +1,138 @@
+name: Sync Facebook Events
+
+on:
+  # Run daily at 8 AM UTC (1:30 PM IST)
+  schedule:
+    - cron: '0 8 * * *'
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  sync:
+    name: Fetch and Commit Facebook Events
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch Facebook events
+        id: fetch
+        continue-on-error: true
+        env:
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+        run: npm run fetch:facebook
+
+      - name: Validate events data
+        if: steps.fetch.outcome == 'success'
+        id: validate
+        continue-on-error: true
+        run: npm run validate:events
+
+      - name: Check for changes
+        if: steps.validate.outcome == 'success'
+        id: git-check
+        run: |
+          git diff --quiet src/data/facebook-events.json public/fb-events/ || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/data/facebook-events.json public/fb-events/
+          git commit -m "chore: sync Facebook events [skip ci]
+
+          Auto-synced from Facebook page at $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          git push
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '⚠️ Facebook Events Sync Failed';
+            const body = `## Sync Failure Report
+
+            The scheduled Facebook events sync failed on ${new Date().toUTCString()}.
+
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ### Possible Causes:
+            1. **Access Token Expired**: Facebook Page Access Tokens expire after ~60 days
+               - Check token expiry: https://developers.facebook.com/tools/debug/accesstoken/
+               - Renew token following instructions in PLAN.md Phase 1
+            2. **API Rate Limit**: Facebook Graph API rate limit reached
+               - Check API usage in Facebook Developer Console
+            3. **Network or API Issues**: Temporary connectivity or Facebook API problems
+               - Check Facebook Platform Status: https://developers.facebook.com/status/
+            4. **Missing Secrets**: GitHub secrets not configured
+               - Verify FACEBOOK_PAGE_ID and FACEBOOK_ACCESS_TOKEN in repository settings
+
+            ### Next Steps:
+            1. Review the workflow logs linked above
+            2. Check Facebook Developer Console for errors
+            3. If token expired, update GitHub secret with new token
+            4. Close this issue once resolved
+
+            ---
+            *This issue was automatically created by the sync-facebook-events workflow.*`;
+
+            // Check if an open issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['facebook-sync', 'automated'],
+            });
+
+            if (issues.data.length === 0) {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['facebook-sync', 'automated', 'bug'],
+              });
+            } else {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: `### Another sync failure occurred
+
+                **Time:** ${new Date().toUTCString()}
+                **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              });
+            }
+
+      - name: Report success
+        if: success() && steps.git-check.outputs.changed == 'true'
+        run: |
+          echo "✅ Facebook events synced successfully!"
+          echo "📊 Changes committed and pushed to repository"
+
+      - name: Report no changes
+        if: success() && steps.git-check.outputs.changed != 'true'
+        run: |
+          echo "ℹ️ No changes detected in Facebook events"
+          echo "📊 Events data is already up to date"

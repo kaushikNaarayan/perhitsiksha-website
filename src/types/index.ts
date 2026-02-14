@@ -54,6 +54,36 @@ export interface TimelineEvent {
   milestone?: boolean;
 }
 
+export interface MediaItem {
+  type: 'image' | 'video';
+  url: string;
+  thumbnail?: string; // For video thumbnails
+  alt: string;
+}
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+
+  // Single media fields
+  image?: string;
+  imageAlt?: string;
+  videoUrl?: string;
+
+  // Album support fields
+  mediaType?: 'image' | 'video' | 'text' | 'album';
+  thumbnailImage?: string;
+  thumbnailAlt?: string;
+  mediaCount?: number;
+  media?: MediaItem[];
+
+  // CTA fields
+  ctaText: string;
+  ctaLink: string;
+}
+
 // Component prop types
 export interface ButtonProps {
   children: React.ReactNode;

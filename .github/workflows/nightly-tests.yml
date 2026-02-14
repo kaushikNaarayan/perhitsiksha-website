@@ -165,11 +165,147 @@ jobs:
         # Test staging endpoint (if it exists)
         curl -f "https://api.counterapi.dev/v2/perhitsiksha-staging/perhitsiksha-visits" || echo "Staging counter may need setup"
 
+  facebook-token-check:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+    - name: Check Facebook Access Token expiry
+      id: token-check
+      continue-on-error: true
+      env:
+        FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+      run: |
+        if [ -z "$FACEBOOK_ACCESS_TOKEN" ]; then
+          echo "⚠️ FACEBOOK_ACCESS_TOKEN secret not configured"
+          echo "token_missing=true" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Check token expiry using Facebook's debug_token endpoint
+        RESPONSE=$(curl -s "https://graph.facebook.com/v22.0/debug_token?input_token=$FACEBOOK_ACCESS_TOKEN&access_token=$FACEBOOK_ACCESS_TOKEN")
+
+        # Extract expiry time (Unix timestamp)
+        EXPIRES_AT=$(echo "$RESPONSE" | grep -o '"expires_at":[0-9]*' | cut -d':' -f2)
+
+        if [ -z "$EXPIRES_AT" ] || [ "$EXPIRES_AT" = "0" ]; then
+          echo "✓ Token has no expiration (never expires)"
+          exit 0
+        fi
+
+        # Calculate days until expiration
+        CURRENT_TIME=$(date +%s)
+        DAYS_UNTIL_EXPIRY=$(( ($EXPIRES_AT - $CURRENT_TIME) / 86400 ))
+
+        echo "📅 Token expires in $DAYS_UNTIL_EXPIRY days"
+
+        if [ $DAYS_UNTIL_EXPIRY -lt 7 ]; then
+          echo "⚠️ Token expires soon!"
+          echo "expires_soon=true" >> $GITHUB_OUTPUT
+          echo "days_until_expiry=$DAYS_UNTIL_EXPIRY" >> $GITHUB_OUTPUT
+        else
+          echo "✓ Token is valid"
+        fi
+
+    - name: Create reminder issue for token renewal
+      if: steps.token-check.outputs.expires_soon == 'true' || steps.token-check.outputs.token_missing == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const tokenMissing = '${{ steps.token-check.outputs.token_missing }}' === 'true';
+          const daysUntilExpiry = '${{ steps.token-check.outputs.days_until_expiry }}' || 'unknown';
+
+          const title = tokenMissing
+            ? '🔐 Facebook Access Token Not Configured'
+            : `🔔 Facebook Access Token Expires in ${daysUntilExpiry} Days`;
+
+          const body = tokenMissing
+            ? `## Facebook Access Token Missing
+
+          The FACEBOOK_ACCESS_TOKEN secret is not configured in this repository.
+
+          ### Setup Instructions:
+          Follow the detailed instructions in PLAN.md Phase 1 to:
+          1. Create a Facebook App
+          2. Generate a Long-Lived Page Access Token
+          3. Add the token to GitHub Secrets
+
+          ### Repository Settings:
+          - Go to: Settings → Secrets and variables → Actions
+          - Add secret: \`FACEBOOK_ACCESS_TOKEN\`
+          - Add secret: \`FACEBOOK_PAGE_ID\`
+
+          **Note:** Without this token, the Facebook events sync workflow will not work.
+
+          ---
+          *This issue was automatically created by the nightly-tests workflow.*`
+            : `## Token Renewal Required
+
+          The Facebook Page Access Token will expire in **${daysUntilExpiry} days**.
+
+          ### Renewal Steps:
+          Follow these steps from PLAN.md Phase 1, Step 1.3:
+
+          1. **Get Short-Lived User Token**
+             - Go to: https://developers.facebook.com/tools/explorer/
+             - Select your app
+             - Generate Access Token with permissions: pages_show_list, pages_read_engagement, pages_read_user_content
+
+          2. **Exchange for Long-Lived User Token (60 days)**
+             \`\`\`bash
+             curl "https://graph.facebook.com/v22.0/oauth/access_token?grant_type=fb_exchange_token&client_id=YOUR_APP_ID&client_secret=YOUR_APP_SECRET&fb_exchange_token=SHORT_LIVED_USER_TOKEN"
+             \`\`\`
+
+          3. **Get Page Access Token**
+             \`\`\`bash
+             curl "https://graph.facebook.com/v22.0/me/accounts?access_token=LONG_LIVED_USER_TOKEN"
+             \`\`\`
+
+          4. **Update GitHub Secret**
+             - Go to: Settings → Secrets and variables → Actions
+             - Update \`FACEBOOK_ACCESS_TOKEN\` with the new Page Access Token
+
+          5. **Verify**
+             - Run the sync workflow manually: Actions → Sync Facebook Events → Run workflow
+             - Close this issue once verified
+
+          ### Important:
+          - Set a calendar reminder to renew the token in 50 days
+          - Page Access Tokens typically expire after 60 days
+          - Update the token BEFORE it expires to avoid sync failures
+
+          ---
+          *This issue was automatically created by the nightly-tests workflow.*`;
+
+          // Check if an open issue already exists
+          const issues = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            labels: ['facebook-token', 'automated'],
+          });
+
+          if (issues.data.length === 0) {
+            // Create new issue
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['facebook-token', 'automated', 'maintenance'],
+              assignees: [], // Optional: Add assignees
+            });
+            console.log('✅ Reminder issue created');
+          } else {
+            console.log('ℹ️ Reminder issue already exists');
+          }
+
   notification:
     runs-on: ubuntu-latest
-    needs: [comprehensive-testing, performance-testing, accessibility-audit, dependency-audit, api-integration-tests]
+    needs: [comprehensive-testing, performance-testing, accessibility-audit, dependency-audit, api-integration-tests, facebook-token-check]
     if: failure()
-    
+
     steps:
     - name: Notify on failure
       run: |
