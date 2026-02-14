@@ -54,11 +54,13 @@ jobs:
 
       - name: Commit and push changes
         if: steps.git-check.outputs.changed == 'true'
+        env:
+          HUSKY: 0
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add src/data/facebook-events.json public/fb-events/
-          git commit -m "chore: sync Facebook events [skip ci]
+          git commit --no-verify -m "chore: sync Facebook events [skip ci]
 
           Auto-synced from Facebook page at $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
           git push
