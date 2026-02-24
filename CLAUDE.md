@@ -5,13 +5,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Development Commands
 
 ```bash
+# Initial Setup (automated - handles Node.js version + npm install)
+./setup.sh && cp .env.example .env   # Then fill in .env values
+
 # Development
 npm run dev                 # Start dev server on http://localhost:3000
 npm run build               # TypeScript compile + production build
 npm run preview             # Preview production build locally
 
 # Testing
-npm run test                # Run Vitest in watch mode
+npm run test                # Run Vitest (single run)
+npm run test:watch          # Run Vitest in watch mode
 npm run test:coverage       # Generate coverage report
 npm run test:ui             # Launch Vitest UI
 npm run test -- ComponentName  # Run specific test file
@@ -24,11 +28,16 @@ npm run lint                # Run ESLint
 npm run format              # Format with Prettier
 npm run format:check        # Check formatting without changes
 npx tsc --noEmit            # Type checking without build
+npm run size                # Analyze bundle size
 
 # Supabase (Local Development)
-npx supabase start          # Start local Supabase stack
+npx supabase start          # Start local Supabase stack (Studio at http://127.0.0.1:54323)
 npx supabase stop           # Stop local Supabase
 npx supabase db reset       # Reset database to migrations
+
+# Facebook Events (Automation)
+npm run fetch:facebook      # Fetch events from Facebook Graph API
+npm run validate:events     # Validate facebook-events.json schema
 ```
 
 ## Architecture Overview
@@ -68,13 +77,27 @@ npx supabase db reset       # Reset database to migrations
   - Hover-pause only works on devices with true hover capability (desktop with mouse)
   - Content: Registration announcement with link to certificate
 - **Carousels:** `EnhancedCarousel`, `CelebrityCarousel`, `TestimonialCarousel`, `YouTubeShortsCarousel`, `PeekCarousel`, `EventsCarousel` - various carousel implementations with drag-to-scroll, autoplay, and accessibility features
-  - **EventsCarousel** - Auto-rotating carousel for Recent Events section
+  - **EventsCarousel** - Auto-rotating carousel for Recent Events section (automated via Facebook API)
     - Auto-rotates every 4 seconds (configurable via `autoRotateInterval` prop)
     - Pauses on hover (desktop), continuous rotation on touch devices
     - Navigation arrows positioned on image corners
     - Pagination dots for manual navigation
     - Responsive layout: single column (<1280px), side-by-side (≥1280px)
     - Fixed heights on desktop to prevent container jumping between slides
+    - Supports single images, single videos, and album posts (multiple media)
+    - Clicking album posts opens GalleryModal, videos open VideoModal
+- **GalleryModal** - Full-screen lightbox for viewing album posts
+  - Navigation with arrows, swipe gestures, pagination dots
+  - Keyboard navigation (arrow keys, ESC to close)
+  - Media counter ("2 / 5") and event title display
+  - Uses MediaViewer for rendering individual images/videos
+- **MediaViewer** - Renders individual media items (images or Facebook videos) within gallery
+  - Lazy loading for images when not active
+  - Facebook video embeds with mobile fallback (opens in Facebook app on mobile)
+- **VideoModal** - Supports both YouTube and Facebook video playback
+  - Platform detection via `platform` prop ('youtube' | 'facebook')
+  - YouTube: existing implementation with youtube-nocookie.com
+  - Facebook: iframe embed with mobile fallback
 - **VisitorCounter** - Displays page views from Supabase with caching
 - **GoogleAnalytics** - GA4 integration (only enabled in production)
 - **TypewriterText**, **StatsCounter** - Animated text effects
@@ -84,10 +107,12 @@ npx supabase db reset       # Reset database to migrations
   - Social icons (Facebook, YouTube) rendered when `primaryCTA` is present
 
 **Type System** (`src/types/index.ts`):
-- Domain types: `Testimonial`, `Story`, `Program`, `Stats`, `TeamMember`, `TimelineEvent`
+- Domain types: `Testimonial`, `Story`, `Program`, `Stats`, `TeamMember`, `TimelineEvent`, `Event`, `MediaItem`
 - Component prop types: `ButtonProps`, `CardProps`, `HeroProps`, `YouTubeEmbedProps`
 - Testimonial roles: `'Student' | 'Parent' | 'Mentor' | 'Contributor'`
 - Story categories: `'Education' | 'Career' | 'Community'`
+- Event media types: `'image' | 'video' | 'text' | 'album'`
+- MediaItem types: `'image' | 'video'` (for album posts)
 
 ### Configuration System
 
@@ -99,10 +124,15 @@ npx supabase db reset       # Reset database to migrations
 
 **Required Environment Variables:**
 ```bash
+# Application
 VITE_SUPABASE_URL           # Supabase project URL
 VITE_SUPABASE_ANON_KEY      # Supabase anon key
 VITE_ENVIRONMENT            # development | staging | production
 VITE_GA_MEASUREMENT_ID      # Google Analytics (optional)
+
+# Facebook API (for local fetch script testing only)
+FACEBOOK_PAGE_ID            # Facebook Page ID (stored in GitHub Secrets for CI)
+FACEBOOK_ACCESS_TOKEN       # Long-lived Page Access Token (stored in GitHub Secrets for CI)
 ```
 
 ### Testing Strategy
@@ -143,7 +173,96 @@ VITE_GA_MEASUREMENT_ID      # Google Analytics (optional)
 **CI/CD Pipeline:**
 - `pr-validate.yml` - Runs on PRs: lint, type-check, test, build
 - `nightly-tests.yml` - Scheduled E2E tests
+- `sync-facebook-events.yml` - Daily automated sync of Facebook events at 8 AM UTC
 - All workflows enforce conventional commits via `commitlint.config.js`
+
+### Facebook Events Automation System
+
+**Overview:**
+Recent Events in the EventsCarousel are automatically synced from the Perhitsiksha Foundation Facebook page daily via GitHub Actions. No manual code updates needed.
+
+**How It Works:**
+1. **Daily Sync:** GitHub Actions workflow runs at 8 AM UTC (1:30 PM IST)
+2. **Fetch Script:** `scripts/fetch-facebook-events.js` fetches latest 15 posts via Facebook Graph API
+3. **Smart Filtering:** Only posts with media (photo/video/album) AND message ≥20 chars are included
+4. **Image Processing:** Downloads and compresses images to ~200KB using Sharp library
+5. **Album Support:** For album posts, downloads first image as thumbnail, stores rest as CDN URLs
+6. **Data Output:** Writes to `src/data/facebook-events.json` (top 10 valid events)
+7. **Validation:** Zod schema validates event structure before commit
+8. **Smart Caching:** Re-runs skip re-downloading existing images, complete in ~1-2 seconds
+9. **Auto-Commit:** If changes detected, commits to main and triggers deployment
+
+**Key Files:**
+- `scripts/fetch-facebook-events.js` (~300 lines) - Main fetch and transform logic
+- `scripts/validate-events-data.js` (~80 lines) - Zod validation schema
+- `src/data/facebook-events.json` - Generated events data (consumed by EventsCarousel)
+- `public/fb-events/` - Downloaded and compressed event images
+- `.github/workflows/sync-facebook-events.yml` - Daily automation workflow
+
+**GitHub Secrets Required:**
+- `FACEBOOK_PAGE_ID` - Numeric Facebook Page ID
+- `FACEBOOK_ACCESS_TOKEN` - Long-lived Page Access Token (~60 day expiry)
+
+**Local Development:**
+```bash
+# Set environment variables
+export FACEBOOK_PAGE_ID="your-page-id"
+export FACEBOOK_ACCESS_TOKEN="your-token"
+
+# Fetch events manually
+npm run fetch:facebook
+
+# Validate output
+npm run validate:events
+
+# Check generated files
+cat src/data/facebook-events.json
+ls -lh public/fb-events/
+```
+
+**Event Structure:**
+```typescript
+interface Event {
+  id: string;              // Facebook post ID
+  title: string;           // First line of message (max 100 chars)
+  description: string;     // Full message text
+  date: string;            // Formatted as "Jan 26, 2026"
+
+  // Single media fields
+  image?: string;          // Path to downloaded image
+  imageAlt?: string;       // Alt text from post
+  videoUrl?: string;       // Facebook video URL
+
+  // Album support
+  mediaType?: 'image' | 'video' | 'text' | 'album';
+  thumbnailImage?: string; // First image for albums
+  thumbnailAlt?: string;
+  mediaCount?: number;     // Total media items in album
+  media?: MediaItem[];     // Array of album media (CDN URLs)
+
+  // CTA
+  ctaText: string;         // "View on Facebook"
+  ctaLink: string;         // Facebook post permalink
+}
+```
+
+**Mobile Video Handling:**
+Facebook video iframes don't work reliably on mobile browsers. Both VideoModal and MediaViewer detect mobile devices and show a "Watch on Facebook" button that opens the video in the Facebook app instead of embedding.
+
+**Token Renewal:**
+Long-lived Page Access Tokens expire after ~60 days. Set a calendar reminder to renew:
+1. Go to Facebook Graph API Explorer
+2. Generate new short-lived user token with permissions
+3. Exchange for long-lived user token via API
+4. Get Page Access Token from /me/accounts endpoint
+5. Update `FACEBOOK_ACCESS_TOKEN` secret in GitHub
+
+**Error Handling:**
+If the workflow fails (token expired, API issues, network problems), it automatically creates a GitHub issue with:
+- Workflow run link
+- Possible causes (token expiry, rate limits, API status)
+- Troubleshooting steps
+- Links to Facebook Developer tools
 
 ## Development Guidelines
 
@@ -247,10 +366,13 @@ Max body line length: 100 chars
 - **Student Testimonials:** JSON file at `src/data/testimonials.json`
   - Videos embedded via `youtubeId` field
   - Filtered by `role: "Student"` for Voices of Change carousel
-- **Recent Events:** Hardcoded array in `src/pages/Home.tsx` (EventsCarousel events prop)
-  - Add new events by appending to the events array with: `id`, `title`, `description`, `date`, `image`, `imageAlt`, `ctaText`, `ctaLink`
-  - Images stored in `public/` folder (referenced as `/filename.jpg`)
-  - Events display in carousel with auto-rotation
+- **Recent Events:** AUTOMATED via Facebook API - no manual updates needed
+  - Data source: `src/data/facebook-events.json` (auto-generated daily)
+  - Images: `public/fb-events/` (auto-downloaded and compressed)
+  - Syncs daily at 8 AM UTC via GitHub Actions workflow
+  - To manually trigger sync: Go to Actions → Sync Facebook Events → Run workflow
+  - Supports single images, videos, and album posts with gallery modal
+  - Post directly to Facebook page - changes appear automatically within 24 hours
 - **Ticker Banner:** `src/components/ui/TickerBanner.tsx`
   - Contains registration announcement
   - Responsive: static on desktop (≥1024px), scrolling on mobile (<1024px)
@@ -263,8 +385,9 @@ Max body line length: 100 chars
 
 ### Node.js Version Requirement
 This project requires **Node.js v20+** due to Vite 7 dependency.
-- If using nvm: `nvm use` (reads `.nvmrc` if present)
-- Setup script `./setup.sh` auto-installs Node 20 via nvm
+- Automated: `./setup.sh` checks version and auto-installs Node 20 via nvm if needed
+- Manual: `nvm install 20 && nvm use 20`
+- **Error symptom:** `TypeError: crypto.hash is not a function` = Node < 20
 
 ### Icon Library
 - Project uses **`react-icons`** for all icons

@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Facebook Events Fetch Script
+ * Facebook Events Fetch Script — v2 HARDENED
  *
- * Fetches posts from the Perhitsiksha Foundation Facebook page,
- * downloads and compresses images, and transforms them into Event format
- * with support for single images, videos, and album posts.
+ * Downloads ALL album images locally to avoid Facebook CDN URL expiry (~7 days).
+ * Uses concurrency, retry logic, and a lock file to prevent overlapping runs.
  *
  * Environment Variables Required:
  * - FACEBOOK_PAGE_ID: The numeric Facebook Page ID
@@ -24,117 +23,131 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Configuration
+/* ================= CONFIG ================= */
+
 const CONFIG = {
   pageId: process.env.FACEBOOK_PAGE_ID,
   accessToken: process.env.FACEBOOK_ACCESS_TOKEN,
   graphApiVersion: 'v22.0',
-  maxPosts: 15, // Fetch recent posts
+  maxPosts: 15,
+  maxEvents: 10,
+  maxAlbumItems: 12,
+  concurrency: 4,
+
   imageOutputDir: path.join(__dirname, '..', 'public', 'fb-events'),
   dataOutputFile: path.join(__dirname, '..', 'src', 'data', 'facebook-events.json'),
+  lockFile: path.join(__dirname, '.facebook-fetch.lock'),
+
   imageMaxWidth: 1200,
   imageQuality: 80,
-  imageTargetSizeKB: 200,
 };
 
-/**
- * Validates required environment variables
- */
+/* ================= UTIL ================= */
+
 function validateEnvironment() {
-  if (!CONFIG.pageId) {
-    throw new Error('Missing FACEBOOK_PAGE_ID environment variable');
-  }
-  if (!CONFIG.accessToken) {
-    throw new Error('Missing FACEBOOK_ACCESS_TOKEN environment variable');
-  }
-  console.log('✓ Environment variables validated');
+  if (!CONFIG.pageId) throw new Error('Missing FACEBOOK_PAGE_ID');
+  if (!CONFIG.accessToken) throw new Error('Missing FACEBOOK_ACCESS_TOKEN');
+  console.log('✓ Environment validated');
 }
 
-/**
- * Ensures output directories exist
- */
 async function ensureDirectories() {
   await fs.mkdir(CONFIG.imageOutputDir, { recursive: true });
   await fs.mkdir(path.dirname(CONFIG.dataOutputFile), { recursive: true });
   console.log('✓ Output directories ready');
 }
 
-/**
- * Fetches posts from Facebook Graph API
- */
+/* ================= LOCK (STALE SAFE) ================= */
+
+async function acquireLock() {
+  try {
+    const stat = await fs.stat(CONFIG.lockFile);
+    const ageMinutes = (Date.now() - stat.mtimeMs) / 60000;
+    if (ageMinutes > 30) {
+      console.log('⚠ Stale lock found, removing...');
+      await fs.unlink(CONFIG.lockFile);
+    }
+  } catch {}
+
+  try {
+    await fs.writeFile(CONFIG.lockFile, String(Date.now()), { flag: 'wx' });
+    console.log('✓ Lock acquired');
+  } catch {
+    console.log('⚠ Another fetch is already running — exiting');
+    process.exit(0);
+  }
+}
+
+async function releaseLock() {
+  try {
+    await fs.unlink(CONFIG.lockFile);
+  } catch {}
+}
+
+/* ================= FACEBOOK API ================= */
+
 async function fetchFacebookPosts() {
   const url = `https://graph.facebook.com/${CONFIG.graphApiVersion}/${CONFIG.pageId}/posts`;
 
   const params = {
     access_token: CONFIG.accessToken,
-    fields: 'id,message,created_time,permalink_url,attachments{type,media_type,media,subattachments{media,type,media_type,target{id,url}}}',
+    fields:
+      'id,message,created_time,permalink_url,attachments{type,media_type,media,target{id,url},subattachments{media,type,media_type,target{id,url}}}',
     limit: CONFIG.maxPosts,
   };
 
   console.log(`Fetching posts from Facebook page ${CONFIG.pageId}...`);
 
   try {
-    const response = await axios.get(url, { params });
-    console.log(`✓ Fetched ${response.data.data.length} posts`);
-    return response.data.data;
+    const res = await axios.get(url, { params });
+    console.log(`✓ Fetched ${res.data.data.length} posts`);
+    return res.data.data || [];
   } catch (error) {
     console.error('Failed to fetch Facebook posts:', error.response?.data || error.message);
     throw error;
   }
 }
 
-/**
- * Downloads and compresses an image (with smart caching)
- * @param {string} imageUrl - Source image URL
- * @param {string} outputPath - Destination file path
- * @param {boolean} forceDownload - Force download even if file exists
- * @returns {Promise<string>} - The relative path to the saved image
- */
-async function downloadAndCompressImage(imageUrl, outputPath, forceDownload = false) {
+/* ================= IMAGE DOWNLOAD ================= */
+
+async function downloadAndCompressImage(imageUrl, outputPath) {
   try {
-    // Smart caching: Check if file already exists
-    if (!forceDownload) {
+    // Smart cache: skip re-downloading existing files
+    try {
+      await fs.access(outputPath);
+      const sizeKB = Math.round((await fs.stat(outputPath)).size / 1024);
+      console.log(`  Using cached: ${path.basename(outputPath)} (${sizeKB}KB)`);
+      return `/fb-events/${path.basename(outputPath)}`;
+    } catch {}
+
+    // 2-attempt retry
+    let res;
+    for (let attempt = 1; attempt <= 2; attempt++) {
       try {
-        await fs.access(outputPath);
-        const stats = await fs.stat(outputPath);
-        const sizeKB = Math.round(stats.size / 1024);
-        console.log(`  Using cached: ${path.basename(outputPath)} (${sizeKB}KB)`);
-        return `/fb-events/${path.basename(outputPath)}`;
-      } catch {
-        // File doesn't exist, proceed with download
+        res = await axios.get(imageUrl, { responseType: 'arraybuffer', timeout: 20000 });
+        break;
+      } catch (err) {
+        if (attempt === 2) throw err;
+        await new Promise(r => setTimeout(r, 2000));
       }
     }
 
-    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    const imageBuffer = Buffer.from(response.data);
-
-    await sharp(imageBuffer)
-      .resize(CONFIG.imageMaxWidth, null, {
-        withoutEnlargement: true,
-        fit: 'inside',
-      })
+    await sharp(Buffer.from(res.data))
+      .resize(CONFIG.imageMaxWidth, null, { withoutEnlargement: true, fit: 'inside' })
       .jpeg({ quality: CONFIG.imageQuality })
       .toFile(outputPath);
 
-    // Check file size
-    const stats = await fs.stat(outputPath);
-    const sizeKB = Math.round(stats.size / 1024);
-    console.log(`  Downloaded and compressed: ${path.basename(outputPath)} (${sizeKB}KB)`);
-
+    const sizeKB = Math.round((await fs.stat(outputPath)).size / 1024);
+    console.log(`  ✓ Saved ${path.basename(outputPath)} (${sizeKB}KB)`);
     return `/fb-events/${path.basename(outputPath)}`;
-  } catch (error) {
-    console.error(`  Failed to download image from ${imageUrl}:`, error.message);
-    throw error;
+  } catch (err) {
+    console.warn(`  ⚠ Image failed: ${err.message}`);
+    return null;
   }
 }
 
-/**
- * Generates a filename-safe string from text
- * @param {string} text - Input text
- * @param {number} maxLength - Maximum length
- * @returns {string} - Sanitized filename
- */
-function sanitizeFilename(text, maxLength = 50) {
+/* ================= HELPERS ================= */
+
+function sanitizeFilename(text, maxLength = 80) {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -142,130 +155,124 @@ function sanitizeFilename(text, maxLength = 50) {
     .substring(0, maxLength);
 }
 
-/**
- * Extracts title from post message
- * @param {string} message - Post message/caption
- * @returns {string} - Extracted title (max 100 chars)
- */
 function extractTitle(message) {
   if (!message) return 'Untitled Event';
-
-  // Take first line or first 100 characters
   const firstLine = message.split('\n')[0];
-  return firstLine.length > 100
-    ? firstLine.substring(0, 97) + '...'
-    : firstLine;
+  return firstLine.length > 100 ? firstLine.substring(0, 97) + '...' : firstLine;
 }
 
-/**
- * Formats Facebook date to readable format
- * @param {string} isoDate - ISO 8601 date string
- * @returns {string} - Formatted date (e.g., "Jan 26, 2026")
- */
-function formatDate(isoDate) {
-  const date = new Date(isoDate);
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
-/**
- * Generates alt text from post content
- * @param {string} message - Post message
- * @param {string} title - Event title
- * @returns {string} - Alt text for accessibility
- */
 function generateAltText(message, title) {
-  if (message && message.length > title.length + 20) {
-    // Use first sentence after title
-    const afterTitle = message.substring(title.length).trim();
-    const firstSentence = afterTitle.split(/[.!?]/)[0];
-    return firstSentence.substring(0, 150);
-  }
-  return title;
+  if (!message) return title;
+  return message.substring(0, 140);
 }
 
-/**
- * Processes a single attachment (image, video, or album)
- * @param {object} post - Facebook post object
- * @param {string} eventId - Event identifier
- * @returns {Promise<object>} - Processed media data
- */
+/* ================= PARALLEL MAP ================= */
+
+async function mapWithConcurrency(items, limit, mapper) {
+  const results = [];
+  let index = 0;
+
+  async function worker() {
+    while (index < items.length) {
+      const i = index++;
+      results[i] = await mapper(items[i], i);
+    }
+  }
+
+  await Promise.all(Array.from({ length: limit }, worker));
+  return results;
+}
+
+/* ================= ATTACHMENT PROCESSING ================= */
+
 async function processAttachment(post, eventId) {
   const attachment = post.attachments?.data?.[0];
-
-  if (!attachment) {
-    // Text-only post
-    return {
-      mediaType: 'text',
-      image: null,
-      videoUrl: null,
-      media: [],
-    };
-  }
+  if (!attachment) return { mediaType: 'text', media: [] };
 
   const { type, media_type, media, subattachments } = attachment;
 
-  // Album (multiple photos/videos)
+  /* ---------- ALBUM ---------- */
   if (type === 'album' && subattachments?.data) {
-    console.log(`  Processing album with ${subattachments.data.length} items...`);
+    const items = subattachments.data.slice(0, CONFIG.maxAlbumItems);
+    console.log(`  Album with ${items.length} items`);
 
-    const mediaItems = [];
-    let thumbnailPath = null;
+    let thumbnailImage = null;
 
-    for (let i = 0; i < subattachments.data.length; i++) {
-      const item = subattachments.data[i];
+    const mediaItems = await mapWithConcurrency(items, CONFIG.concurrency, async (item, i) => {
+      const mediaId = item.target?.id || `${i}`;
+      const alt = generateAltText(post.message, extractTitle(post.message));
 
+      // Photo: download locally
       if (item.media_type === 'photo' && item.media?.image?.src) {
-        const mediaUrl = item.media.image.src;
+        const filename = `${eventId}-${mediaId}.jpg`;
+        const outputPath = path.join(CONFIG.imageOutputDir, filename);
+        const localPath = await downloadAndCompressImage(item.media.image.src, outputPath);
 
-        // Download first photo as thumbnail (if not already downloaded)
-        if (!thumbnailPath) {
-          const filename = `${eventId}-thumbnail.jpg`;
-          const outputPath = path.join(CONFIG.imageOutputDir, filename);
-          thumbnailPath = await downloadAndCompressImage(mediaUrl, outputPath);
-        }
+        // Skip items where download failed — don't emit {url: null}
+        if (!localPath) return null;
 
-        // Store all images as CDN URLs for gallery
-        mediaItems.push({
-          type: 'image',
-          url: mediaUrl,
-          alt: generateAltText(post.message, extractTitle(post.message)),
-        });
-      } else if (item.media_type === 'video' && item.target?.url) {
-        mediaItems.push({
-          type: 'video',
-          url: item.target.url,
-          thumbnail: item.media?.image?.src || null,
-          alt: generateAltText(post.message, extractTitle(post.message)),
-        });
+        if (!thumbnailImage) thumbnailImage = localPath;
+        return { type: 'image', url: localPath, alt };
       }
+
+      // Video: download thumbnail locally, use individual video URL for playback
+      if (item.media_type === 'video') {
+        let thumbLocal = null;
+        if (item.media?.image?.src) {
+          const filename = `${eventId}-${mediaId}-thumb.jpg`;
+          const outputPath = path.join(CONFIG.imageOutputDir, filename);
+          thumbLocal = await downloadAndCompressImage(item.media.image.src, outputPath);
+        }
+        // item.target?.url is the individual reel/video permalink; fall back to post url
+        const videoUrl = item.target?.url || post.permalink_url;
+        return {
+          type: 'video',
+          url: videoUrl,
+          thumbnail: thumbLocal || undefined,
+          alt,
+        };
+      }
+
+      return null;
+    });
+
+    const filteredMedia = mediaItems.filter(Boolean);
+
+    // No valid media items at all — treat as text-only
+    if (filteredMedia.length === 0) {
+      return { mediaType: 'text', media: [] };
     }
 
-    // Fallback: If no photos, download first video thumbnail
-    if (!thumbnailPath && mediaItems.length > 0) {
-      const firstVideo = mediaItems.find(item => item.type === 'video' && item.thumbnail);
-      if (firstVideo?.thumbnail) {
-        console.log(`  No photos in album, using video thumbnail as fallback`);
-        const filename = `${eventId}-thumbnail.jpg`;
-        const outputPath = path.join(CONFIG.imageOutputDir, filename);
-        try {
-          thumbnailPath = await downloadAndCompressImage(firstVideo.thumbnail, outputPath);
-        } catch (error) {
-          console.warn(`  Failed to download video thumbnail: ${error.message}`);
-        }
-      }
+    // thumbnailImage still null (e.g. video-only album) — use first video thumbnail
+    if (!thumbnailImage) {
+      const firstVideoWithThumb = filteredMedia.find(m => m.type === 'video' && m.thumbnail);
+      if (firstVideoWithThumb) thumbnailImage = firstVideoWithThumb.thumbnail;
+    }
+
+    // Still no thumbnail — can't render a preview card, skip
+    if (!thumbnailImage) {
+      console.warn('  ⚠ Album has no usable thumbnail, treating as text');
+      return { mediaType: 'text', media: [] };
     }
 
     return {
       mediaType: 'album',
-      thumbnailImage: thumbnailPath,
+      thumbnailImage,
       thumbnailAlt: generateAltText(post.message, extractTitle(post.message)),
-      mediaCount: mediaItems.length,
-      media: mediaItems,
+      media: filteredMedia,
+      mediaCount: filteredMedia.length,
     };
   }
 
-  // Single photo
+  /* ---------- SINGLE PHOTO ---------- */
   if (media_type === 'photo' && media?.image?.src) {
     const filename = `${eventId}.jpg`;
     const outputPath = path.join(CONFIG.imageOutputDir, filename);
@@ -278,180 +285,132 @@ async function processAttachment(post, eventId) {
     };
   }
 
-  // Single video
-  if (media_type === 'video' && attachment.target?.url) {
-    let thumbnailPath = null;
-
-    // Download video thumbnail if available
+  /* ---------- SINGLE VIDEO ---------- */
+  if (media_type === 'video') {
+    let thumbnail = null;
     if (media?.image?.src) {
       const filename = `${eventId}-thumb.jpg`;
       const outputPath = path.join(CONFIG.imageOutputDir, filename);
-      thumbnailPath = await downloadAndCompressImage(media.image.src, outputPath);
+      thumbnail = await downloadAndCompressImage(media.image.src, outputPath);
     }
-
     return {
       mediaType: 'video',
-      image: thumbnailPath,
+      image: thumbnail,
       imageAlt: generateAltText(post.message, extractTitle(post.message)),
-      videoUrl: attachment.target.url,
+      videoUrl: post.permalink_url,
     };
   }
 
-  // Inline video (video_inline type from Facebook Reels)
+  /* ---------- REELS / INLINE VIDEO ---------- */
   if (type === 'video_inline' && media_type === 'video') {
-    let thumbnailPath = null;
-    let videoUrl = attachment.url || post.permalink_url;
-
-    // Download video thumbnail if available
+    let thumbnail = null;
     if (media?.image?.src) {
       const filename = `${eventId}-thumb.jpg`;
       const outputPath = path.join(CONFIG.imageOutputDir, filename);
-      try {
-        thumbnailPath = await downloadAndCompressImage(media.image.src, outputPath);
-      } catch (error) {
-        console.warn(`  Failed to download thumbnail: ${error.message}`);
-      }
+      thumbnail = await downloadAndCompressImage(media.image.src, outputPath);
     }
-
-    console.log(`  Inline video processed: ${videoUrl}`);
     return {
       mediaType: 'video',
-      image: thumbnailPath,
+      image: thumbnail,
       imageAlt: generateAltText(post.message, extractTitle(post.message)),
-      videoUrl: videoUrl,
+      videoUrl: post.permalink_url,
     };
   }
 
-  // Fallback for unknown types
   console.warn(`  Unknown attachment type: ${type}/${media_type}`);
-  return {
-    mediaType: 'text',
-    image: null,
-    videoUrl: null,
-    media: [],
-  };
+  return { mediaType: 'text', media: [] };
 }
 
-/**
- * Transforms Facebook posts into Event objects
- * @param {Array} posts - Facebook post objects
- * @returns {Promise<Array>} - Array of Event objects
- */
+/* ================= TRANSFORM ================= */
+
 async function transformPostsToEvents(posts) {
   const events = [];
 
   for (const post of posts) {
     try {
-      const eventId = sanitizeFilename(post.id);
-      const title = extractTitle(post.message);
-      const description = post.message || 'No description available';
-      const date = formatDate(post.created_time);
-
-      console.log(`\nProcessing: ${title}`);
-
-      // Filter BEFORE downloading: Check for media and meaningful message
       const hasAttachment = post.attachments?.data?.[0];
-      const hasMeaningfulMessage = (post.message || '').trim().length >= 20;
+      const hasText = (post.message || '').trim().length >= 20;
 
-      if (!hasAttachment || !hasMeaningfulMessage) {
-        console.log(`  ⊘ Skipped: ${hasAttachment ? 'message too short' : 'no media'} (${(post.message || '').trim().length} chars)`);
+      if (!hasAttachment || !hasText) {
+        console.log(
+          `\n⊘ Skipped: ${hasAttachment ? 'message too short' : 'no media'} (${(post.message || '').trim().length} chars)`
+        );
         continue;
       }
 
-      // Only download images for posts that pass the filter
+      const eventId = sanitizeFilename(post.id);
+      console.log(`\nProcessing: ${extractTitle(post.message)}`);
+
       const mediaData = await processAttachment(post, eventId);
 
-      const event = {
+      events.push({
         id: eventId,
-        title,
-        description,
-        date,
+        title: extractTitle(post.message),
+        description: post.message || '',
+        date: formatDate(post.created_time),
         ...mediaData,
         ctaText: 'View on Facebook',
         ctaLink: post.permalink_url,
-      };
+      });
 
-      events.push(event);
-      console.log(`✓ Event created: ${title}`);
+      console.log(`✓ Event created: ${extractTitle(post.message)}`);
 
-      // Stop after collecting 10 valid events
-      if (events.length >= 10) {
-        console.log(`\n✓ Reached 10 events, stopping...`);
+      if (events.length >= CONFIG.maxEvents) {
+        console.log(`\n✓ Reached ${CONFIG.maxEvents} events, stopping`);
         break;
       }
     } catch (error) {
       console.error(`Failed to process post ${post.id}:`, error.message);
-      // Continue with other posts
+      // Continue with remaining posts
     }
   }
 
   return events;
 }
 
-/**
- * Saves events data to JSON file
- * @param {Array} events - Array of Event objects
- */
-async function saveEventsData(events) {
-  const json = JSON.stringify(events, null, 2);
-  await fs.writeFile(CONFIG.dataOutputFile, json, 'utf8');
-  console.log(`\n✓ Saved ${events.length} events to ${CONFIG.dataOutputFile}`);
-}
+/* ================= CLEANUP ================= */
 
-/**
- * Cleans up orphaned images (images no longer in current events)
- * @param {Array} events - Array of Event objects
- */
 async function cleanupOrphanedImages(events) {
-  console.log('\nCleaning up orphaned images...');
+  console.log('\nCleaning orphaned images...');
 
   try {
-    // Get all current image files in the directory
-    const existingFiles = await fs.readdir(CONFIG.imageOutputDir);
-    const imageFiles = existingFiles.filter(file => file.endsWith('.jpg'));
+    const existingFiles = (await fs.readdir(CONFIG.imageOutputDir)).filter(
+      f => f.endsWith('.jpg') || f.endsWith('.webp')
+    );
 
-    if (imageFiles.length === 0) {
-      console.log('  No images to clean up');
-      return;
-    }
-
-    // Collect all image filenames that should be kept
     const activeImages = new Set();
     for (const event of events) {
-      if (event.image) {
-        activeImages.add(path.basename(event.image));
-      }
-      if (event.thumbnailImage) {
-        activeImages.add(path.basename(event.thumbnailImage));
+      if (event.image) activeImages.add(path.basename(event.image));
+      if (event.thumbnailImage) activeImages.add(path.basename(event.thumbnailImage));
+      if (event.media?.length) {
+        for (const item of event.media) {
+          if (item.type === 'image' && item.url) activeImages.add(path.basename(item.url));
+          if (item.type === 'video' && item.thumbnail) activeImages.add(path.basename(item.thumbnail));
+        }
       }
     }
 
-    // Delete orphaned images
-    let deletedCount = 0;
-    for (const file of imageFiles) {
+    let deleted = 0;
+    for (const file of existingFiles) {
       if (!activeImages.has(file)) {
-        const filePath = path.join(CONFIG.imageOutputDir, file);
-        await fs.unlink(filePath);
+        await fs.unlink(path.join(CONFIG.imageOutputDir, file));
         console.log(`  Deleted orphaned: ${file}`);
-        deletedCount++;
+        deleted++;
       }
     }
 
-    if (deletedCount === 0) {
-      console.log('  No orphaned images found');
-    } else {
-      console.log(`✓ Cleaned up ${deletedCount} orphaned image(s)`);
-    }
+    console.log(`✓ Cleanup complete (${deleted} removed)`);
   } catch (error) {
-    console.warn(`  Warning: Failed to cleanup orphaned images: ${error.message}`);
+    console.warn(`  Warning: Cleanup failed: ${error.message}`);
   }
 }
 
-/**
- * Main execution function
- */
+/* ================= MAIN ================= */
+
 async function main() {
-  console.log('🚀 Facebook Events Fetch Script\n');
+  console.log('🚀 Facebook Events Fetch Script (v2 Hardened)\n');
+
+  await acquireLock();
 
   try {
     validateEnvironment();
@@ -459,21 +418,23 @@ async function main() {
 
     const posts = await fetchFacebookPosts();
     const events = await transformPostsToEvents(posts);
-    await saveEventsData(events);
+
+    await fs.writeFile(CONFIG.dataOutputFile, JSON.stringify(events, null, 2), 'utf8');
+    console.log(`\n✓ Saved ${events.length} events to ${CONFIG.dataOutputFile}`);
+
     await cleanupOrphanedImages(events);
 
-    console.log('\n✅ Success! Facebook events have been fetched and saved.');
-    console.log(`   Data file: ${CONFIG.dataOutputFile}`);
-    console.log(`   Images: ${CONFIG.imageOutputDir}`);
+    console.log('\n✅ Success! Facebook events fetched and saved.');
     console.log('\nNext steps:');
     console.log('   1. Run: npm run validate:events');
     console.log('   2. Review: cat src/data/facebook-events.json');
     console.log('   3. Test: npm run dev');
-  } catch (error) {
-    console.error('\n❌ Error:', error.message);
-    process.exit(1);
+  } catch (err) {
+    console.error('\n❌ ERROR:', err.message);
+    process.exitCode = 1;
+  } finally {
+    await releaseLock();
   }
 }
 
-// Run the script
 main();

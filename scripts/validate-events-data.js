@@ -22,11 +22,18 @@ const __dirname = path.dirname(__filename);
 const DATA_FILE = path.join(__dirname, '..', 'src', 'data', 'facebook-events.json');
 const IMAGE_DIR = path.join(__dirname, '..', 'public', 'fb-events');
 
+// Accepts both full https:// URLs (video permalinks) and local /fb-events/ paths (downloaded images)
+const localOrUrl = z
+  .string()
+  .refine(v => v.startsWith('/fb-events/') || v.startsWith('http'), {
+    message: 'Must be a local /fb-events/ path or a full http(s) URL',
+  });
+
 // Zod schemas matching the TypeScript interfaces
 const MediaItemSchema = z.object({
   type: z.enum(['image', 'video']),
-  url: z.string().url(),
-  thumbnail: z.string().url().optional(),
+  url: localOrUrl,
+  thumbnail: localOrUrl.optional(),
   alt: z.string(),
 });
 
@@ -127,22 +134,21 @@ async function validateDataConsistency(events) {
       }
     }
 
-    // Check for local image file paths
-    const imagePaths = [
+    // Check all local /fb-events/ paths exist on disk
+    const localPaths = [
       event.image,
       event.thumbnailImage,
+      ...(event.media?.map(m => m.url).filter(u => u?.startsWith('/fb-events/')) ?? []),
+      ...(event.media?.map(m => m.thumbnail).filter(t => t?.startsWith('/fb-events/')) ?? []),
     ].filter(Boolean);
 
-    for (const imgPath of imagePaths) {
-      if (imgPath.startsWith('/fb-events/')) {
-        const filename = imgPath.replace('/fb-events/', '');
-        const fullPath = path.join(IMAGE_DIR, filename);
-
-        try {
-          await fs.access(fullPath);
-        } catch {
-          errors.push(`Image file not found: ${imgPath}`);
-        }
+    for (const imgPath of localPaths) {
+      const filename = imgPath.replace('/fb-events/', '');
+      const fullPath = path.join(IMAGE_DIR, filename);
+      try {
+        await fs.access(fullPath);
+      } catch {
+        errors.push(`Image file not found on disk: ${imgPath}`);
       }
     }
 
@@ -180,10 +186,12 @@ function validateUrls(events) {
       errors.push(`Invalid video URL format: ${event.videoUrl}`);
     }
 
-    // Check media URLs (for albums)
+    // Check media URLs (for albums) — allow local /fb-events/ paths for images, http for videos
     if (event.media) {
       event.media.forEach((item, index) => {
-        if (!item.url.startsWith('http')) {
+        const isLocal = item.url.startsWith('/fb-events/');
+        const isHttp = item.url.startsWith('http');
+        if (!isLocal && !isHttp) {
           errors.push(`Invalid media URL at index ${index}: ${item.url}`);
         }
       });
