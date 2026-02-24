@@ -13,6 +13,8 @@ interface MediaViewerProps {
  * Used within GalleryModal for album posts.
  */
 export function MediaViewer({ mediaItem, isActive }: MediaViewerProps) {
+  if (!mediaItem) return null;
+
   if (mediaItem.type === 'image') {
     return (
       <img

@@ -108,6 +108,9 @@ export function GalleryModal({
 
   if (!isOpen || !media || media.length === 0) return null;
 
+  // Clamp currentIndex in case stale state from a previous album exceeds new media length
+  const safeIndex = currentIndex >= media.length ? 0 : currentIndex;
+
   return (
     <div
       className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center"
@@ -131,7 +134,7 @@ export function GalleryModal({
       {/* Media counter and title */}
       <div className="absolute top-4 left-4 z-50 text-white">
         <div className="text-sm font-medium bg-black bg-opacity-50 px-3 py-1 rounded-full">
-          {currentIndex + 1} / {media.length}
+          {safeIndex + 1} / {media.length}
         </div>
         {eventTitle && (
           <div className="mt-2 text-lg font-semibold max-w-md">
@@ -157,8 +160,8 @@ export function GalleryModal({
       {/* Media viewer */}
       <div className="w-full h-full flex items-center justify-center p-4">
         <MediaViewer
-          mediaItem={media[currentIndex]}
-          index={currentIndex}
+          mediaItem={media[safeIndex]}
+          index={safeIndex}
           isActive={true}
         />
       </div>
@@ -188,7 +191,7 @@ export function GalleryModal({
                 setCurrentIndex(index);
               }}
               className={`w-2 h-2 rounded-full transition-all ${
-                index === currentIndex
+                index === safeIndex
                   ? 'bg-white w-8'
                   : 'bg-white bg-opacity-50 hover:bg-opacity-75'
               }`}
