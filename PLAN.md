@@ -67,7 +67,7 @@ All features have been successfully implemented and tested. The system is produc
 
 **Environment Variables (GitHub Secrets):**
 - `FACEBOOK_PAGE_ID`: `103024869002738`
-- `FACEBOOK_ACCESS_TOKEN`: Long-lived Page Access Token (~60 day expiry)
+- `FACEBOOK_ACCESS_TOKEN`: Permanent Page Access Token (no expiry; data access expires ~May 2026)
 
 **Script Configuration:**
 ```javascript
@@ -80,10 +80,10 @@ imageQuality: 80          // JPEG quality 80%
 
 ### Important Notes
 
-⚠️ **Token Expiry** - Facebook Page Access Tokens expire every ~60 days
-- Set calendar reminder to regenerate token every 50 days
-- Update `FACEBOOK_ACCESS_TOKEN` secret in GitHub
-- Workflow creates issue when sync fails (likely token expiry)
+✅ **Token Expiry** - The current Page Access Token is **permanent** (`expires_at: 0`)
+- No 60-day expiry — token was derived from a long-lived user token
+- **Data access expires ~mid-May 2026** (`data_access_expires_at`); renew before then
+- Workflow creates a GitHub issue automatically if sync fails
 
 ✅ **Testing** - All features tested and working:
 - Local fetch script execution
@@ -230,7 +230,7 @@ GET https://graph.facebook.com/v22.0/{PAGE_ID}/posts?fields=id,message,created_t
 
 **Secrets Required:**
 - `FACEBOOK_PAGE_ID`: Perhitsiksha Foundation page ID
-- `FACEBOOK_ACCESS_TOKEN`: Long-lived Page Access Token
+- `FACEBOOK_ACCESS_TOKEN`: Permanent Page Access Token
 
 ### 4. Data Storage
 
@@ -543,7 +543,7 @@ npx playwright test tests/gallery-modal.spec.ts
    - Check daily workflow runs (8 AM UTC)
    - Verify events update automatically
    - Monitor for API failures
-   - Set up token expiry reminder (60 days)
+   - Monitor data access expiry (~mid-May 2026; renew before then)
 
 ## Error Handling & Fallbacks
 
@@ -588,17 +588,16 @@ git push
 ## Token Management
 
 **Access Token Lifespan:**
-- Long-lived Page Access Tokens: 60 days
-- Requires renewal every ~2 months
+- Current token is **permanent** (`expires_at: 0`) — no regular renewal needed
+- **Data access expires ~mid-May 2026** — must renew before this date or API calls will fail
+- Confirmed via Facebook Graph API debug_token endpoint (Feb 2026)
 
-**Renewal Reminder:**
-Add to `nightly-tests.yml`:
-```yaml
-- name: Check Facebook token expiry
-  run: |
-    # Query debug_token endpoint
-    # If expires in < 7 days, create reminder issue
-```
+**Renewal (when data access expires):**
+1. Go to Facebook Graph API Explorer
+2. Generate new short-lived user token with required permissions
+3. Exchange for long-lived user token via the API
+4. Get Page Access Token from `/me/accounts` endpoint
+5. Update `FACEBOOK_ACCESS_TOKEN` in GitHub Secrets
 
 **Token Security:**
 - Never commit tokens to repository

@@ -98,6 +98,7 @@ npm run validate:events     # Validate facebook-events.json schema
   - Platform detection via `platform` prop ('youtube' | 'facebook')
   - YouTube: existing implementation with youtube-nocookie.com
   - Facebook: iframe embed with mobile fallback
+- **YouTubeEmbed** - Reusable YouTube iframe wrapper with 16:9 aspect ratio and privacy-enhanced nocookie domain
 - **VisitorCounter** - Displays page views from Supabase with caching
 - **GoogleAnalytics** - GA4 integration (only enabled in production)
 - **TypewriterText**, **StatsCounter** - Animated text effects
@@ -250,11 +251,13 @@ interface Event {
 Facebook video iframes don't work reliably on mobile browsers. Both VideoModal and MediaViewer detect mobile devices and show a "Watch on Facebook" button that opens the video in the Facebook app instead of embedding.
 
 **Token Renewal:**
-Long-lived Page Access Tokens expire after ~60 days. Set a calendar reminder to renew:
+The current Page Access Token is **permanent** (`expires_at: 0`) — it does not expire every 60 days. This is because it was derived from a long-lived user token, which makes Facebook issue a non-expiring Page token.
+
+However, **data access** (`data_access_expires_at`) expires around **mid-May 2026**. When this hits, the token remains valid but API calls will start failing. To renew data access:
 1. Go to Facebook Graph API Explorer
-2. Generate new short-lived user token with permissions
-3. Exchange for long-lived user token via API
-4. Get Page Access Token from /me/accounts endpoint
+2. Generate a new short-lived user token with the required permissions
+3. Exchange for a long-lived user token via the API
+4. Get the Page Access Token from the `/me/accounts` endpoint
 5. Update `FACEBOOK_ACCESS_TOKEN` secret in GitHub
 
 **Error Handling:**
@@ -286,6 +289,19 @@ Max body line length: 100 chars
 - Component-specific styles are inline via className
 - Responsive design: mobile-first with `sm:`, `md:`, `lg:`, `xl:` breakpoints
 - Animations use Tailwind's `transition-*` utilities
+
+**Brand Color Palette** (defined in `tailwind.config.js`):
+- `primary-500: #0068B3` - Main brand blue (buttons, links, focus rings)
+- `accent-500: #00A6E7` - Light blue accent
+- `success-500: #00B388` - Success green
+- Custom gray scale with values aligned to Google's Material palette
+
+**Custom CSS Classes** (defined in `src/index.css`):
+- Buttons: `btn-primary`, `btn-secondary`, `btn-outline`
+- Layout: `card`, `container-padding`, `section-padding`
+- Typography: `heading-1`, `heading-2`, `heading-3`, `body-large`, `body-base`
+- Utilities: `hide-scrollbar` (carousels), `hover-lift`, `hero-content-box`, `shimmer-btn`
+- YouTube: `youtube-embed` (16:9 responsive iframe wrapper)
 
 **Responsive Breakpoint Guidelines:**
 - **Header Navigation:** Uses `lg:` breakpoint (1024px)
