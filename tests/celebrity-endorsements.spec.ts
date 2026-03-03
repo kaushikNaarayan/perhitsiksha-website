@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Celebrity Endorsements', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3000');
+    await page.goto('/');
   });
 
   test('should display celebrity endorsements section', async ({ page }) => {
@@ -79,16 +79,16 @@ test.describe('Celebrity Endorsements', () => {
     await expect(modalTitle).toBeVisible({ timeout: 3000 });
   });
 
-  test('should have all 12 celebrity endorsements in total', async ({ page }) => {
+  test('should have all 16 celebrity endorsements in total', async ({ page }) => {
     await page.waitForLoadState('networkidle');
 
     // Count total number of celebrity cards (duplicated for infinite scroll)
-    // The carousel duplicates the array, so we should have 24 cards (12 * 2)
+    // The carousel duplicates the array, so we should have 32 cards (16 * 2)
     const celebrityCards = page.locator('.flex-none.w-64');
     const count = await celebrityCards.count();
 
-    // Should have 24 cards (12 celebrities * 2 for infinite scroll)
-    expect(count).toBe(24);
+    // Should have 32 cards (16 celebrities * 2 for infinite scroll)
+    expect(count).toBe(32);
   });
 
   test('should support drag-to-scroll interaction', async ({ page }) => {
