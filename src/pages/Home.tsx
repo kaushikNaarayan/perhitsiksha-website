@@ -21,103 +21,103 @@ const Home: React.FC = () => {
     []
   );
 
-  // Celebrity endorsements data for carousel
+  // Celebrity endorsements data for carousel — ordered newest first
   const celebrityEndorsements = [
     {
       id: '1',
-      name: 'Priyamani',
-      videoId: 'l4JAmumyw5k',
-      profession: 'Actress',
+      name: 'Sunil Shetty',
+      videoId: 'ctqDft-Xrb0',
+      profession: 'Actor & Film Producer',
     },
     {
       id: '2',
-      name: 'Madhur Bhandarkar',
-      videoId: 'LD5Qzq7pxwg',
-      profession: 'Film Director',
-    },
-    {
-      id: '3',
-      name: 'Amala Akkineni',
-      videoId: 'g9viUStaIUI',
-      profession: 'Actress',
-    },
-    {
-      id: '4',
-      name: 'Ravi Dubey',
-      videoId: '2WgZU1tg0gI',
-      profession: 'Actor',
-    },
-    {
-      id: '5',
-      name: 'Anjum Sharma',
-      videoId: 'pI6ZTT17-QA',
-      profession: 'Actor',
-    },
-    {
-      id: '6',
-      name: 'Venkatesh Prasad',
-      videoId: '5Ft1a0I1LHo',
-      profession: 'Former Cricketer',
-    },
-    {
-      id: '7',
-      name: 'Suresh Raina',
-      videoId: 'G3RbOb5t22E',
-      profession: 'Cricketer',
-    },
-    {
-      id: '8',
-      name: 'Atul Wassan',
-      videoId: '4Z9V_wbU5mg',
-      profession: 'Cricket Commentator',
-    },
-    {
-      id: '9',
-      name: 'Pullela Gopichand',
-      videoId: '9Cw2TarHBM8',
-      profession: 'Badminton Coach',
-    },
-    {
-      id: '10',
-      name: 'VVS Laxman',
-      videoId: 'dEWv_0c-omo',
-      profession: 'Cricketer',
-    },
-    {
-      id: '11',
-      name: 'Kidambi Srikanth',
-      videoId: 'Z3ps_cG0UjM',
-      profession: 'Badminton Star',
-    },
-    {
-      id: '12',
-      name: 'Mohammad Azharuddin',
-      videoId: 'RAxeVaOgKW0',
-      profession: 'Cricketer',
-    },
-    {
-      id: '13',
-      name: 'Sania Mirza',
-      videoId: 'jzkOt0RYJLI',
-      profession: 'Tennis Player',
-    },
-    {
-      id: '14',
-      name: 'Saina Nehwal',
-      videoId: 'uH5t-gXKhzc',
-      profession: 'Badminton Player',
-    },
-    {
-      id: '15',
       name: 'Satwiksairaj Rankireddy',
       videoId: 'U4fnK-_HCXw',
       profession: 'Badminton Player',
     },
     {
+      id: '3',
+      name: 'Saina Nehwal',
+      videoId: 'uH5t-gXKhzc',
+      profession: 'Badminton Player',
+    },
+    {
+      id: '4',
+      name: 'Sania Mirza',
+      videoId: 'jzkOt0RYJLI',
+      profession: 'Tennis Player',
+    },
+    {
+      id: '5',
+      name: 'Mohammad Azharuddin',
+      videoId: 'RAxeVaOgKW0',
+      profession: 'Cricketer',
+    },
+    {
+      id: '6',
+      name: 'Kidambi Srikanth',
+      videoId: 'Z3ps_cG0UjM',
+      profession: 'Badminton Star',
+    },
+    {
+      id: '7',
+      name: 'VVS Laxman',
+      videoId: 'dEWv_0c-omo',
+      profession: 'Cricketer',
+    },
+    {
+      id: '8',
+      name: 'Pullela Gopichand',
+      videoId: '9Cw2TarHBM8',
+      profession: 'Badminton Coach',
+    },
+    {
+      id: '9',
+      name: 'Atul Wassan',
+      videoId: '4Z9V_wbU5mg',
+      profession: 'Cricket Commentator',
+    },
+    {
+      id: '10',
+      name: 'Suresh Raina',
+      videoId: 'G3RbOb5t22E',
+      profession: 'Cricketer',
+    },
+    {
+      id: '11',
+      name: 'Venkatesh Prasad',
+      videoId: '5Ft1a0I1LHo',
+      profession: 'Former Cricketer',
+    },
+    {
+      id: '12',
+      name: 'Anjum Sharma',
+      videoId: 'pI6ZTT17-QA',
+      profession: 'Actor',
+    },
+    {
+      id: '13',
+      name: 'Ravi Dubey',
+      videoId: '2WgZU1tg0gI',
+      profession: 'Actor',
+    },
+    {
+      id: '14',
+      name: 'Amala Akkineni',
+      videoId: 'g9viUStaIUI',
+      profession: 'Actress',
+    },
+    {
+      id: '15',
+      name: 'Madhur Bhandarkar',
+      videoId: 'LD5Qzq7pxwg',
+      profession: 'Film Director',
+    },
+    {
       id: '16',
-      name: 'Sunil Shetty',
-      videoId: 'ctqDft-Xrb0',
-      profession: 'Actor & Film Producer',
+      name: 'Priyamani',
+      videoId: 'l4JAmumyw5k',
+      profession: 'Actress',
     },
   ];
 
