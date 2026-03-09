@@ -16,10 +16,30 @@ import type { Event } from '../types';
 // Import images
 import heroBgImage from '../assets/images/hero-bg.png';
 
+const certificates = [
+  {
+    name: 'Certificate of Incorporation',
+    image: '/certificate-of-incorporation.jpg',
+    link: 'https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view',
+  },
+  {
+    name: '12A Certificate',
+    image: '/12A-certificate.jpg',
+    link: '/12A-certificate.pdf',
+  },
+  {
+    name: '80G Certificate',
+    image: '/80G-certificate.jpg',
+    link: '/80G-certificate.pdf',
+  },
+];
+
 const Home: React.FC = () => {
   const [voicesTestimonials, setVoicesTestimonials] = useState<Testimonial[]>(
     []
   );
+  const [certIndex, setCertIndex] = useState(0);
+  const [certPaused, setCertPaused] = useState(false);
 
   // Celebrity endorsements data for carousel — ordered newest first
   const celebrityEndorsements = [
@@ -128,6 +148,15 @@ const Home: React.FC = () => {
     );
     setVoicesTestimonials(studentTestimonials);
   }, []);
+
+  // Auto-rotate certificates every 5s
+  useEffect(() => {
+    if (certPaused) return;
+    const timer = setInterval(() => {
+      setCertIndex(prev => (prev + 1) % certificates.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [certPaused]);
 
   const programs = [
     {
@@ -256,23 +285,98 @@ const Home: React.FC = () => {
 
             <div className="relative z-10 p-8 md:p-12 lg:p-16">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-                {/* Certificate Thumbnail */}
-                <div className="lg:col-span-5">
-                  <a
-                    href="https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view?usp=drive_link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block group"
-                  >
-                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
-                      <img
-                        src="/certificate-of-incorporation.jpg"
-                        alt="Certificate of Incorporation"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {/* Certificate Carousel */}
+                <div
+                  className="lg:col-span-5"
+                  onMouseEnter={() => setCertPaused(true)}
+                  onMouseLeave={() => setCertPaused(false)}
+                >
+                  <div className="relative">
+                    <a
+                      href={certificates[certIndex].link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block group"
+                    >
+                      <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-2xl">
+                        {certificates.map((cert, i) => (
+                          <img
+                            key={cert.name}
+                            src={cert.image}
+                            alt={cert.name}
+                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${i === certIndex ? 'opacity-100' : 'opacity-0'}`}
+                          />
+                        ))}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <p className="text-white text-sm font-semibold drop-shadow-lg">
+                            {certificates[certIndex].name}
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+
+                    {/* Prev/Next arrows */}
+                    <button
+                      onClick={e => {
+                        e.preventDefault();
+                        setCertIndex(
+                          (certIndex - 1 + certificates.length) %
+                            certificates.length
+                        );
+                      }}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors"
+                      aria-label="Previous certificate"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={e => {
+                        e.preventDefault();
+                        setCertIndex((certIndex + 1) % certificates.length);
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors"
+                      aria-label="Next certificate"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+
+                    {/* Dots */}
+                    <div className="flex justify-center gap-2 mt-3">
+                      {certificates.map((cert, i) => (
+                        <button
+                          key={cert.name}
+                          onClick={() => setCertIndex(i)}
+                          className={`w-2 h-2 rounded-full transition-all ${i === certIndex ? 'bg-white scale-125' : 'bg-white/40 hover:bg-white/60'}`}
+                          aria-label={cert.name}
+                        />
+                      ))}
                     </div>
-                  </a>
+                  </div>
                 </div>
 
                 {/* Certificate Details */}
@@ -395,69 +499,35 @@ const Home: React.FC = () => {
                     </div>
 
                     <div className="pt-4 flex flex-wrap gap-3">
-                      <a
-                        href="https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view?usp=drive_link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all bg-white text-primary-600 hover:bg-white/90 shadow-lg hover:shadow-xl"
-                      >
-                        Certificate of Incorporation
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                      {certificates.map((cert, i) => (
+                        <a
+                          key={cert.name}
+                          href={cert.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => {
+                            e.preventDefault();
+                            setCertIndex(i);
+                            window.open(cert.link, '_blank');
+                          }}
+                          className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all shadow-lg hover:shadow-xl ${i === certIndex ? 'bg-white text-primary-600 hover:bg-white/90' : 'bg-white/10 text-white border border-white/30 hover:bg-white/20'}`}
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                      </a>
-                      <a
-                        href="/12A-certificate.pdf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all bg-white/10 text-white border border-white/30 hover:bg-white/20 shadow-lg hover:shadow-xl"
-                      >
-                        12A Certificate
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                      </a>
-                      <a
-                        href="/80G-certificate.pdf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all bg-white/10 text-white border border-white/30 hover:bg-white/20 shadow-lg hover:shadow-xl"
-                      >
-                        80G Certificate
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                      </a>
+                          {cert.name}
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                            />
+                          </svg>
+                        </a>
+                      ))}
                     </div>
                   </div>
                 </div>
