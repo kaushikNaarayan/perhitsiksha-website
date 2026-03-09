@@ -33,3 +33,9 @@ coverage
 *.sln
 *.sw?
 cloudflared*
+
+# Gas Town (added by gt)
+.runtime/
+.claude/
+.logs/
+.beads/
