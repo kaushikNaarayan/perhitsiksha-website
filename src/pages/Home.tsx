@@ -394,14 +394,56 @@ const Home: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="pt-4">
+                    <div className="pt-4 flex flex-wrap gap-3">
                       <a
                         href="https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view?usp=drive_link"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all bg-white text-primary-600 hover:bg-white/90 shadow-lg hover:shadow-xl"
                       >
-                        View Full Certificate
+                        Certificate of Incorporation
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
+                        </svg>
+                      </a>
+                      <a
+                        href="/12A-certificate.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all bg-white/10 text-white border border-white/30 hover:bg-white/20 shadow-lg hover:shadow-xl"
+                      >
+                        12A Certificate
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
+                        </svg>
+                      </a>
+                      <a
+                        href="/80G-certificate.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all bg-white/10 text-white border border-white/30 hover:bg-white/20 shadow-lg hover:shadow-xl"
+                      >
+                        80G Certificate
                         <svg
                           className="w-4 h-4"
                           fill="none"
