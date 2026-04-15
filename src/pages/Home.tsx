@@ -32,6 +32,11 @@ const certificates = [
     image: '/80G-certificate.jpg',
     link: '/80G-certificate.pdf',
   },
+  {
+    name: 'CSR Registration',
+    image: '/CSR-certificate.jpg',
+    link: '/CSR-certificate.pdf',
+  },
 ];
 
 const Home: React.FC = () => {
