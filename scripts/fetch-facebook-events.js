@@ -25,9 +25,6 @@ const __dirname = path.dirname(__filename);
 
 /* ================= CONFIG ================= */
 
-const CDN_MODE = !!process.env.CDN_OUTPUT_MODE;
-const CDN_BASE_URL = process.env.CDN_BASE_URL || '';
-
 const CONFIG = {
   pageId: process.env.FACEBOOK_PAGE_ID,
   accessToken: process.env.FACEBOOK_ACCESS_TOKEN,
@@ -37,11 +34,9 @@ const CONFIG = {
   maxAlbumItems: 12,
   concurrency: 4,
 
-  imageOutputDir: process.env.CDN_IMAGE_DIR || path.join(__dirname, '..', 'public', 'fb-events'),
-  dataOutputFile: process.env.CDN_DATA_FILE || path.join(__dirname, '..', 'src', 'data', 'facebook-events.json'),
-  lockFile: CDN_MODE
-    ? path.join(process.env.CDN_IMAGE_DIR || '/tmp', '.facebook-fetch.lock')
-    : path.join(__dirname, '.facebook-fetch.lock'),
+  imageOutputDir: path.join(__dirname, '..', 'public', 'fb-events'),
+  dataOutputFile: path.join(__dirname, '..', 'src', 'data', 'facebook-events.json'),
+  lockFile: path.join(__dirname, '.facebook-fetch.lock'),
 
   imageMaxWidth: 1200,
   imageQuality: 80,
@@ -121,8 +116,7 @@ async function downloadAndCompressImage(imageUrl, outputPath) {
       await fs.access(outputPath);
       const sizeKB = Math.round((await fs.stat(outputPath)).size / 1024);
       console.log(`  Using cached: ${path.basename(outputPath)} (${sizeKB}KB)`);
-      const relativePath = `/fb-events/${path.basename(outputPath)}`;
-      return CDN_MODE ? `${CDN_BASE_URL}${relativePath}` : relativePath;
+      return `/fb-events/${path.basename(outputPath)}`;
     } catch {}
 
     // 2-attempt retry
@@ -144,8 +138,7 @@ async function downloadAndCompressImage(imageUrl, outputPath) {
 
     const sizeKB = Math.round((await fs.stat(outputPath)).size / 1024);
     console.log(`  ✓ Saved ${path.basename(outputPath)} (${sizeKB}KB)`);
-    const relativePath = `/fb-events/${path.basename(outputPath)}`;
-      return CDN_MODE ? `${CDN_BASE_URL}${relativePath}` : relativePath;
+    return `/fb-events/${path.basename(outputPath)}`;
   } catch (err) {
     console.warn(`  ⚠ Image failed: ${err.message}`);
     return null;

@@ -10,7 +10,8 @@ import type { Testimonial } from '../types';
 
 // Import data
 import testimonialsData from '../data/testimonials.json';
-import { useEvents } from '../hooks/useEvents';
+import facebookEventsData from '../data/facebook-events.json';
+import type { Event } from '../types';
 
 // Import images
 import heroBgImage from '../assets/images/hero-bg.png';
@@ -39,7 +40,6 @@ const certificates = [
 ];
 
 const Home: React.FC = () => {
-  const facebookEvents = useEvents();
   const [voicesTestimonials, setVoicesTestimonials] = useState<Testimonial[]>(
     []
   );
@@ -275,7 +275,10 @@ const Home: React.FC = () => {
             <h2 className="heading-2">From Our Community</h2>
           </div>
 
-          <EventsCarousel events={facebookEvents} autoRotateInterval={4000} />
+          <EventsCarousel
+            events={facebookEventsData as Event[]}
+            autoRotateInterval={4000}
+          />
         </div>
       </section>
 
