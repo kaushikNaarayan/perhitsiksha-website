@@ -22,3 +22,15 @@ jobs:
           git config --global --add credential.helper "!f() { echo \"username=kaushikNaarayan\"; echo \"password=${{ secrets.PERSONAL_REPO_TOKEN }}\"; }; f"
           git remote add personal https://github.com/kaushikNaarayan/perhitsiksha-website.git
           git push personal main --force
+
+      - name: Trigger deploy on personal repo
+        # PAT-authenticated pushes don't auto-trigger workflows on the target
+        # repo (GitHub prevents Actions-triggering-Actions loops), so we must
+        # explicitly dispatch the deploy workflow.
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.PERSONAL_REPO_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/kaushikNaarayan/perhitsiksha-website/actions/workflows/deploy.yml/dispatches \
+            -d '{"ref":"main"}'
