@@ -245,43 +245,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Voices of Change Testimonial Carousel */}
-      {voicesTestimonials.length > 0 && (
-        <section className="bg-primary-50 section-padding">
-          <div className="max-w-6xl mx-auto container-padding text-center">
-            <h2 className="heading-2 mb-4">Voices of Change</h2>
-            <p className="body-large mb-8">
-              Hear directly from our students about the impact of education.
-            </p>
-
-            <PeekCarousel testimonials={voicesTestimonials} />
-
-            <div className="mt-8">
-              <Button href="/testimonials" variant="primary">
-                See All Testimonials
-              </Button>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Recent Events */}
-      <section className="bg-white section-padding">
-        <div className="max-w-7xl mx-auto container-padding">
-          <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
-              OUR LATEST UPDATES
-            </p>
-            <h2 className="heading-2">From Our Community</h2>
-          </div>
-
-          <EventsCarousel
-            events={facebookEventsData as Event[]}
-            autoRotateInterval={4000}
-          />
-        </div>
-      </section>
-
       {/* Official Registration Announcement */}
       <section className="bg-white section-padding">
         <div className="max-w-7xl mx-auto container-padding">
@@ -501,6 +464,56 @@ const Home: React.FC = () => {
                           </p>
                         </div>
                       </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">
+                            CSR Registration Number
+                          </p>
+                          <p className="text-xs text-white/80 font-mono">
+                            CSR00108984
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">
+                            CSR Certified On
+                          </p>
+                          <p className="text-xs text-white/80">April 1, 2026</p>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="pt-4 flex flex-wrap gap-3">
@@ -539,6 +552,43 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Voices of Change Testimonial Carousel */}
+      {voicesTestimonials.length > 0 && (
+        <section className="bg-primary-50 section-padding">
+          <div className="max-w-6xl mx-auto container-padding text-center">
+            <h2 className="heading-2 mb-4">Voices of Change</h2>
+            <p className="body-large mb-8">
+              Hear directly from our students about the impact of education.
+            </p>
+
+            <PeekCarousel testimonials={voicesTestimonials} />
+
+            <div className="mt-8">
+              <Button href="/testimonials" variant="primary">
+                See All Testimonials
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Recent Events */}
+      <section className="bg-white section-padding">
+        <div className="max-w-7xl mx-auto container-padding">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
+              OUR LATEST UPDATES
+            </p>
+            <h2 className="heading-2">From Our Community</h2>
+          </div>
+
+          <EventsCarousel
+            events={facebookEventsData as Event[]}
+            autoRotateInterval={4000}
+          />
         </div>
       </section>
 
