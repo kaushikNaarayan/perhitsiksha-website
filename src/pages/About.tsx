@@ -82,13 +82,13 @@ const About: React.FC = () => {
               </h4>
               <div className="grid grid-cols-2 gap-8">
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">300+</div>
+                  <div className="text-4xl font-bold mb-2">450+</div>
                   <div className="text-sm text-primary-100">
                     Students Supported
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">600+</div>
+                  <div className="text-4xl font-bold mb-2">700+</div>
                   <div className="text-sm text-primary-100">Contributors</div>
                 </div>
               </div>

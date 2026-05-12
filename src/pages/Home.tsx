@@ -189,7 +189,7 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <Hero
         title="CLSI Perhitsiksha"
-        subheadline="300+ Success Stories. 600+ Global Contributors. One Mission."
+        subheadline="450+ Success Stories. 700+ Global Contributors. One Mission."
         subtitle="No student should drop out because of a lack of funds. Perhitsiksha Foundation provides a lifeline of financial aid and career guidance to ensure talent never goes to waste."
         showLogo={true}
         primaryCTA={{
