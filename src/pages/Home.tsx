@@ -49,12 +49,6 @@ const Home: React.FC = () => {
   // Celebrity endorsements data for carousel — ordered newest first
   const celebrityEndorsements = [
     {
-      id: '17',
-      name: 'Sonu Sood',
-      videoId: 'O5XwANLELyw',
-      profession: 'Actor & Philanthropist',
-    },
-    {
       id: '1',
       name: 'Sunil Shetty',
       videoId: 'ctqDft-Xrb0',
@@ -65,6 +59,12 @@ const Home: React.FC = () => {
       name: 'Satwiksairaj Rankireddy',
       videoId: 'U4fnK-_HCXw',
       profession: 'Badminton Player',
+    },
+    {
+      id: '17',
+      name: 'Sonu Sood',
+      videoId: 'O5XwANLELyw',
+      profession: 'Actor & Philanthropist',
     },
     {
       id: '3',
