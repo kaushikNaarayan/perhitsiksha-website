@@ -121,18 +121,6 @@ const Home: React.FC = () => {
       profession: 'Former Cricketer',
     },
     {
-      id: '12',
-      name: 'Anjum Sharma',
-      videoId: 'pI6ZTT17-QA',
-      profession: 'Actor',
-    },
-    {
-      id: '13',
-      name: 'Ravi Dubey',
-      videoId: '2WgZU1tg0gI',
-      profession: 'Actor',
-    },
-    {
       id: '14',
       name: 'Amala Akkineni',
       videoId: 'g9viUStaIUI',
