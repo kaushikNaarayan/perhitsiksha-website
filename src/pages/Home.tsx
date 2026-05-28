@@ -46,14 +46,9 @@ const Home: React.FC = () => {
   const [certIndex, setCertIndex] = useState(0);
   const [certPaused, setCertPaused] = useState(false);
 
-  // Celebrity endorsements data for carousel — ordered newest first
+  // Celebrity endorsements data for carousel — newest goes to position #3
+  // so the freshest endorsement renders centered on screen at carousel load
   const celebrityEndorsements = [
-    {
-      id: '18',
-      name: 'Jimmy Shergill',
-      videoId: 'yg86WTcwlFc',
-      profession: 'Actor',
-    },
     {
       id: '1',
       name: 'Sunil Shetty',
@@ -65,6 +60,12 @@ const Home: React.FC = () => {
       name: 'Satwiksairaj Rankireddy',
       videoId: 'U4fnK-_HCXw',
       profession: 'Badminton Player',
+    },
+    {
+      id: '18',
+      name: 'Jimmy Shergill',
+      videoId: 'yg86WTcwlFc',
+      profession: 'Actor',
     },
     {
       id: '17',
