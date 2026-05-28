@@ -51,7 +51,7 @@ const Home: React.FC = () => {
     {
       id: '18',
       name: 'Jimmy Shergill',
-      videoId: '_UykDVDOLUA',
+      videoId: 'yg86WTcwlFc',
       profession: 'Actor',
     },
     {
