@@ -49,6 +49,12 @@ const Home: React.FC = () => {
   // Celebrity endorsements data for carousel — ordered newest first
   const celebrityEndorsements = [
     {
+      id: '18',
+      name: 'Jimmy Shergill',
+      videoId: '_UykDVDOLUA',
+      profession: 'Actor',
+    },
+    {
       id: '1',
       name: 'Sunil Shetty',
       videoId: 'ctqDft-Xrb0',
