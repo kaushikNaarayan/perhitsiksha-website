@@ -339,7 +339,7 @@ Max body line length: 100 chars
 - Must be kept in sync across both files when updating contact information
 
 **Official Contact Information** (must be consistent across all files):
-- **Phone:** +91 81422 38633 (WhatsApp: `wa.me/918142238633`)
+- **Phone:** +91 83175 80423 (WhatsApp: `wa.me/918317580423`)
 - **Email:** clsi.perhitsiksha@gmail.com
 - **Address:** H NO. 659 Eldeco Udayan-I, Sec-3 Bangla Bazar, Dilkusha, Lucknow, Uttar Pradesh - 226002
 - **Facebook:** https://www.facebook.com/share/19uSggzByG/

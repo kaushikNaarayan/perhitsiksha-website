@@ -348,7 +348,7 @@ const Testimonials: React.FC = () => {
             <Button
               variant="secondary"
               size="lg"
-              href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
+              href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
               className="text-primary-500 border-white hover:bg-white"
             >
               Become a Contributor

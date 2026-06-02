@@ -218,7 +218,7 @@ const Privacy: React.FC = () => {
                   CLSI (Formerly Perhitsiksha)
                 </p>
                 <p className="mb-1">Email: clsi.perhitsiksha@gmail.com</p>
-                <p className="mb-1">Phone: +91 81422 38633</p>
+                <p className="mb-1">Phone: +91 83175 80423</p>
                 <p>We will respond to your inquiries within 30 days.</p>
               </div>
             </div>

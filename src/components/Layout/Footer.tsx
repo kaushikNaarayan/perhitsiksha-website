@@ -104,7 +104,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <a
-                  href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
+                  href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
                   className="text-gray-300 hover:text-white transition-colors duration-200"
                   target="_blank"
                   rel="noopener noreferrer"

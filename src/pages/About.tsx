@@ -527,7 +527,7 @@ const About: React.FC = () => {
             <Button
               variant="secondary"
               size="lg"
-              href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
+              href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
               className="text-primary-500 border-white hover:bg-white"
             >
               Become a Contributor
@@ -569,10 +569,10 @@ const About: React.FC = () => {
               <div className="flex items-center">
                 <FaPhone className="w-5 h-5 text-primary-500 mr-3" />
                 <a
-                  href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
+                  href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
                   className="text-gray-700 hover:text-primary-500 transition-colors duration-200"
                 >
-                  +91 81422 38633
+                  +91 83175 80423
                 </a>
               </div>
             </div>

@@ -75,7 +75,7 @@ const Header: React.FC = () => {
           {/* Desktop CTA Button */}
           <div className="hidden lg:block">
             <a
-              href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
+              href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
               className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 inline-block"
             >
               Become a Contributor

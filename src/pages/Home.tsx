@@ -195,7 +195,7 @@ const Home: React.FC = () => {
         showLogo={true}
         primaryCTA={{
           text: 'Become a Contributor',
-          href: 'https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute.',
+          href: 'https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute.',
         }}
         stats={[]}
         backgroundImage={heroBgImage}
@@ -611,7 +611,7 @@ const Home: React.FC = () => {
               variant="outline"
               size="lg"
               className="text-white border-white hover:bg-white hover:text-primary-500"
-              href="https://wa.me/918142238633?text=Hi,%20I%20would%20like%20to%20contribute."
+              href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
             >
               Become a Contributor
             </Button>
