@@ -4,7 +4,9 @@ import VideoModal from './VideoModal';
 interface CelebrityEndorsement {
   id: string;
   name: string;
-  videoId: string;
+  videoId?: string;
+  videoSrc?: string;
+  thumbnailSrc?: string;
   profession: string;
 }
 
@@ -43,12 +45,14 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
 
   const [modalVideo, setModalVideo] = useState<{
     isOpen: boolean;
-    videoId: string;
+    videoId?: string;
+    videoSrc?: string;
+    platform: 'youtube' | 'local';
     title: string;
     celebrityName: string;
   }>({
     isOpen: false,
-    videoId: '',
+    platform: 'youtube',
     title: '',
     celebrityName: '',
   });
@@ -264,7 +268,9 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
 
     setModalVideo({
       isOpen: true,
-      videoId: celebrity.videoId,
+      videoId: celebrity.videoSrc ? undefined : celebrity.videoId,
+      videoSrc: celebrity.videoSrc,
+      platform: celebrity.videoSrc ? 'local' : 'youtube',
       title: `${celebrity.name} supports Perhitsiksha`,
       celebrityName: celebrity.name,
     });
@@ -275,7 +281,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   const handleModalClose = () => {
     setModalVideo({
       isOpen: false,
-      videoId: '',
+      platform: 'youtube',
       title: '',
       celebrityName: '',
     });
@@ -338,10 +344,16 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                 >
                   {/* Thumbnail */}
                   <img
-                    src={getYouTubeShortThumbnail(celebrity.videoId)}
+                    src={
+                      celebrity.thumbnailSrc ||
+                      (celebrity.videoId
+                        ? getYouTubeShortThumbnail(celebrity.videoId)
+                        : '')
+                    }
                     alt={`${celebrity.name} endorsement`}
                     className="w-full h-full object-cover"
                     onError={e => {
+                      if (!celebrity.videoId) return;
                       // Fallback chain: sddefault → hqdefault → default → prevent further errors
                       const target = e.target as HTMLImageElement;
                       if (target.src.includes('sddefault')) {
@@ -349,7 +361,6 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                       } else if (target.src.includes('hqdefault')) {
                         target.src = `https://img.youtube.com/vi/${celebrity.videoId}/default.jpg`;
                       } else {
-                        // Prevent infinite error loop
                         target.onerror = null;
                       }
                     }}
@@ -369,11 +380,13 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                   </div>
 
                   {/* YouTube Shorts indicator */}
-                  <div className="absolute top-3 right-3">
-                    <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-                      Shorts
+                  {!celebrity.videoSrc && (
+                    <div className="absolute top-3 right-3">
+                      <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                        Shorts
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -386,6 +399,8 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
         isOpen={modalVideo.isOpen}
         onClose={handleModalClose}
         videoId={modalVideo.videoId}
+        videoUrl={modalVideo.videoSrc}
+        platform={modalVideo.platform}
         title={modalVideo.title}
         celebrityName={modalVideo.celebrityName}
       />

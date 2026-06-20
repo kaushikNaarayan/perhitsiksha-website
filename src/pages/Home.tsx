@@ -50,6 +50,13 @@ const Home: React.FC = () => {
   // so the freshest endorsement renders centered on screen at carousel load
   const celebrityEndorsements = [
     {
+      id: '0',
+      name: 'Huma Qureshi',
+      videoSrc: '/videos/huma-qureshi-perhitsiksha.mp4',
+      thumbnailSrc: '/videos/huma-qureshi-thumbnail.jpg',
+      profession: 'Actress',
+    },
+    {
       id: '1',
       name: 'Sunil Shetty',
       videoId: 'ctqDft-Xrb0',

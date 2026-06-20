@@ -7,7 +7,7 @@ interface VideoModalProps {
   videoUrl?: string; // For Facebook videos
   title: string;
   celebrityName?: string;
-  platform?: 'youtube' | 'facebook'; // Defaults to 'youtube' for backward compatibility
+  platform?: 'youtube' | 'facebook' | 'local'; // Defaults to 'youtube' for backward compatibility
 }
 
 const VideoModal: React.FC<VideoModalProps> = ({
@@ -51,7 +51,10 @@ const VideoModal: React.FC<VideoModalProps> = ({
   let embedUrl = '';
   let aspectRatioStyle = {};
 
-  if (platform === 'facebook' && videoUrl) {
+  if (platform === 'local' && videoUrl) {
+    // Local MP4 — 9:16 portrait
+    aspectRatioStyle = { paddingTop: '177.78%' };
+  } else if (platform === 'facebook' && videoUrl) {
     // Facebook video embed
     embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
       videoUrl
@@ -65,7 +68,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
     aspectRatioStyle = { paddingTop: '177.78%' };
   } else {
     console.error(
-      'Invalid VideoModal props: either videoId (YouTube) or videoUrl (Facebook) required'
+      'Invalid VideoModal props: either videoId (YouTube) or videoUrl (Facebook/local) required'
     );
     return null;
   }
@@ -112,9 +115,17 @@ const VideoModal: React.FC<VideoModalProps> = ({
         </div>
 
         {/* Video Container - Aspect ratio adapts based on platform */}
-        {/* YouTube Shorts: 9:16 (177.78%) | Facebook: 16:9 (56.25%) */}
+        {/* YouTube Shorts / local: 9:16 (177.78%) | Facebook: 16:9 (56.25%) */}
         <div className="relative bg-black" style={aspectRatioStyle}>
-          {platform === 'facebook' && isMobile ? (
+          {platform === 'local' ? (
+            <video
+              src={videoUrl}
+              className="absolute top-0 left-0 w-full h-full"
+              controls
+              autoPlay
+              playsInline
+            />
+          ) : platform === 'facebook' && isMobile ? (
             // Mobile: Show button to open Facebook video in new tab
             <div className="absolute inset-0 flex items-center justify-center p-8">
               <div className="text-center">
