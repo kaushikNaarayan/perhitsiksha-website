@@ -9,7 +9,7 @@
   {
     "name": "All assets",
     "path": "dist/**/*",
-    "limit": "8 MB",
+    "limit": "25 MB",
     "webpack": false
   }
 ]

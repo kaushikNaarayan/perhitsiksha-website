@@ -64,7 +64,12 @@ jobs:
   size-check:
     runs-on: ubuntu-latest
     needs: validate
-    
+    # size-limit-action posts a PR comment; without this the default read-only
+    # GITHUB_TOKEN fails with "Resource not accessible by integration".
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -123,4 +128,7 @@ jobs:
     - name: Run accessibility tests
       run: |
         npm install -g @axe-core/cli
-        axe http://localhost:3000 --exit
+        # Use the runner's pre-installed ChromeDriver (matches the runner's Chrome).
+        # The bundled chromedriver lags the runner's Chrome and fails with
+        # "session not created: only supports Chrome version N".
+        axe http://localhost:3000 --exit --chromedriver-path "$CHROMEWEBDRIVER/chromedriver"
