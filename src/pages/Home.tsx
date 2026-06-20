@@ -64,8 +64,7 @@ const Home: React.FC = () => {
     {
       id: '19',
       name: 'Huma Qureshi',
-      videoSrc: '/endorsements/huma-qureshi.mp4',
-      poster: '/endorsements/huma-qureshi-poster.jpg',
+      videoId: 'qvllTVqIkwI',
       profession: 'Actress',
     },
     {
