@@ -91,15 +91,15 @@ test.describe('Celebrity endorsements order', () => {
     await expect(secondCard.locator('text=Satwiksairaj Rankireddy')).toBeVisible();
   });
 
-  test('Priyamani appears last (16th) in the carousel', async ({ page }) => {
-    const lastCard = page.locator('.flex-none.w-64').nth(15);
+  test('Priyamani appears last (17th) in the carousel', async ({ page }) => {
+    const lastCard = page.locator('.flex-none.w-64').nth(16);
     await expect(lastCard.locator('text=Priyamani')).toBeAttached();
   });
 
-  test('Carousel contains all 16 celebrities (32 cards with duplication)', async ({ page }) => {
-    // The carousel duplicates the array for infinite scroll: 16 * 2 = 32
+  test('Carousel contains all 17 celebrities (34 cards with duplication)', async ({ page }) => {
+    // The carousel duplicates the array for infinite scroll: 17 * 2 = 34
     const cards = page.locator('.flex-none.w-64');
     const count = await cards.count();
-    expect(count).toBe(32);
+    expect(count).toBe(34);
   });
 });

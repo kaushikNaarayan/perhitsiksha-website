@@ -79,16 +79,16 @@ test.describe('Celebrity Endorsements', () => {
     await expect(modalTitle).toBeVisible({ timeout: 3000 });
   });
 
-  test('should have all 16 celebrity endorsements in total', async ({ page }) => {
+  test('should have all 17 celebrity endorsements in total', async ({ page }) => {
     await page.waitForLoadState('networkidle');
 
     // Count total number of celebrity cards (duplicated for infinite scroll)
-    // The carousel duplicates the array, so we should have 32 cards (16 * 2)
+    // The carousel duplicates the array, so we should have 34 cards (17 * 2)
     const celebrityCards = page.locator('.flex-none.w-64');
     const count = await celebrityCards.count();
 
-    // Should have 32 cards (16 celebrities * 2 for infinite scroll)
-    expect(count).toBe(32);
+    // Should have 34 cards (17 celebrities * 2 for infinite scroll)
+    expect(count).toBe(34);
   });
 
   test('should support drag-to-scroll interaction', async ({ page }) => {

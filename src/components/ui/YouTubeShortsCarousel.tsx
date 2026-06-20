@@ -4,10 +4,12 @@ import VideoModal from './VideoModal';
 interface CelebrityEndorsement {
   id: string;
   name: string;
-  videoId?: string;
-  videoSrc?: string;
-  thumbnailSrc?: string;
   profession: string;
+  // YouTube-hosted endorsements provide a videoId (existing pattern).
+  videoId?: string;
+  // Self-hosted endorsements provide a local mp4 (videoSrc) and poster image.
+  videoSrc?: string;
+  poster?: string;
 }
 
 interface YouTubeShortsCarouselProps {
@@ -45,13 +47,17 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
 
   const [modalVideo, setModalVideo] = useState<{
     isOpen: boolean;
-    videoId?: string;
-    videoSrc?: string;
+    videoId: string;
+    videoSrc: string;
+    poster: string;
     platform: 'youtube' | 'local';
     title: string;
     celebrityName: string;
   }>({
     isOpen: false,
+    videoId: '',
+    videoSrc: '',
+    poster: '',
     platform: 'youtube',
     title: '',
     celebrityName: '',
@@ -268,8 +274,9 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
 
     setModalVideo({
       isOpen: true,
-      videoId: celebrity.videoSrc ? undefined : celebrity.videoId,
-      videoSrc: celebrity.videoSrc,
+      videoId: celebrity.videoId ?? '',
+      videoSrc: celebrity.videoSrc ?? '',
+      poster: celebrity.poster ?? '',
       platform: celebrity.videoSrc ? 'local' : 'youtube',
       title: `${celebrity.name} supports Perhitsiksha`,
       celebrityName: celebrity.name,
@@ -281,6 +288,9 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   const handleModalClose = () => {
     setModalVideo({
       isOpen: false,
+      videoId: '',
+      videoSrc: '',
+      poster: '',
       platform: 'youtube',
       title: '',
       celebrityName: '',
@@ -342,18 +352,17 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                   className="relative w-full h-full cursor-pointer group"
                   onClick={() => handleVideoPlay(celebrity)}
                 >
-                  {/* Thumbnail */}
+                  {/* Thumbnail: self-hosted poster when present, else YouTube thumbnail */}
                   <img
                     src={
-                      celebrity.thumbnailSrc ||
-                      (celebrity.videoId
-                        ? getYouTubeShortThumbnail(celebrity.videoId)
-                        : '')
+                      celebrity.poster ??
+                      getYouTubeShortThumbnail(celebrity.videoId ?? '')
                     }
                     alt={`${celebrity.name} endorsement`}
                     className="w-full h-full object-cover"
                     onError={e => {
-                      if (!celebrity.videoId) return;
+                      // Self-hosted posters have no fallback chain
+                      if (celebrity.poster) return;
                       // Fallback chain: sddefault → hqdefault → default → prevent further errors
                       const target = e.target as HTMLImageElement;
                       if (target.src.includes('sddefault')) {
@@ -361,6 +370,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                       } else if (target.src.includes('hqdefault')) {
                         target.src = `https://img.youtube.com/vi/${celebrity.videoId}/default.jpg`;
                       } else {
+                        // Prevent infinite error loop
                         target.onerror = null;
                       }
                     }}
@@ -379,14 +389,12 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                     </div>
                   </div>
 
-                  {/* YouTube Shorts indicator */}
-                  {!celebrity.videoSrc && (
-                    <div className="absolute top-3 right-3">
-                      <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-                        Shorts
-                      </div>
+                  {/* Format indicator */}
+                  <div className="absolute top-3 right-3">
+                    <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                      {celebrity.videoSrc ? 'Video' : 'Shorts'}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -399,7 +407,8 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
         isOpen={modalVideo.isOpen}
         onClose={handleModalClose}
         videoId={modalVideo.videoId}
-        videoUrl={modalVideo.videoSrc}
+        videoSrc={modalVideo.videoSrc}
+        poster={modalVideo.poster}
         platform={modalVideo.platform}
         title={modalVideo.title}
         celebrityName={modalVideo.celebrityName}

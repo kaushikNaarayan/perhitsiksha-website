@@ -5,6 +5,8 @@ interface VideoModalProps {
   onClose: () => void;
   videoId?: string; // For YouTube videos
   videoUrl?: string; // For Facebook videos
+  videoSrc?: string; // For self-hosted mp4 videos
+  poster?: string; // Poster image for self-hosted videos
   title: string;
   celebrityName?: string;
   platform?: 'youtube' | 'facebook' | 'local'; // Defaults to 'youtube' for backward compatibility
@@ -15,6 +17,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
   onClose,
   videoId,
   videoUrl,
+  videoSrc,
+  poster,
   title,
   celebrityName,
   platform = 'youtube',
@@ -51,8 +55,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
   let embedUrl = '';
   let aspectRatioStyle = {};
 
-  if (platform === 'local' && videoUrl) {
-    // Local MP4 — 9:16 portrait
+  if (platform === 'local' && videoSrc) {
+    // Self-hosted mp4 — rendered via <video> below, uses 9:16 portrait aspect
     aspectRatioStyle = { paddingTop: '177.78%' };
   } else if (platform === 'facebook' && videoUrl) {
     // Facebook video embed
@@ -68,7 +72,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
     aspectRatioStyle = { paddingTop: '177.78%' };
   } else {
     console.error(
-      'Invalid VideoModal props: either videoId (YouTube) or videoUrl (Facebook/local) required'
+      'Invalid VideoModal props: videoId (YouTube), videoUrl (Facebook), or videoSrc (local) required'
     );
     return null;
   }
@@ -115,16 +119,26 @@ const VideoModal: React.FC<VideoModalProps> = ({
         </div>
 
         {/* Video Container - Aspect ratio adapts based on platform */}
-        {/* YouTube Shorts / local: 9:16 (177.78%) | Facebook: 16:9 (56.25%) */}
+        {/* YouTube Shorts: 9:16 (177.78%) | Facebook: 16:9 (56.25%) */}
         <div className="relative bg-black" style={aspectRatioStyle}>
           {platform === 'local' ? (
+            // Self-hosted mp4 played via native HTML5 video
             <video
-              src={videoUrl}
-              className="absolute top-0 left-0 w-full h-full"
+              src={videoSrc}
+              poster={poster}
               controls
               autoPlay
               playsInline
-            />
+              className="absolute top-0 left-0 w-full h-full bg-black"
+            >
+              <p className="text-white p-4">
+                Your browser does not support embedded video.{' '}
+                <a href={videoSrc} className="underline">
+                  Download the video
+                </a>
+                .
+              </p>
+            </video>
           ) : platform === 'facebook' && isMobile ? (
             // Mobile: Show button to open Facebook video in new tab
             <div className="absolute inset-0 flex items-center justify-center p-8">

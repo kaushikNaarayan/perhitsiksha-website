@@ -50,13 +50,6 @@ const Home: React.FC = () => {
   // so the freshest endorsement renders centered on screen at carousel load
   const celebrityEndorsements = [
     {
-      id: '0',
-      name: 'Huma Qureshi',
-      videoSrc: '/videos/huma-qureshi-perhitsiksha.mp4',
-      thumbnailSrc: '/videos/huma-qureshi-thumbnail.jpg',
-      profession: 'Actress',
-    },
-    {
       id: '1',
       name: 'Sunil Shetty',
       videoId: 'ctqDft-Xrb0',
@@ -67,6 +60,13 @@ const Home: React.FC = () => {
       name: 'Satwiksairaj Rankireddy',
       videoId: 'U4fnK-_HCXw',
       profession: 'Badminton Player',
+    },
+    {
+      id: '19',
+      name: 'Huma Qureshi',
+      videoSrc: '/endorsements/huma-qureshi.mp4',
+      poster: '/endorsements/huma-qureshi-poster.jpg',
+      profession: 'Actress',
     },
     {
       id: '18',
