@@ -3,6 +3,10 @@ name: Sync to Personal Repo
 on:
   push:
     branches: [ main ]
+  workflow_run:
+    workflows: ["Sync Facebook Events"]
+    types: [completed]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -14,23 +18,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push to personal repo
+      - name: Configure SSH deploy key
         run: |
-          # Clear any existing credential helpers
-          git config --unset-all http.https://github.com/.extraheader || true
-          git config --global credential.helper ""
-          git config --global --add credential.helper "!f() { echo \"username=kaushikNaarayan\"; echo \"password=${{ secrets.PERSONAL_REPO_TOKEN }}\"; }; f"
-          git remote add personal https://github.com/kaushikNaarayan/perhitsiksha-website.git
-          git push personal main --force
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SYNC_DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          printf 'Host github.com\n  IdentityFile ~/.ssh/deploy_key\n  IdentitiesOnly yes\n' > ~/.ssh/config
 
-      - name: Trigger deploy on personal repo
-        # PAT-authenticated pushes don't auto-trigger workflows on the target
-        # repo (GitHub prevents Actions-triggering-Actions loops), so we must
-        # explicitly dispatch the deploy workflow.
+      - name: Push to personal repo
+        # SSH deploy key push triggers deploy.yml on the target repo automatically.
         run: |
-          curl -fsS -X POST \
-            -H "Authorization: Bearer ${{ secrets.PERSONAL_REPO_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/kaushikNaarayan/perhitsiksha-website/actions/workflows/deploy.yml/dispatches \
-            -d '{"ref":"main"}'
+          git remote add personal git@github.com:kaushikNaarayan/perhitsiksha-website.git
+          git push personal main --force
