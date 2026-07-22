@@ -76,7 +76,7 @@ npm run validate:events     # Validate facebook-events.json schema
   - Scrolling ticker animation on mobile/tablet (<1024px)
   - Hover-pause only works on devices with true hover capability (desktop with mouse)
   - Content: Registration announcement with link to certificate
-- **Carousels:** `EnhancedCarousel`, `CelebrityCarousel`, `TestimonialCarousel`, `YouTubeShortsCarousel`, `PeekCarousel`, `EventsCarousel` - various carousel implementations with drag-to-scroll, autoplay, and accessibility features
+- **Carousels:** `EnhancedCarousel`, `TestimonialCarousel`, `PeekCarousel`, `EventsCarousel` - various carousel implementations with drag-to-scroll, autoplay, and accessibility features
   - **EventsCarousel** - Auto-rotating carousel for Recent Events section (automated via Facebook API)
     - Auto-rotates every 4 seconds (configurable via `autoRotateInterval` prop)
     - Pauses on hover (desktop), continuous rotation on touch devices
@@ -150,7 +150,7 @@ FACEBOOK_ACCESS_TOKEN       # Long-lived Page Access Token (stored in GitHub Sec
 **E2E Tests (Playwright):**
 - Located in `tests/` directory
 - Configured in `playwright.config.ts` to auto-start dev server on port 3000
-- Example: `tests/celebrity-endorsements.spec.ts`
+- Example: `tests/instagram-social-links.spec.ts`
 - Run specific test: `npx playwright test tests/specific.spec.ts`
 - UI mode: `npx playwright test --ui` for interactive debugging
 
@@ -376,9 +376,6 @@ Max body line length: 100 chars
 - Full legal details available in `src/components/Layout/Footer.tsx`
 
 **Key Content Locations:**
-- **Celebrity Endorsements:** Hardcoded array in `src/pages/Home.tsx` (lines 22-113)
-  - Add new celebrities by appending to the `celebrityEndorsements` array with `id`, `name`, `videoId`, and `profession`
-  - YouTube video IDs extracted from youtube.com/watch?v=ID or youtube.com/shorts/ID
 - **Student Testimonials:** JSON file at `src/data/testimonials.json`
   - Videos embedded via `youtubeId` field
   - Filtered by `role: "Student"` for Voices of Change carousel
