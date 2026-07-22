@@ -87,7 +87,7 @@ const Home: React.FC = () => {
     <div>
       {/* Hero Section */}
       <Hero
-        title="CLSI Perhitsiksha"
+        title="Perhitsiksha"
         subheadline="450+ Success Stories. 700+ Global Contributors. One Mission."
         subtitle="No student should drop out because of a lack of funds. Perhitsiksha Foundation provides a lifeline of financial aid and career guidance to ensure talent never goes to waste."
         showLogo={true}

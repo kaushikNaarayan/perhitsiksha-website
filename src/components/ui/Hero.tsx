@@ -89,7 +89,7 @@ const Hero: React.FC<HeroProps> = ({
             <div className="mb-6 flex justify-center">
               <img
                 src={logoImage}
-                alt="CLSI Perhitsiksha Logo"
+                alt="Perhitsiksha Logo"
                 className="w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-2xl object-cover shadow-lg"
               />
             </div>
