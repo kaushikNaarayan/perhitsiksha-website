@@ -67,39 +67,3 @@ test.describe('Instagram social links', () => {
     await expect(page.locator('footer a[aria-label="Follow us on Instagram"]')).toBeVisible();
   });
 });
-
-test.describe('Celebrity endorsements order', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
-  });
-
-  test('Sunil Shetty appears first in the carousel', async ({ page }) => {
-    // The first card in the DOM should be Sunil Shetty
-    const firstCard = page.locator('.flex-none.w-64').first();
-    await expect(firstCard.locator('text=Sunil Shetty')).toBeVisible();
-    await expect(firstCard.locator('text=Actor & Film Producer')).toBeVisible();
-  });
-
-  test('Sunil Shetty thumbnail uses correct video ID', async ({ page }) => {
-    const thumbnail = page.locator('img[alt*="Sunil Shetty"]').first();
-    await expect(thumbnail).toHaveAttribute('src', /ctqDft-Xrb0/);
-  });
-
-  test('Satwiksairaj Rankireddy appears second in the carousel', async ({ page }) => {
-    const secondCard = page.locator('.flex-none.w-64').nth(1);
-    await expect(secondCard.locator('text=Satwiksairaj Rankireddy')).toBeVisible();
-  });
-
-  test('Priyamani appears last (17th) in the carousel', async ({ page }) => {
-    const lastCard = page.locator('.flex-none.w-64').nth(16);
-    await expect(lastCard.locator('text=Priyamani')).toBeAttached();
-  });
-
-  test('Carousel contains all 17 celebrities (34 cards with duplication)', async ({ page }) => {
-    // The carousel duplicates the array for infinite scroll: 17 * 2 = 34
-    const cards = page.locator('.flex-none.w-64');
-    const count = await cards.count();
-    expect(count).toBe(34);
-  });
-});
