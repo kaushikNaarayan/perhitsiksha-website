@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   build-and-deploy-staging:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     environment:
       name: staging
       url: ${{ steps.deployment.outputs.page_url }}
@@ -83,7 +83,7 @@ jobs:
         # Could integrate with Slack, Discord, etc.
         
   lighthouse:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     needs: build-and-deploy-staging
     if: success()
     

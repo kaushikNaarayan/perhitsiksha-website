@@ -10,10 +10,10 @@ on:
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# via the gh-pages branch (git push), not the Actions Pages-artifact path —
+# that path is blocked org-wide by a GitHub Actions artifact storage quota (pw-my4).
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
   actions: read
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   pre-deploy-checks:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     outputs:
       should-deploy: ${{ steps.checks.outputs.should-deploy }}
     
@@ -69,26 +69,26 @@ jobs:
         echo "should-deploy=true" >> $GITHUB_OUTPUT
 
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     needs: pre-deploy-checks
     if: needs.pre-deploy-checks.outputs.should-deploy == 'true'
     environment:
       name: production
-      url: ${{ steps.deployment.outputs.page_url }}
-    
+      url: https://www.perhitsiksha.org
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
         cache: 'npm'
-        
+
     - name: Install dependencies
       run: npm ci
-      
+
     - name: Build for production
       env:
         VITE_COUNTER_WORKSPACE: ${{ secrets.PROD_COUNTER_WORKSPACE || 'perhitsiksha' }}
@@ -97,26 +97,30 @@ jobs:
         VITE_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
         VITE_SUPABASE_ANON_KEY: ${{ secrets.PROD_SUPABASE_ANON_KEY }}
       run: npm run build
-      
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-      
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: './dist'
-        
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
-      
+
+    # Deploy via git push to the gh-pages branch (git storage) instead of
+    # actions/upload-pages-artifact + deploy-pages, which upload through
+    # GitHub Actions artifact storage — org-wide quota is hit, so that path
+    # is hard-blocked regardless of runner (pw-my4). dist/CNAME preserves
+    # the custom domain.
+    - name: Deploy dist/ to gh-pages branch
+      run: |
+        cd dist
+        git init -q
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git checkout -q -b gh-pages
+        git add -A
+        git commit -q -m "deploy: ${{ github.sha }}"
+        git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages:gh-pages
+
     - name: Post-deployment verification
       run: |
         echo "Verifying production deployment..."
         # Wait for deployment to be ready
         sleep 60
         # Health check
-        curl -f ${{ steps.deployment.outputs.page_url }} || exit 1
+        curl -f https://www.perhitsiksha.org || exit 1
         echo "Production deployment verified successfully!"
         
     - name: Notify deployment success
@@ -134,7 +138,7 @@ jobs:
         # Could implement automatic rollback logic here
 
   post-deploy-monitoring:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     needs: build-and-deploy
     if: success()
     

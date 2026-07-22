@@ -15,7 +15,7 @@ permissions:
 jobs:
   sync:
     name: Fetch and Commit Facebook Events
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
 
     steps:
       - name: Checkout repository
