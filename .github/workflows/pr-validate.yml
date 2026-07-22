@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     
     steps:
     - name: Checkout
@@ -62,7 +62,7 @@ jobs:
         retention-days: 7
         
   size-check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     needs: validate
     # size-limit-action posts a PR comment; without this the default read-only
     # GITHUB_TOKEN fails with "Resource not accessible by integration".
@@ -96,7 +96,7 @@ jobs:
         package_manager: npm
         
   accessibility-check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     needs: validate
     
     steps:

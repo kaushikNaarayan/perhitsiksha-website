@@ -7,7 +7,7 @@ on:
 
 jobs:
   comprehensive-testing:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     
     steps:
     - name: Checkout
@@ -50,7 +50,7 @@ jobs:
       run: npm run build
 
   performance-testing:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     
     steps:
     - name: Checkout
@@ -92,7 +92,7 @@ jobs:
           --assert.assertions.seo=0.8
 
   accessibility-audit:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     
     steps:
     - name: Checkout
@@ -131,7 +131,7 @@ jobs:
         axe http://localhost:3000/stories --exit
 
   dependency-audit:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     
     steps:
     - name: Checkout
@@ -150,7 +150,7 @@ jobs:
       run: npm outdated || echo "Some packages may need updates"
 
   api-integration-tests:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     
     steps:
     - name: Test Counter API availability
@@ -166,7 +166,7 @@ jobs:
         curl -f "https://api.counterapi.dev/v2/perhitsiksha-staging/perhitsiksha-visits" || echo "Staging counter may need setup"
 
   facebook-token-check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     permissions:
       issues: write
 
@@ -302,7 +302,7 @@ jobs:
           }
 
   notification:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gt2]
     needs: [comprehensive-testing, performance-testing, accessibility-audit, dependency-audit, api-integration-tests, facebook-token-check]
     if: failure()
 
