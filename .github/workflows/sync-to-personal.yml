@@ -30,5 +30,7 @@ jobs:
       - name: Push to personal repo
         # SSH deploy key push triggers deploy.yml on the target repo automatically.
         run: |
-          git remote add personal git@github.com:kaushikNaarayan/perhitsiksha-website.git
+          # Idempotent: self-hosted runners reuse the workspace, so a bare
+          # `git remote add` fails with 'remote personal already exists'.
+          git remote set-url personal git@github.com:kaushikNaarayan/perhitsiksha-website.git || git remote add personal git@github.com:kaushikNaarayan/perhitsiksha-website.git
           git push personal main --force
