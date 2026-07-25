@@ -6,6 +6,7 @@ import Button from '../components/ui/Button';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
 import PeekCarousel from '../components/ui/PeekCarousel';
 import EventsCarousel from '../components/ui/EventsCarousel';
+import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
 import ScrollProgress from '../components/ui/ScrollProgress';
 import StatsCounter from '../components/ui/StatsCounter';
 import {
@@ -20,6 +21,7 @@ import type { Testimonial } from '../types';
 // Import data
 import testimonialsData from '../data/testimonials.json';
 import facebookEventsData from '../data/facebook-events.json';
+import celebrityEndorsementsData from '../data/celebrity-endorsements.json';
 import type { Event } from '../types';
 
 // Import images
@@ -399,6 +401,21 @@ const Home: React.FC = () => {
             </p>
 
             <PeekCarousel testimonials={supporterTestimonials} />
+          </div>
+        </section>
+      )}
+
+      {/* Celebrated Voices — public figures who lent their voice (org's own YouTube-channel videos) */}
+      {celebrityEndorsementsData.length > 0 && (
+        <section className="bg-white section-fluid">
+          <div className="max-w-6xl mx-auto container-padding text-center">
+            <h2 className="heading-2 mb-4">
+              {t('celebrityEndorsements.title')}
+            </h2>
+            <p className="body-large mb-8 prose-measure mx-auto">
+              {t('celebrityEndorsements.subtitle')}
+            </p>
+            <YouTubeShortsCarousel endorsements={celebrityEndorsementsData} />
           </div>
         </section>
       )}
