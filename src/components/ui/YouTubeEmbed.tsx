@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { YouTubeEmbedProps } from '../../types';
 import { trackVideoPlay } from '../../utils/analytics';
+import BlurImage from './BlurImage';
 
 const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   videoId,
@@ -69,7 +70,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
     <div className="youtube-embed cursor-pointer group" onClick={handlePlay}>
       <div className="absolute inset-0">
         {currentThumbnailIndex < thumbnailUrls.length ? (
-          <img
+          <BlurImage
             src={thumbnailUrls[currentThumbnailIndex]}
             alt={title}
             className="w-full h-full object-cover rounded-lg"

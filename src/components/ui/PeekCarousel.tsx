@@ -1,5 +1,8 @@
 import React, { useState, useRef } from 'react';
 import VideoModal from './VideoModal';
+import PlayButton from './PlayButton';
+import { useLanguage } from '../../i18n/useLanguage';
+import { gsap, useGSAP, Observer, prefersReducedMotion } from '../../lib/gsap';
 import type { Testimonial } from '../../types';
 
 interface PeekCarouselProps {
@@ -7,6 +10,7 @@ interface PeekCarouselProps {
 }
 
 const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
+  const { lang } = useLanguage();
   const [modalVideo, setModalVideo] = useState<{
     isOpen: boolean;
     videoId: string;
@@ -20,6 +24,56 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
   });
 
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Observer-driven snap: a wheel/touch flick snaps to the next/prev card.
+  // Native overflow scroll still works for fine control; manual touch handlers
+  // are intentionally gone to avoid double-binding.
+  useGSAP(
+    () => {
+      const el = carouselRef.current;
+      if (!el) return;
+      if (prefersReducedMotion()) return;
+
+      const cardStep = () => {
+        const first = el.querySelector<HTMLElement>('[data-peek-card]');
+        const gap = 16;
+        return first ? first.offsetWidth + gap : el.clientWidth * 0.8;
+      };
+
+      let animating = false;
+      const snap = (dir: number) => {
+        if (animating) return;
+        const max = el.scrollWidth - el.clientWidth;
+        const target = gsap.utils.clamp(
+          0,
+          max,
+          el.scrollLeft + dir * cardStep()
+        );
+        animating = true;
+        gsap.to(el, {
+          scrollTo: { x: target },
+          duration: 0.6,
+          ease: 'spring',
+          onComplete: () => {
+            animating = false;
+          },
+        });
+      };
+
+      const observer = Observer.create({
+        target: el,
+        type: 'wheel,touch',
+        // Drag/scroll left → advance; right → go back.
+        onLeft: () => snap(1),
+        onRight: () => snap(-1),
+        tolerance: 20,
+        preventDefault: false,
+      });
+
+      return () => observer.kill();
+    },
+    { scope: carouselRef, dependencies: [testimonials.length] }
+  );
 
   const handleVideoPlay = (testimonial: Testimonial) => {
     setModalVideo({
@@ -43,42 +97,6 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
     return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
   };
 
-  // Handle touch/swipe for mobile
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (carouselRef.current) {
-      const scrollAmount = carouselRef.current.clientWidth * 0.8; // Scroll by 80% of container width
-
-      if (isLeftSwipe) {
-        carouselRef.current.scrollBy({
-          left: scrollAmount,
-          behavior: 'smooth',
-        });
-      } else if (isRightSwipe) {
-        carouselRef.current.scrollBy({
-          left: -scrollAmount,
-          behavior: 'smooth',
-        });
-      }
-    }
-  };
-
   return (
     <div className="relative">
       {/* Mobile & Desktop - Peek Carousel */}
@@ -86,9 +104,6 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
         <div
           ref={carouselRef}
           className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 px-4"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
@@ -97,13 +112,14 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
           }}
         >
           {testimonials.map(testimonial => (
-            <div
+            <article
               key={testimonial.id}
-              className="flex-none w-72 md:w-80 snap-start"
+              data-peek-card
+              className="flex-none w-[80%] sm:w-72 md:w-80 snap-start"
             >
               {/* Video Container */}
               <div
-                className="relative mb-4 bg-gray-900 rounded-xl overflow-hidden shadow-lg"
+                className="relative mb-4 bg-gray-900 rounded-2xl overflow-hidden shadow-lg"
                 style={{ aspectRatio: '16/9' }}
               >
                 <div
@@ -114,7 +130,7 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
                   <img
                     src={getYouTubeThumbnail(testimonial.youtubeId!)}
                     alt={`${testimonial.name} testimonial`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover photo-grade"
                     onError={e => {
                       const target = e.target as HTMLImageElement;
                       target.src = `https://img.youtube.com/vi/${testimonial.youtubeId}/hqdefault.jpg`;
@@ -123,15 +139,10 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
 
                   {/* Overlay with play button */}
                   <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all duration-200">
-                    <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                      <svg
-                        className="w-8 h-8 text-gray-800 ml-1"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
+                    <PlayButton
+                      size={64}
+                      ariaLabel={`Play ${testimonial.name} testimonial`}
+                    />
                   </div>
 
                   {/* Featured badge for featured testimonials */}
@@ -164,15 +175,15 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
                   >
                     {testimonial.role}
                   </span>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-gray-600">
                     {testimonial.location}
                   </span>
                 </div>
                 <blockquote className="text-sm text-gray-600 italic leading-relaxed line-clamp-3">
-                  "{testimonial.quote}"
+                  "{testimonial.quote[lang] ?? testimonial.quote.en}"
                 </blockquote>
               </div>
-            </div>
+            </article>
           ))}
 
           {/* Add a spacer at the end for better scroll experience */}
@@ -186,7 +197,7 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
 
       {/* Scroll Hint for Mobile */}
       <div className="flex justify-center mt-4 md:hidden">
-        <div className="flex items-center text-sm text-gray-500 bg-white px-3 py-1 rounded-full shadow-sm">
+        <div className="glass-chip flex items-center text-sm text-gray-700 px-3 py-1 rounded-full shadow-sm">
           <svg
             className="w-4 h-4 mr-1"
             fill="none"

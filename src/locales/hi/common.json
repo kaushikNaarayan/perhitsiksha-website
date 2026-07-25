@@ -1,0 +1,17 @@
+{
+  "brand": "Perhitsiksha",
+  "taxNote": "सभी दान 80G कर-मुक्त हैं",
+  "cta": {
+    "becomeContributor": "सहयोगी बनें",
+    "seeAllTestimonials": "सभी अनुभव देखें",
+    "seeImpactStories": "प्रभाव की कहानियाँ देखें",
+    "learnMoreAboutUs": "हमारे बारे में और जानें"
+  },
+  "carousel": {
+    "playVideo": "वीडियो चलाएँ",
+    "play": "चलाएँ"
+  },
+  "tooltip": {
+    "moreInfo": "अधिक जानकारी"
+  }
+}

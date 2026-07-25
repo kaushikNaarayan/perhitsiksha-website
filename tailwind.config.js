@@ -1,23 +1,32 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // Dark mode is driven by an explicit `data-theme="dark"` on <html>
+  // (set by ThemeToggle). Enables `dark:` utilities to target that attribute.
+  darkMode: ['selector', '[data-theme="dark"]'],
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  // Portrait student-photo utilities (pe-gdu B3): kept in the bundle so they're
+  // available for student/testimonial photo cards even where markup applies
+  // them dynamically. See .portrait-3-4 / .photo-name-scrim in src/index.css.
+  safelist: ["portrait-3-4", "photo-name-scrim"],
   theme: {
     extend: {
       colors: {
         primary: {
-          50: '#e6f2ff',
-          100: '#b3d9ff',
-          200: '#80c1ff',
-          300: '#4da8ff',
-          400: '#1a90ff',
-          500: '#0068B3', // Main brand blue
-          600: '#005299',
-          700: '#003d80',
-          800: '#002766',
-          900: '#00124d',
+          // Canonical Perhitsiksha DS blue (pe-6wt migration: #0068B3 -> #0061EF).
+          // Anchored on the DS token layer in src/index.css (:root --blue-*).
+          50: '#E9F0FE',
+          100: '#C7D9FD',
+          200: '#9DBBFB',
+          300: '#6693F8',
+          400: '#3377F4',
+          500: '#0061EF', // Main brand blue (DS --blue-200)
+          600: '#0040EA', // DS --blue-300
+          700: '#0000DB', // DS --blue-400 (shadow)
+          800: '#0000B0',
+          900: '#00008A',
         },
         accent: {
           50: '#e6f8ff',
@@ -44,26 +53,44 @@ export default {
           900: '#00231c',
         },
         gray: {
+          // Ramp darkened for WCAG AA (pe-09n): body/subtext grays now clear
+          // 4.5:1 on white. 600=#5A5F66 (6.4:1), 700=#3C4043 (10.5:1).
+          // Ramp kept monotonic; 800 nudged darker to stay below the new 700.
           50: '#F8F9FA',
           100: '#F1F3F4',
           200: '#E8EAED',
           300: '#DADCE0',
           400: '#BDC1C6',
           500: '#9AA0A6',
-          600: '#80868B',
-          700: '#5F6368',
-          800: '#3C4043',
+          600: '#5A5F66', // ~6.4:1 on white — body/subtext floor
+          700: '#3C4043', // ~10.5:1 on white
+          800: '#2A2D30',
           900: '#202124',
         }
       },
       fontFamily: {
-        'sans': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        'display': ['Inter', 'system-ui', 'sans-serif'],
+        // Canonical DS type: Anek (script-routed Latin + Devanagari; browser picks glyphs by lang).
+        'sans': ['"Anek Latin"', '"Anek Devanagari"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        'display': ['"Anek Latin"', '"Anek Devanagari"', 'system-ui', 'sans-serif'],
       },
       spacing: {
         '18': '4.5rem',
         '88': '22rem',
         '128': '32rem',
+      },
+      // Corner radii — mirror the --radius-* DS tokens (pe-gdu B3). No sharp
+      // corners: cards at 24px, media/inputs/chips at 16px.
+      borderRadius: {
+        card: 'var(--radius-card)', // 24px
+        media: 'var(--radius-media)', // 16px
+      },
+      // Strict z-index scale — mirror the --z-* DS tokens (pe-gdu B3).
+      zIndex: {
+        bg: 'var(--z-bg)', // -1
+        base: 'var(--z-base)', // 1
+        float: 'var(--z-float)', // 10 (hero sparkles)
+        header: 'var(--z-header)', // 100
+        modal: 'var(--z-modal)', // 1000
       },
       fontSize: {
         'xs': '0.75rem',

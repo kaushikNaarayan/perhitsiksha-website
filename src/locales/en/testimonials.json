@@ -1,0 +1,34 @@
+{
+  "hero": {
+    "title": "Voices of Change",
+    "subtitle": "Hear directly from our community about how education transforms lives and creates lasting impact."
+  },
+  "featured": {
+    "title": "Featured Impact Stories",
+    "subtitle": "Discover how education transforms lives through our most inspiring testimonials",
+    "badge": "Featured"
+  },
+  "filters": {
+    "title": "All Testimonials",
+    "subtitle": "Browse stories from our entire community",
+    "showing": "Showing {{count}} testimonials",
+    "clickToWatch": "Click any video to watch",
+    "roles": {
+      "all": "All",
+      "student": "Student",
+      "parent": "Parent",
+      "mentor": "Mentor",
+      "contributor": "Contributor"
+    }
+  },
+  "empty": {
+    "title": "No testimonials found",
+    "subtitle": "Try selecting a different role filter."
+  },
+  "cta": {
+    "title": "Your Support Creates These Stories",
+    "description": "Every testimonial represents a life transformed through education. Your contribution can create the next success story.",
+    "becomeContributor": "Become a Contributor",
+    "learnMore": "Learn More About Us"
+  }
+}

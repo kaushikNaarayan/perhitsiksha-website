@@ -1,40 +1,44 @@
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
 const TickerBanner: React.FC = () => {
+  const { t } = useTranslation('ticker');
+
+  const announcement = (
+    <Trans
+      t={t}
+      i18nKey="announcement"
+      components={{
+        cert: (
+          <a
+            href="https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 underline font-semibold hover:text-primary-100 transition-colors"
+          />
+        ),
+        icon: (
+          <span className="inline-flex items-center justify-center border border-white rounded w-4 h-4">
+            <FaExternalLinkAlt className="w-2.5 h-2.5" />
+          </span>
+        ),
+      }}
+    />
+  );
+
   return (
-    <div className="bg-primary-600 text-white py-2 overflow-hidden">
+    <aside
+      aria-label={t('ariaLabel', { defaultValue: 'Announcements' })}
+      className="bg-primary-600 text-white py-2 overflow-hidden"
+    >
       <div className="ticker-wrapper">
         <div className="ticker-content">
           <span className="ticker-item text-xs sm:text-sm md:text-base whitespace-nowrap">
-            Official Update: Perhitsiksha Foundation is now a registered Section
-            8 NGO (CIN: U85500UP2025NPL237759).{' '}
-            <a
-              href="https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view?usp=drive_link"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 underline font-semibold hover:text-primary-100 transition-colors"
-            >
-              View Certificate
-              <span className="inline-flex items-center justify-center border border-white rounded w-4 h-4">
-                <FaExternalLinkAlt className="w-2.5 h-2.5" />
-              </span>
-            </a>{' '}
+            {announcement}{' '}
           </span>
           <span className="ticker-item text-xs sm:text-sm md:text-base whitespace-nowrap">
-            Official Update: Perhitsiksha Foundation is now a registered Section
-            8 NGO (CIN: U85500UP2025NPL237759).{' '}
-            <a
-              href="https://drive.google.com/file/d/1ozwZyO0k4ZiZUWqoTQh60qHTI_w5K2L_/view?usp=drive_link"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 underline font-semibold hover:text-primary-100 transition-colors"
-            >
-              View Certificate
-              <span className="inline-flex items-center justify-center border border-white rounded w-4 h-4">
-                <FaExternalLinkAlt className="w-2.5 h-2.5" />
-              </span>
-            </a>{' '}
+            {announcement}{' '}
           </span>
         </div>
       </div>
@@ -87,7 +91,7 @@ const TickerBanner: React.FC = () => {
           }
         }
       `}</style>
-    </div>
+    </aside>
   );
 };
 

@@ -224,10 +224,10 @@ const Privacy: React.FC = () => {
             </div>
 
             <div className="border-t border-gray-200 pt-6">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-600">
                 This privacy policy is effective as of the date stated above and
-                applies to all information collected by Perhitsiksha through our website
-                and services.
+                applies to all information collected by Perhitsiksha through our
+                website and services.
               </p>
             </div>
           </div>

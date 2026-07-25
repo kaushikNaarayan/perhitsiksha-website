@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Hero from '../components/ui/Hero';
 import Card from '../components/ui/Card';
 import {
@@ -19,26 +20,40 @@ import Button from '../components/ui/Button';
 import aboutHeroBg from '../assets/images/about-hero-bg.png';
 
 const About: React.FC = () => {
+  const { t } = useTranslation('about');
   return (
     <div>
       {/* Hero Section */}
       <Hero
-        title="Transforming Lives Through Education"
-        subtitle="Empowering underprivileged students to achieve their dreams through quality education and mentorship since 2022."
+        title={t('hero.title')}
+        subtitle={t('hero.subtitle')}
         backgroundImage={aboutHeroBg}
         overlay={true}
       />
+
+      {/* Founding Story — "the Why" (sourced from WEBSITE_TEXT.md) */}
+      <section className="bg-gray-50 section-padding">
+        <div className="max-w-3xl mx-auto container-padding text-center">
+          <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
+            {t('foundingStory.eyebrow')}
+          </p>
+          <h2 className="heading-2 mb-6">{t('foundingStory.title')}</h2>
+          <p className="body-large text-gray-700 leading-relaxed mb-4">
+            {t('foundingStory.paragraph1')}
+          </p>
+          <p className="body-large text-gray-700 leading-relaxed">
+            {t('foundingStory.paragraph2')}
+          </p>
+        </div>
+      </section>
 
       {/* Who We Are Section */}
       <section className="bg-white section-padding">
         <div className="max-w-6xl mx-auto container-padding">
           <div className="text-center mb-16">
-            <h2 className="heading-2 mb-6">Who We Are</h2>
+            <h2 className="heading-2 mb-6">{t('whoWeAre.title')}</h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Perhit Siksha (earlier CLSI) is a forum dedicated to breaking the
-              cycle of poverty through education. Since 2022, we've been
-              transforming the lives of deserving underprivileged children
-              across India.
+              {t('whoWeAre.intro')}
             </p>
           </div>
 
@@ -46,56 +61,48 @@ const About: React.FC = () => {
             <div className="space-y-6">
               <div className="space-y-4">
                 <h3 className="text-3xl font-bold text-gray-900">
-                  Our Approach
+                  {t('whoWeAre.approach.title')}
                 </h3>
                 <p className="body-large text-gray-700 leading-relaxed">
-                  We believe in providing direct financial support to families
-                  while preserving their dignity. Our approach removes barriers
-                  to quality education by addressing both financial constraints
-                  and emotional support needs.
+                  {t('whoWeAre.approach.paragraph1')}
                 </p>
                 <p className="body-large text-gray-700 leading-relaxed">
-                  Operating primarily in Uttar Pradesh, Uttarakhand, and Andhra
-                  Pradesh, we create sustainable pathways for students to
-                  achieve their educational goals and break generational cycles
-                  of poverty.
+                  {t('whoWeAre.approach.paragraph2')}
                 </p>
               </div>
 
               <div className="bg-primary-50 p-6 rounded-2xl border border-primary-100">
                 <h4 className="text-lg font-bold text-primary-900 mb-4 flex items-center">
                   <FaHeart className="mr-3 text-primary-600" />
-                  Why It Matters
+                  {t('whoWeAre.whyItMatters.title')}
                 </h4>
                 <p className="text-primary-800 leading-relaxed">
-                  Every child deserves the opportunity to learn, grow, and
-                  achieve their dreams. Education is not just about
-                  academics—it's about hope, dignity, and the power to transform
-                  entire communities.
+                  {t('whoWeAre.whyItMatters.body')}
                 </p>
               </div>
             </div>
 
             <div className="bg-primary-500 p-8 rounded-2xl text-white shadow-sm">
               <h4 className="text-xl font-bold mb-6 text-center">
-                Our Impact in Numbers
+                {t('whoWeAre.impact.title')}
               </h4>
               <div className="grid grid-cols-2 gap-8">
                 <div className="text-center">
                   <div className="text-4xl font-bold mb-2">450+</div>
                   <div className="text-sm text-primary-100">
-                    Students Supported
+                    {t('whoWeAre.impact.studentsSupported')}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-4xl font-bold mb-2">700+</div>
-                  <div className="text-sm text-primary-100">Contributors</div>
+                  <div className="text-sm text-primary-100">
+                    {t('whoWeAre.impact.contributors')}
+                  </div>
                 </div>
               </div>
               <div className="mt-6 pt-6 border-t border-primary-400 text-center">
                 <p className="text-sm text-primary-100">
-                  Every contribution directly impacts a student's educational
-                  journey
+                  {t('whoWeAre.impact.note')}
                 </p>
               </div>
             </div>
@@ -107,11 +114,10 @@ const About: React.FC = () => {
                 <FaBullseye className="text-2xl text-white" />
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Accountability
+                {t('whoWeAre.pillars.accountability.title')}
               </h4>
               <p className="text-gray-700 leading-relaxed">
-                Rigorous monitoring ensures every rupee reaches its intended
-                purpose with complete transparency and measurable impact.
+                {t('whoWeAre.pillars.accountability.body')}
               </p>
             </Card>
             <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-gray-50">
@@ -119,12 +125,10 @@ const About: React.FC = () => {
                 <FaSeedling className="text-2xl text-white" />
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Holistic Mentorship
+                {t('whoWeAre.pillars.mentorship.title')}
               </h4>
               <p className="text-gray-700 leading-relaxed">
-                Beyond financial aid, we provide dedicated academic guidance,
-                career counseling, and emotional support throughout their
-                journey.
+                {t('whoWeAre.pillars.mentorship.body')}
               </p>
             </Card>
             <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-primary-50">
@@ -132,12 +136,10 @@ const About: React.FC = () => {
                 <FaUsers className="text-2xl text-white" />
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Community Connection
+                {t('whoWeAre.pillars.community.title')}
               </h4>
               <p className="text-gray-700 leading-relaxed">
-                We foster lasting relationships between contributors and
-                students, creating a supportive community that celebrates every
-                milestone.
+                {t('whoWeAre.pillars.community.body')}
               </p>
             </Card>
           </div>
@@ -148,10 +150,9 @@ const About: React.FC = () => {
       <section className="bg-gray-50 section-padding">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-16">
-            <h2 className="heading-2 mb-6">Our Vision & Mission</h2>
+            <h2 className="heading-2 mb-6">{t('visionMission.title')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Guided by our unwavering commitment to educational equity and
-              social transformation
+              {t('visionMission.subtitle')}
             </p>
           </div>
 
@@ -164,19 +165,15 @@ const About: React.FC = () => {
                     <FaEye className="text-3xl text-primary-600" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900">
-                    Our Vision
+                    {t('visionMission.vision.title')}
                   </h3>
                 </div>
                 <p className="text-lg leading-relaxed text-gray-700">
-                  To empower every underprivileged child by providing
-                  opportunities to complete at least intermediate-level
-                  education, nurturing their academic potential and paving the
-                  way for a brighter, more equitable future.
+                  {t('visionMission.vision.body')}
                 </p>
                 <div className="mt-6 pt-6 border-t border-primary-200">
                   <p className="text-sm text-primary-600 italic">
-                    "Education is the most powerful weapon which you can use to
-                    change the world." - Nelson Mandela
+                    {t('visionMission.vision.quote')}
                   </p>
                 </div>
               </div>
@@ -190,36 +187,32 @@ const About: React.FC = () => {
                     <FaRocket className="text-3xl text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900">
-                    Our Mission
+                    {t('visionMission.mission.title')}
                   </h3>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-start">
                     <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
                     <p className="text-gray-700 leading-relaxed">
-                      Provide dignified financial aid for education without
-                      intermediaries
+                      {t('visionMission.mission.point1')}
                     </p>
                   </div>
                   <div className="flex items-start">
                     <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
                     <p className="text-gray-700 leading-relaxed">
-                      Offer comprehensive academic and emotional mentorship
-                      throughout their journey
+                      {t('visionMission.mission.point2')}
                     </p>
                   </div>
                   <div className="flex items-start">
                     <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
                     <p className="text-gray-700 leading-relaxed">
-                      Build a transparent, trustworthy platform driven by
-                      collective commitment
+                      {t('visionMission.mission.point3')}
                     </p>
                   </div>
                   <div className="flex items-start">
                     <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
                     <p className="text-gray-700 leading-relaxed">
-                      Enable promising children to transcend socio-economic
-                      limitations through education
+                      {t('visionMission.mission.point4')}
                     </p>
                   </div>
                 </div>
@@ -230,7 +223,7 @@ const About: React.FC = () => {
           {/* Core Principles */}
           <div className="bg-white rounded-3xl p-8 shadow-sm">
             <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
-              How We Make It Happen
+              {t('visionMission.howWeMakeItHappen.title')}
             </h3>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
@@ -238,10 +231,10 @@ const About: React.FC = () => {
                   <FaHeart className="text-2xl text-white" />
                 </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
-                  With Dignity
+                  {t('visionMission.howWeMakeItHappen.dignity.title')}
                 </h4>
                 <p className="text-gray-600 text-sm">
-                  Preserving self-respect while providing support
+                  {t('visionMission.howWeMakeItHappen.dignity.body')}
                 </p>
               </div>
               <div className="text-center">
@@ -249,10 +242,10 @@ const About: React.FC = () => {
                   <FaGem className="text-2xl text-white" />
                 </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
-                  With Transparency
+                  {t('visionMission.howWeMakeItHappen.transparency.title')}
                 </h4>
                 <p className="text-gray-600 text-sm">
-                  Complete accountability in every transaction
+                  {t('visionMission.howWeMakeItHappen.transparency.body')}
                 </p>
               </div>
               <div className="text-center">
@@ -260,10 +253,10 @@ const About: React.FC = () => {
                   <FaUsers className="text-2xl text-white" />
                 </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
-                  With Community
+                  {t('visionMission.howWeMakeItHappen.community.title')}
                 </h4>
                 <p className="text-gray-600 text-sm">
-                  Building lasting connections that inspire and sustain
+                  {t('visionMission.howWeMakeItHappen.community.body')}
                 </p>
               </div>
             </div>
@@ -275,10 +268,9 @@ const About: React.FC = () => {
       <section className="bg-white section-padding">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-16">
-            <h2 className="heading-2 mb-6">Our Core Values</h2>
+            <h2 className="heading-2 mb-6">{t('values.title')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              The fundamental principles that guide every decision we make and
-              action we take in our mission to transform lives.
+              {t('values.subtitle')}
             </p>
           </div>
 
@@ -288,12 +280,10 @@ const About: React.FC = () => {
                 <FaGraduationCap className="text-3xl text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Education First
+                {t('values.educationFirst.title')}
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                Education is the cornerstone of social transformation—the most
-                powerful instrument for personal empowerment and community
-                development.
+                {t('values.educationFirst.body')}
               </p>
             </Card>
             <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-gray-50">
@@ -301,12 +291,10 @@ const About: React.FC = () => {
                 <FaBullseye className="text-3xl text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Merit & Need
+                {t('values.meritNeed.title')}
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                We carefully balance academic potential with financial
-                necessity, ensuring our support creates the maximum sustainable
-                impact for deserving students.
+                {t('values.meritNeed.body')}
               </p>
             </Card>
             <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-primary-50">
@@ -314,12 +302,10 @@ const About: React.FC = () => {
                 <FaSeedling className="text-3xl text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Holistic Growth
+                {t('values.holisticGrowth.title')}
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                Our support extends far beyond financial aid—we nurture academic
-                excellence, career readiness, and personal development for
-                lifelong success.
+                {t('values.holisticGrowth.body')}
               </p>
             </Card>
             <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-gray-50">
@@ -327,12 +313,10 @@ const About: React.FC = () => {
                 <FaGem className="text-3xl text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Transparency
+                {t('values.transparency.title')}
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                Every contribution is tracked and reported with complete
-                transparency, ensuring trust and accountability in all our
-                operations and fund utilization.
+                {t('values.transparency.body')}
               </p>
             </Card>
           </div>
@@ -343,10 +327,8 @@ const About: React.FC = () => {
       <section className="bg-gray-50 section-padding">
         <div className="max-w-4xl mx-auto container-padding">
           <div className="text-center mb-16">
-            <h2 className="heading-2 mb-4">Our Journey</h2>
-            <p className="body-large text-gray-600">
-              Key milestones in our mission to democratize education
-            </p>
+            <h2 className="heading-2 mb-4">{t('journey.title')}</h2>
+            <p className="body-large text-gray-600">{t('journey.subtitle')}</p>
           </div>
 
           <div className="relative">
@@ -366,13 +348,11 @@ const About: React.FC = () => {
                     <div className="flex items-center mb-3">
                       <div className="w-3 h-3 bg-primary-500 rounded-full mr-3"></div>
                       <h3 className="text-xl font-bold text-gray-900">
-                        Foundation
+                        {t('journey.milestones.foundation.title')}
                       </h3>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      CLSI was established with a vision to transform lives
-                      through education and create lasting impact in
-                      communities.
+                      {t('journey.milestones.foundation.body')}
                     </p>
                   </Card>
                 </div>
@@ -390,16 +370,14 @@ const About: React.FC = () => {
                     <div className="flex items-center mb-3">
                       <div className="w-3 h-3 bg-primary-500 rounded-full mr-3"></div>
                       <h3 className="text-xl font-bold text-gray-900">
-                        50 Students
+                        {t('journey.milestones.fiftyStudents.title')}
                       </h3>
                       <span className="ml-2 text-xs px-2 py-1 bg-primary-100 text-primary-600 rounded-full">
-                        Milestone
+                        {t('journey.milestones.fiftyStudents.tag')}
                       </span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      Reached our first major milestone of supporting 50
-                      deserving students, establishing our foundation for
-                      growth.
+                      {t('journey.milestones.fiftyStudents.body')}
                     </p>
                   </Card>
                 </div>
@@ -417,15 +395,14 @@ const About: React.FC = () => {
                     <div className="flex items-center mb-3">
                       <div className="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
                       <h3 className="text-xl font-bold text-gray-900">
-                        100 Students
+                        {t('journey.milestones.hundredStudents.title')}
                       </h3>
                       <span className="ml-2 text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
-                        Growth
+                        {t('journey.milestones.hundredStudents.tag')}
                       </span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      Doubled our impact by supporting 100 students across
-                      multiple states, expanding our geographical reach.
+                      {t('journey.milestones.hundredStudents.body')}
                     </p>
                   </Card>
                 </div>
@@ -443,16 +420,14 @@ const About: React.FC = () => {
                     <div className="flex items-center mb-3">
                       <div className="w-3 h-3 bg-primary-500 rounded-full mr-3"></div>
                       <h3 className="text-xl font-bold text-gray-900">
-                        200+ Students
+                        {t('journey.milestones.twoHundredStudents.title')}
                       </h3>
                       <span className="ml-2 text-xs px-2 py-1 bg-primary-100 text-primary-600 rounded-full">
-                        Vision
+                        {t('journey.milestones.twoHundredStudents.tag')}
                       </span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      Significantly expanding our reach to support over 200
-                      students while enhancing our mentorship programs and
-                      community impact.
+                      {t('journey.milestones.twoHundredStudents.body')}
                     </p>
                   </Card>
                 </div>
@@ -465,8 +440,8 @@ const About: React.FC = () => {
                 <div className="w-2 h-2 bg-white rounded-full"></div>
               </div>
               <div className="ml-6 md:ml-8 flex-1">
-                <p className="text-sm text-gray-500 italic">
-                  Our journey continues...
+                <p className="text-sm text-gray-600 italic">
+                  {t('journey.continues')}
                 </p>
               </div>
             </div>
@@ -478,10 +453,8 @@ const About: React.FC = () => {
       <section className="bg-white section-padding">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-12">
-            <h2 className="heading-2 mb-4">Our Team</h2>
-            <p className="body-large">
-              Dedicated individuals working towards educational equity.
-            </p>
+            <h2 className="heading-2 mb-4">{t('team.title')}</h2>
+            <p className="body-large">{t('team.subtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
@@ -490,12 +463,12 @@ const About: React.FC = () => {
                 <span className="text-2xl font-bold text-white">SS</span>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-1">
-                Shri. Shobhit Sinha
+                {t('team.member1.name')}
               </h3>
-              <p className="text-primary-600 font-medium mb-2">Director</p>
-              <p className="text-sm text-gray-600">
-                Leading educational transformation initiatives
+              <p className="text-primary-600 font-medium mb-2">
+                {t('team.director')}
               </p>
+              <p className="text-sm text-gray-600">{t('team.member1.role')}</p>
             </Card>
 
             <Card className="text-center p-6 hover:shadow-md transition-all duration-300">
@@ -503,12 +476,12 @@ const About: React.FC = () => {
                 <span className="text-2xl font-bold text-white">SJ</span>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-1">
-                Ms. Seema Jain
+                {t('team.member2.name')}
               </h3>
-              <p className="text-primary-600 font-medium mb-2">Director</p>
-              <p className="text-sm text-gray-600">
-                Driving student support programs
+              <p className="text-primary-600 font-medium mb-2">
+                {t('team.director')}
               </p>
+              <p className="text-sm text-gray-600">{t('team.member2.role')}</p>
             </Card>
           </div>
         </div>
@@ -517,10 +490,9 @@ const About: React.FC = () => {
       {/* Call to Action */}
       <section className="bg-primary-500 text-white section-padding">
         <div className="max-w-4xl mx-auto container-padding text-center">
-          <h2 className="heading-2 mb-4">Ready to Make a Difference?</h2>
+          <h2 className="heading-2 mb-4">{t('cta.title')}</h2>
           <p className="text-xl mb-8 text-primary-100">
-            Join us in transforming lives through education. Every contribution
-            creates ripples of change that last generations.
+            {t('cta.description')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -530,7 +502,7 @@ const About: React.FC = () => {
               href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
               className="text-primary-500 border-white hover:bg-white"
             >
-              Become a Contributor
+              {t('cta.becomeContributor')}
             </Button>
             <Button
               variant="outline"
@@ -538,7 +510,7 @@ const About: React.FC = () => {
               href="/testimonials"
               className="text-white border-white hover:bg-white hover:text-primary-500"
             >
-              See Impact Stories
+              {t('cta.seeImpactStories')}
             </Button>
           </div>
         </div>
@@ -548,11 +520,8 @@ const About: React.FC = () => {
       <section className="bg-gray-50 section-padding">
         <div className="max-w-4xl mx-auto container-padding">
           <div className="text-center mb-8">
-            <h2 className="heading-2 mb-4">Get in Touch</h2>
-            <p className="body-large">
-              Have questions about our work or want to get involved? We'd love
-              to hear from you.
-            </p>
+            <h2 className="heading-2 mb-4">{t('contact.title')}</h2>
+            <p className="body-large">{t('contact.subtitle')}</p>
           </div>
 
           <div className="flex justify-center">

@@ -5,7 +5,10 @@
     "role": "Student",
     "location": "India",
     "youtubeId": "-nO2AIZNbbY",
-    "quote": "Perhitsiksha provided me with the support I needed to pursue my education. Their mentorship and guidance helped me achieve my goals.",
+    "quote": {
+      "en": "Perhitsiksha provided me with the support I needed to pursue my education. Their mentorship and guidance helped me achieve my goals.",
+      "hi": "मुझे… B.S.C. nursing करनी है… इससे मेरी स्कूल की फीस सबमिट भी होती है"
+    },
     "featured": true
   },
   {
@@ -14,7 +17,9 @@
     "role": "Student",
     "location": "India",
     "youtubeId": "SLSTiVsaw9o",
-    "quote": "Through Perhitsiksha, I was able to overcome financial barriers and focus on my studies. The support made all the difference in my educational journey.",
+    "quote": {
+      "en": "Through Perhitsiksha, I was able to overcome financial barriers and focus on my studies. The support made all the difference in my educational journey."
+    },
     "featured": false
   },
   {
@@ -23,7 +28,9 @@
     "role": "Student",
     "location": "India",
     "youtubeId": "6EiYyVOujX8",
-    "quote": "Perhitsiksha gave me the opportunity to pursue higher education when my family couldn't afford it. I'm grateful for their belief in my potential.",
+    "quote": {
+      "en": "Perhitsiksha gave me the opportunity to pursue higher education when my family couldn't afford it. I'm grateful for their belief in my potential."
+    },
     "featured": true
   },
   {
@@ -32,7 +39,9 @@
     "role": "Contributor",
     "location": "India",
     "youtubeId": "ffztznX6NI8",
-    "quote": "Contributing to Perhitsiksha gives me immense satisfaction knowing that my support directly impacts a student's future. It's the most meaningful investment I make.",
+    "quote": {
+      "en": "Contributing to Perhitsiksha gives me immense satisfaction knowing that my support directly impacts a student's future. It's the most meaningful investment I make."
+    },
     "featured": false
   },
   {
@@ -41,7 +50,9 @@
     "role": "Coordinator",
     "location": "India",
     "youtubeId": "Z37rsfqWu6E",
-    "quote": "Working with Perhitsiksha has shown me the transformative power of education. Every day, I witness students breaking barriers and achieving their dreams.",
+    "quote": {
+      "en": "Working with Perhitsiksha has shown me the transformative power of education. Every day, I witness students breaking barriers and achieving their dreams."
+    },
     "featured": true
   },
   {
@@ -50,7 +61,9 @@
     "role": "Parent",
     "location": "India",
     "youtubeId": "6DVA-T63h8g",
-    "quote": "Perhitsiksha's support not only provided the necessary funding but also guidance that helped our family navigate the educational journey. Today, our story inspires other parents who believe in the power of education.",
+    "quote": {
+      "en": "Perhitsiksha's support not only provided the necessary funding but also guidance that helped our family navigate the educational journey. Today, our story inspires other parents who believe in the power of education."
+    },
     "featured": true
   },
   {
@@ -59,7 +72,9 @@
     "role": "Parent",
     "location": "India",
     "youtubeId": "QX7gPeQx12g",
-    "quote": "My determination to provide quality education for my child led me to Perhitsiksha. They helped make our dreams a reality and gave my child better opportunities.",
+    "quote": {
+      "en": "My determination to provide quality education for my child led me to Perhitsiksha. They helped make our dreams a reality and gave my child better opportunities."
+    },
     "featured": false
   },
   {
@@ -68,7 +83,9 @@
     "role": "Mentor",
     "location": "India",
     "youtubeId": "xNaremGF8Ko",
-    "quote": "My journey as a mentor with Perhitsiksha showcases the transformative power of guidance and support. Helping students achieve their goals demonstrates how mentorship can change lives.",
+    "quote": {
+      "en": "My journey as a mentor with Perhitsiksha showcases the transformative power of guidance and support. Helping students achieve their goals demonstrates how mentorship can change lives."
+    },
     "featured": true
   },
   {
@@ -77,7 +94,9 @@
     "role": "Mentor",
     "location": "India",
     "youtubeId": "gDyZVALHhxU",
-    "quote": "My commitment to mentoring through Perhitsiksha reflects the organization's core values of guidance and support. I help shape the next generation of leaders and innovators.",
+    "quote": {
+      "en": "My commitment to mentoring through Perhitsiksha reflects the organization's core values of guidance and support. I help shape the next generation of leaders and innovators."
+    },
     "featured": false
   },
   {
@@ -86,7 +105,9 @@
     "role": "Parent",
     "location": "India",
     "youtubeId": "VGxDPY10k4E",
-    "quote": "Perhitsiksha's support has been instrumental in my child's educational journey. Their commitment to helping families like ours is truly remarkable.",
+    "quote": {
+      "en": "Perhitsiksha's support has been instrumental in my child's educational journey. Their commitment to helping families like ours is truly remarkable."
+    },
     "featured": false
   },
   {
@@ -95,7 +116,9 @@
     "role": "Parent",
     "location": "India",
     "youtubeId": "86HzMPnEe7c",
-    "quote": "Through Perhitsiksha, my child received the educational opportunities I always dreamed of providing. Their support changed our family's future.",
+    "quote": {
+      "en": "Through Perhitsiksha, my child received the educational opportunities I always dreamed of providing. Their support changed our family's future."
+    },
     "featured": false
   },
   {
@@ -104,7 +127,9 @@
     "role": "Parent",
     "location": "India",
     "youtubeId": "S0zH15KHTRE",
-    "quote": "Perhitsiksha's assistance gave my child the chance to pursue higher education. I'm grateful for their belief in our children's potential.",
+    "quote": {
+      "en": "Perhitsiksha's assistance gave my child the chance to pursue higher education. I'm grateful for their belief in our children's potential."
+    },
     "featured": true
   },
   {
@@ -113,7 +138,9 @@
     "role": "Parent",
     "location": "India",
     "youtubeId": "uDgrpL_I-HY",
-    "quote": "The support from Perhitsiksha has been life-changing for our family. Education is the key to breaking barriers, and they made it possible.",
+    "quote": {
+      "en": "The support from Perhitsiksha has been life-changing for our family. Education is the key to breaking barriers, and they made it possible."
+    },
     "featured": false
   },
   {
@@ -122,7 +149,9 @@
     "role": "Parent",
     "location": "India",
     "youtubeId": "UtKlUTgUhs0",
-    "quote": "Perhitsiksha's dedication to helping families overcome educational challenges is inspiring. They truly understand the value of every child's dreams.",
+    "quote": {
+      "en": "Perhitsiksha's dedication to helping families overcome educational challenges is inspiring. They truly understand the value of every child's dreams."
+    },
     "featured": true
   }
 ]

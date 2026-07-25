@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
 import logoImage from '../../assets/images/logo.jpg';
+import { useDonationDrawer } from '../../context/DonationContext';
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation('footer');
+  const { open: openDonation } = useDonationDrawer();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -15,33 +19,38 @@ const Footer: React.FC = () => {
             <div className="flex items-center space-x-2 mb-4">
               <img
                 src={logoImage}
-                alt="Perhitsiksha Logo"
+                alt={t('logoAlt')}
                 className="w-8 h-8 rounded-lg object-cover"
               />
-              <span className="text-xl font-bold">Perhitsiksha Foundation</span>
+              <span className="text-xl font-bold">{t('orgName')}</span>
             </div>
             <div className="text-gray-300 mb-4 max-w-md text-sm">
+              <p className="mb-1">{t('registration.section8')}</p>
               <p className="mb-1">
-                Registered as a Section 8 Company under the Companies Act, 2013
+                <span className="font-medium">
+                  {t('registration.cinLabel')}
+                </span>{' '}
+                U85500UP2025NPL237759
               </p>
               <p className="mb-1">
-                <span className="font-medium">CIN:</span> U85500UP2025NPL237759
-              </p>
-              <p className="mb-1">
-                <span className="font-medium">Date of Incorporation:</span>{' '}
+                <span className="font-medium">
+                  {t('registration.incorporationLabel')}
+                </span>{' '}
                 December 6, 2025
               </p>
               <p>
-                <span className="font-medium">Registered Office:</span> H NO.
-                659 Eldeco Udayan-I, Sec-3 Bangla Bazar, Dilkusha, Lucknow,
-                Uttar Pradesh - 226002
+                <span className="font-medium">
+                  {t('registration.officeLabel')}
+                </span>{' '}
+                H NO. 659 Eldeco Udayan-I, Sec-3 Bangla Bazar, Dilkusha,
+                Lucknow, Uttar Pradesh - 226002
               </p>
             </div>
             <div className="flex space-x-4">
               <a
                 href="https://www.facebook.com/share/19uSggzByG/"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
-                aria-label="Follow us on Facebook"
+                aria-label={t('social.facebook')}
               >
                 <svg
                   className="w-6 h-6"
@@ -54,7 +63,7 @@ const Footer: React.FC = () => {
               <a
                 href="https://www.youtube.com/@PerhitSikshaFoundation"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
-                aria-label="Subscribe to our YouTube channel"
+                aria-label={t('social.youtube')}
               >
                 <svg
                   className="w-6 h-6"
@@ -67,7 +76,7 @@ const Footer: React.FC = () => {
               <a
                 href="https://www.instagram.com/perhit.siksha/"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
-                aria-label="Follow us on Instagram"
+                aria-label={t('social.instagram')}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -84,14 +93,16 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {t('quickLinks.title')}
+            </h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   to="/testimonials"
                   className="text-gray-300 hover:text-white transition-colors duration-200"
                 >
-                  Testimonials
+                  {t('quickLinks.testimonials')}
                 </Link>
               </li>
               <li>
@@ -99,32 +110,31 @@ const Footer: React.FC = () => {
                   to="/about"
                   className="text-gray-300 hover:text-white transition-colors duration-200"
                 >
-                  About Us
+                  {t('quickLinks.about')}
                 </Link>
               </li>
               <li>
-                <a
-                  href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={openDonation}
+                  className="text-gray-300 hover:text-white transition-colors duration-200 text-left"
                 >
-                  Support Students
-                </a>
+                  {t('quickLinks.support')}
+                </button>
               </li>
             </ul>
           </div>
 
           {/* Contact & Legal */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Connect</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('connect.title')}</h3>
             <ul className="space-y-2">
               <li>
                 <a
                   href="mailto:clsi.perhitsiksha@gmail.com"
                   className="text-gray-300 hover:text-white transition-colors duration-200"
                 >
-                  Contact Us
+                  {t('connect.contact')}
                 </a>
               </li>
               <li>
@@ -132,7 +142,7 @@ const Footer: React.FC = () => {
                   to="/privacy"
                   className="text-gray-300 hover:text-white transition-colors duration-200"
                 >
-                  Privacy Policy
+                  {t('connect.privacy')}
                 </Link>
               </li>
             </ul>
@@ -143,18 +153,23 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-800 pt-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm text-center sm:text-left">
-              © {currentYear} Perhitsiksha. All rights reserved.
+              {t('copyright', { year: currentYear })}
             </p>
             <p className="text-gray-400 text-sm">
-              Website made by{' '}
-              <a
-                href="https://www.materiallab.io/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 transition-colors duration-200 font-medium"
-              >
-                Material Lab
-              </a>
+              <Trans
+                t={t}
+                i18nKey="madeBy"
+                components={{
+                  a: (
+                    <a
+                      href="https://www.materiallab.io/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 transition-colors duration-200 font-medium"
+                    />
+                  ),
+                }}
+              />
             </p>
           </div>
         </div>

@@ -2,6 +2,99 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===================================================================
+   Canonical Perhitsiksha DS token layer (pe-6wt migration).
+   Single source of truth for brand colour; Tailwind `primary` mirrors it.
+   =================================================================== */
+:root {
+  /* Blue — functional workhorse */
+  --blue-050: #e9f0fe;
+  --blue-100: #c7d9fd;
+  --blue-200: #0061ef; /* base = brand */
+  --blue-300: #0040ea;
+  --blue-400: #0000db; /* shadow only */
+  /* Warm ground + ink */
+  --surface-page: #f9f4f2;
+  --white: #ffffff;
+  --grey-700: #2d2c2b;
+  /* Semantic aliases (mirror ds/tokens/colors.css) */
+  --brand-primary: var(--blue-200);
+  --brand-signature: #ff7300; /* orange — logo/pop/illustration ONLY, never a button */
+  --brand-ink: var(--grey-700);
+  --focus-ring: var(--blue-200);
+  /* Surfaces that flip in dark (light defaults). */
+  --surface-card: #ffffff; /* solid card ground */
+  --surface-muted: #f1f3f4; /* subtle alt / hover ground */
+  --border-subtle: #e8eaed; /* hairline dividers */
+  --ink-strong: var(--grey-700); /* headings */
+  --ink-body: #5a5f66; /* body / subtext (AA on light) */
+  --ink-soft: #3c4043; /* secondary text */
+  --brand-link: var(--blue-200); /* link/accent ink */
+  /* Composition tokens (pe-gdu B3) --------------------------------- */
+  /* Corner radii — no sharp corners; cards/images/inputs at 16 or 24px. */
+  --radius-card: 24px; /* cards / large surfaces */
+  --radius-media: 16px; /* images / inputs / chips */
+  /* Strict z-index scale. bg behind base; float (hero sparkles) above
+     the bg image yet below hero text (z-20); header=100; modals/drawers=1000. */
+  --z-bg: -1;
+  --z-base: 1;
+  --z-float: 10;
+  --z-header: 100;
+  --z-modal: 1000;
+}
+
+/* ===================================================================
+   Dark theme tokens (pe-7t9).
+   Explicit `data-theme="dark"` on <html> always wins; when no explicit
+   choice is made, OS preference is honoured via prefers-color-scheme.
+   Text kept >=4.5:1 on its surface in both themes.
+   =================================================================== */
+:root[data-theme='dark'] {
+  --surface-page: #141314; /* page ground */
+  --surface-card: #1e1c1d; /* solid card */
+  --surface-muted: #2a2627; /* alt / hover ground */
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --white: #1e1c1d; /* remap literal-white surface token */
+  --brand-ink: #f2eeec; /* near-white warm ink (~15:1 on page) */
+  --ink-strong: #f2eeec; /* headings */
+  --ink-soft: #d8d3d0; /* secondary text (~11:1 on card) */
+  --ink-body: #bdb7b4; /* body / subtext (~6.8:1 on card) */
+  --brand-primary: #66a3ff; /* lighter on-dark blue (~6:1 on page) */
+  --brand-link: #66a3ff;
+  --focus-ring: #66a3ff;
+}
+
+/* OS-dark default when the user has made no explicit choice.
+   `:not([data-theme='light'])` lets an explicit light choice override it. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
+    --surface-page: #141314;
+    --surface-card: #1e1c1d;
+    --surface-muted: #2a2627;
+    --border-subtle: rgba(255, 255, 255, 0.12);
+    --white: #1e1c1d;
+    --brand-ink: #f2eeec;
+    --ink-strong: #f2eeec;
+    --ink-soft: #d8d3d0;
+    --ink-body: #bdb7b4;
+    --brand-primary: #66a3ff;
+    --brand-link: #66a3ff;
+    --focus-ring: #66a3ff;
+  }
+}
+
+/* Respect reduced-motion globally: kill CSS loops (GSAP gates itself via matchMedia). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Custom base styles */
 @layer base {
   html {
@@ -10,23 +103,46 @@
 
   body {
     font-family:
-      'Inter',
+      'Anek Latin',
+      'Anek Devanagari',
       system-ui,
       -apple-system,
-      BlinkMacSystemFont,
       'Segoe UI',
-      Roboto,
       sans-serif;
     line-height: 1.6;
-    color: #3c4043;
+    color: var(--brand-ink);
+    background: var(--surface-page);
     margin: 0;
     min-height: 100vh;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   /* Improved focus styles for accessibility */
   *:focus-visible {
-    outline: 2px solid #0068b3;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
+  }
+
+  /* ===============================================================
+     Devanagari (Hindi) metric overrides — Anek Devanagari needs a
+     little more leading and non-negative tracking to breathe. Tracking
+     is clamped to [0, 0.02em]; headings get slightly tighter leading.
+     =============================================================== */
+  :lang(hi) {
+    line-height: 1.8;
+    letter-spacing: 0;
+  }
+
+  :lang(hi) h1,
+  :lang(hi) h2,
+  :lang(hi) h3,
+  :lang(hi) .heading-1,
+  :lang(hi) .heading-2,
+  :lang(hi) .heading-3 {
+    line-height: 1.4;
+    letter-spacing: 0.01em;
   }
 }
 
@@ -45,7 +161,8 @@
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden;
+    /* Radius bumped to --radius-card (24px) — no sharp corners (pe-gdu B3). */
+    @apply bg-white rounded-3xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden;
   }
 
   .container-padding {
@@ -54,6 +171,11 @@
 
   .section-padding {
     @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  /* Fluid section rhythm — scales block padding with the viewport (pe-gdu B3). */
+  .section-fluid {
+    padding-block: clamp(4rem, 10vw, 8rem);
   }
 
   .heading-1 {
@@ -137,12 +259,16 @@
 
   /* Mobile menu slide-in animations */
   .mobile-menu-backdrop {
-    @apply fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300;
+    @apply fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300;
+    /* Drawer sits at modal level, just under the panel (pe-gdu B3 z-scale). */
+    z-index: calc(var(--z-modal) - 1);
   }
 
   .mobile-menu-panel {
-    @apply fixed top-0 right-0 h-full bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out;
-    width: 280px;
+    @apply fixed inset-0 overflow-y-auto overscroll-contain;
+    z-index: var(--z-modal);
+    /* Full-screen warm-white ground (DS --surface-page). */
+    background: var(--surface-page);
   }
 
   .mobile-menu-enter {
@@ -173,6 +299,58 @@
       rgba(0, 0, 0, 0.6) 100%
     );
     z-index: -1;
+  }
+
+  /* Cap prose line-length at ~60ch for comfortable reading (pe-gdu B3). */
+  .prose-measure {
+    max-width: 60ch;
+  }
+
+  /* Strict z-index scale utilities (z-bg / z-base / z-float / z-header /
+     z-modal) are generated by Tailwind from theme.extend.zIndex, which
+     mirrors the --z-* tokens above (pe-gdu B3). */
+
+  /* Portrait media normaliser — mixed portrait/landscape student photos all
+     resolve to a 3:4 frame so card heights never break (pe-gdu B3). */
+  .portrait-3-4 {
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  /* Subtle campaign colour-grade for student photos (cohesion, pe-gdu B3). */
+  .photo-grade {
+    filter: sepia(10%) contrast(105%);
+  }
+
+  /* Bottom scrim behind white name/age text over a photo — never a light
+     scrim (dark protection, per DS photo-scrim law). */
+  .photo-name-scrim::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 55%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    pointer-events: none;
+  }
+
+  /* Glassmorphism for floating name tags / chips (pe-gdu B3). */
+  .glass-chip {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+  :root[data-theme='dark'] .glass-chip {
+    background: rgba(30, 28, 29, 0.6);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']):not([data-theme='dark']) .glass-chip {
+      background: rgba(30, 28, 29, 0.6);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
   }
 
   /* Shimmer effect for CTA button */
@@ -220,7 +398,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-media); /* 16px — no sharp corners (pe-gdu B3) */
 }
 
 /* Smooth transitions for interactive elements */
@@ -240,7 +418,7 @@
   position: absolute;
   top: -40px;
   left: 6px;
-  background: #0068b3;
+  background: var(--brand-primary);
   color: white;
   padding: 8px;
   text-decoration: none;
@@ -275,4 +453,124 @@
 .marquee-container {
   animation: marquee 30s linear infinite;
   will-change: transform;
+}
+
+/* ===================================================================
+   Dark-theme adaptation for un-tokenised utilities (pe-7t9).
+   Section components hard-code `bg-white` / `text-gray-*`; they can't be
+   edited here, so remap the literal utility + @apply classes when the
+   dark theme is active. Higher specificity (:root[...] .util) beats the
+   plain utilities without !important. Slash-opacity classes
+   (bg-white/10, text-white/90) use different class names and are NOT
+   matched — the blue hero panels & photo scrims stay intact by design.
+   =================================================================== */
+/* Solid surfaces */
+:root[data-theme='dark'] .bg-white,
+:root[data-theme='dark'] .card {
+  background-color: var(--surface-card);
+  transition: background-color 0.3s ease;
+}
+:root[data-theme='dark'] .bg-gray-50,
+:root[data-theme='dark'] .bg-gray-100 {
+  background-color: var(--surface-muted);
+  transition: background-color 0.3s ease;
+}
+:root[data-theme='dark'] .bg-primary-50 {
+  background-color: #262324;
+}
+
+/* Ink */
+:root[data-theme='dark'] .text-gray-900,
+:root[data-theme='dark'] .text-gray-800,
+:root[data-theme='dark'] .heading-1,
+:root[data-theme='dark'] .heading-2,
+:root[data-theme='dark'] .heading-3 {
+  color: var(--ink-strong);
+}
+:root[data-theme='dark'] .text-gray-700 {
+  color: var(--ink-soft);
+}
+:root[data-theme='dark'] .text-gray-600,
+:root[data-theme='dark'] .text-gray-500,
+:root[data-theme='dark'] .body-large,
+:root[data-theme='dark'] .body-base {
+  color: var(--ink-body);
+}
+:root[data-theme='dark'] .text-primary-500,
+:root[data-theme='dark'] .text-primary-600,
+:root[data-theme='dark'] .text-primary-700 {
+  color: var(--brand-link);
+}
+
+/* Borders */
+:root[data-theme='dark'] .border-gray-100,
+:root[data-theme='dark'] .border-gray-200,
+:root[data-theme='dark'] .border-gray-300 {
+  border-color: var(--border-subtle);
+}
+
+/* Secondary button: white ground -> dark card, keep legible */
+:root[data-theme='dark'] .btn-secondary {
+  background-color: var(--surface-card);
+  color: var(--brand-link);
+  border-color: var(--brand-link);
+}
+:root[data-theme='dark'] .btn-secondary:hover {
+  background-color: var(--surface-muted);
+}
+
+/* ===================================================================
+   Texture + organic decor (pe-1a4 B8).
+   Static, GPU-cheap page grain + a reusable organic-blob utility.
+   =================================================================== */
+
+/* Site-wide grain/noise overlay. Fixed, non-interactive, sits at the very
+   back (--z-bg) so it tints the page ground without touching any section
+   markup. The noise is a static inline SVG feTurbulence data-URI — no
+   external asset, no animation (perf-safe). Kept very subtle (~4%). */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-bg);
+  pointer-events: none;
+  opacity: 0.04;
+  /* fractalNoise turbulence rasterised to a tiling 200x200 tile. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  /* Multiply keeps grain reading as texture (dark specks) on the warm
+     light ground instead of a flat grey wash. */
+  mix-blend-mode: multiply;
+}
+
+/* Dark mode: multiply on a near-black ground would vanish or muddy, so
+   switch to screen (light specks) and dial the opacity down further. */
+:root[data-theme='dark'] body::before {
+  opacity: 0.025;
+  mix-blend-mode: screen;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='dark']) body::before {
+    opacity: 0.025;
+    mix-blend-mode: screen;
+  }
+}
+
+/* Organic decorative blob (see components/ui/Blob.tsx). Purely a colour
+   fill on a soft, rounded, off-round path. Softly blurred so it reads as an
+   ambient wash of colour behind content — never a hard shape. Non-interactive. */
+@layer components {
+  .blob-decor {
+    pointer-events: none;
+    filter: blur(8px);
+    opacity: 0.5;
+  }
+  :root[data-theme='dark'] .blob-decor {
+    opacity: 0.35;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']):not([data-theme='dark']) .blob-decor {
+      opacity: 0.35;
+    }
+  }
 }

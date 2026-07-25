@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Hero from '../components/ui/Hero';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import VideoModal from '../components/ui/VideoModal';
+import PlayButton from '../components/ui/PlayButton';
+import { useLanguage } from '../i18n/useLanguage';
 import type { Testimonial } from '../types';
-import { FaPlay, FaStar, FaQuoteLeft } from 'react-icons/fa';
+import { FaStar, FaQuoteLeft } from 'react-icons/fa';
+import { gsap, useGSAP, ScrollTrigger } from '../lib/gsap';
 
 // Import data
 import testimonialsData from '../data/testimonials.json';
@@ -13,6 +17,8 @@ import testimonialsData from '../data/testimonials.json';
 import testimonialsHeroBg from '../assets/images/testimonials-hero-bg.png';
 
 const Testimonials: React.FC = () => {
+  const { t } = useTranslation(['testimonials', 'common']);
+  const { lang } = useLanguage();
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [filteredTestimonials, setFilteredTestimonials] = useState<
     Testimonial[]
@@ -33,6 +39,10 @@ const Testimonials: React.FC = () => {
     celebrityName: '',
   });
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  const featuredWrapRef = useRef<HTMLDivElement>(null);
+  const featuredTextRef = useRef<HTMLDivElement>(null);
+
   const roles = ['All', 'Student', 'Parent', 'Mentor', 'Contributor'];
 
   useEffect(() => {
@@ -51,6 +61,84 @@ const Testimonials: React.FC = () => {
       );
     }
   }, [testimonials, selectedRole]);
+
+  // GSAP layer: pin the featured text column, scrub-parallax the grid
+  // portraits, and stagger-reveal the grid cards. All matchMedia-gated so
+  // reduced-motion gets static end-states.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      // Pin the left featured text column while the right cards scroll (lg+).
+      mm.add(
+        '(min-width: 1024px) and (prefers-reduced-motion: no-preference)',
+        () => {
+          if (!featuredWrapRef.current || !featuredTextRef.current) return;
+          const st = ScrollTrigger.create({
+            trigger: featuredWrapRef.current,
+            start: 'top 120px',
+            end: 'bottom bottom',
+            pin: featuredTextRef.current,
+            pinSpacing: false,
+          });
+          return () => st.kill();
+        }
+      );
+
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        // Vertical scrub parallax on grid portraits (frames are overflow-hidden).
+        const portraits = gsap.utils.toArray<HTMLElement>(
+          '.parallax-portrait',
+          rootRef.current
+        );
+        portraits.forEach(img => {
+          gsap.fromTo(
+            img,
+            { yPercent: -15, scale: 1.5 },
+            {
+              yPercent: 15,
+              scale: 1.5,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: img,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+              },
+            }
+          );
+        });
+
+        // Staggered reveal of grid cards.
+        const cards = gsap.utils.toArray<HTMLElement>(
+          '.reveal-card',
+          rootRef.current
+        );
+        if (cards.length) {
+          gsap.set(cards, { autoAlpha: 0, y: 50 });
+          const batch = ScrollTrigger.batch('.reveal-card', {
+            start: 'top 85%',
+            once: true,
+            onEnter: b =>
+              gsap.to(b, {
+                y: 0,
+                autoAlpha: 1,
+                stagger: 0.1,
+                ease: 'spring',
+                duration: 0.7,
+              }),
+          });
+          return () => batch.forEach(st => st.kill());
+        }
+      });
+
+      ScrollTrigger.refresh();
+    },
+    {
+      scope: rootRef,
+      dependencies: [filteredTestimonials, featuredTestimonials],
+    }
+  );
 
   const handleRoleFilter = (role: string) => {
     setSelectedRole(role);
@@ -79,103 +167,109 @@ const Testimonials: React.FC = () => {
   };
 
   return (
-    <div>
+    <div ref={rootRef}>
       {/* Hero Section */}
       <Hero
-        title="Voices of Change"
-        subtitle="Hear directly from our community about how education transforms lives and creates lasting impact."
+        title={t('hero.title')}
+        subtitle={t('hero.subtitle')}
         backgroundImage={testimonialsHeroBg}
         overlay={true}
       />
 
-      {/* Featured Testimonials Section */}
+      {/* Featured Testimonials Section — 2 columns: pinned text + scrolling cards */}
       <section className="bg-white section-padding">
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="text-center mb-12">
-            <h2 className="heading-2 mb-4">Featured Impact Stories</h2>
-            <p className="body-large text-gray-600 max-w-3xl mx-auto">
-              Discover how education transforms lives through our most inspiring
-              testimonials
-            </p>
-          </div>
+          <div
+            ref={featuredWrapRef}
+            className="grid lg:grid-cols-2 gap-8 lg:gap-12 mb-12 items-start"
+          >
+            {/* Left: pinned intro text */}
+            <div ref={featuredTextRef} className="lg:py-8">
+              <h2 className="heading-2 mb-4">{t('featured.title')}</h2>
+              <p className="body-large text-gray-600 max-w-xl">
+                {t('featured.subtitle')}
+              </p>
+            </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 mb-12">
-            {featuredTestimonials.slice(0, 2).map(testimonial => (
-              <Card
-                key={testimonial.id}
-                className="overflow-hidden group hover:shadow-xl transition-all duration-300"
-              >
-                {/* Video Preview */}
-                <div className="relative aspect-video bg-gray-900">
-                  <img
-                    src={getYouTubeThumbnail(testimonial.youtubeId!)}
-                    alt={`${testimonial.name} testimonial`}
-                    className="w-full h-full object-cover"
-                    onError={e => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://img.youtube.com/vi/${testimonial.youtubeId}/hqdefault.jpg`;
-                    }}
-                  />
+            {/* Right: scrolling featured cards */}
+            <div className="space-y-8">
+              {featuredTestimonials.slice(0, 2).map(testimonial => (
+                <article key={testimonial.id}>
+                  <Card className="overflow-hidden group hover:shadow-xl transition-all duration-300">
+                    {/* Video Preview */}
+                    <div className="relative aspect-video bg-gray-900">
+                      <img
+                        src={getYouTubeThumbnail(testimonial.youtubeId!)}
+                        alt={`${testimonial.name} testimonial`}
+                        className="w-full h-full object-cover"
+                        onError={e => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = `https://img.youtube.com/vi/${testimonial.youtubeId}/hqdefault.jpg`;
+                        }}
+                      />
 
-                  {/* Play Button Overlay */}
-                  <div
-                    className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center cursor-pointer group-hover:bg-opacity-50 transition-all duration-200"
-                    onClick={() => handleVideoPlay(testimonial)}
-                  >
-                    <div className="w-20 h-20 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                      <FaPlay className="text-2xl text-gray-800 ml-1" />
-                    </div>
-                  </div>
+                      {/* Play Button Overlay */}
+                      <div
+                        className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center cursor-pointer group-hover:bg-opacity-50 transition-all duration-200"
+                        onClick={() => handleVideoPlay(testimonial)}
+                      >
+                        <PlayButton
+                          size={80}
+                          ariaLabel={`Play ${testimonial.name} testimonial`}
+                        />
+                      </div>
 
-                  {/* Featured Badge */}
-                  <div className="absolute top-4 left-4">
-                    <div className="flex items-center bg-primary-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      <FaStar className="w-3 h-3 mr-1" />
-                      Featured
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold">
-                      {testimonial.name.charAt(0)}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {testimonial.name}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                            testimonial.role === 'Student'
-                              ? 'bg-blue-100 text-blue-800'
-                              : testimonial.role === 'Parent'
-                                ? 'bg-green-100 text-green-800'
-                                : testimonial.role === 'Mentor'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : 'bg-orange-100 text-orange-800'
-                          }`}
-                        >
-                          {testimonial.role}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {testimonial.location}
-                        </span>
+                      {/* Featured Badge */}
+                      <div className="absolute top-4 left-4">
+                        <div className="flex items-center bg-primary-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                          <FaStar className="w-3 h-3 mr-1" />
+                          {t('featured.badge')}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="relative">
-                    <FaQuoteLeft className="absolute -top-2 -left-1 text-primary-200 text-2xl" />
-                    <blockquote className="text-gray-700 italic leading-relaxed pl-6">
-                      "{testimonial.quote}"
-                    </blockquote>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                    {/* Content */}
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold">
+                          {testimonial.name.charAt(0)}
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">
+                            {testimonial.name}
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                                testimonial.role === 'Student'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : testimonial.role === 'Parent'
+                                    ? 'bg-green-100 text-green-800'
+                                    : testimonial.role === 'Mentor'
+                                      ? 'bg-purple-100 text-purple-800'
+                                      : 'bg-orange-100 text-orange-800'
+                              }`}
+                            >
+                              {testimonial.role}
+                            </span>
+                            <span className="text-sm text-gray-600">
+                              {testimonial.location}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <FaQuoteLeft className="absolute -top-2 -left-1 text-primary-200 text-2xl" />
+                        <blockquote className="text-gray-700 italic leading-relaxed pl-6">
+                          "{testimonial.quote[lang] ?? testimonial.quote.en}"
+                        </blockquote>
+                      </div>
+                    </div>
+                  </Card>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -186,11 +280,9 @@ const Testimonials: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                All Testimonials
+                {t('filters.title')}
               </h2>
-              <p className="text-gray-600">
-                Browse stories from our entire community
-              </p>
+              <p className="text-gray-600">{t('filters.subtitle')}</p>
             </div>
 
             <div className="flex gap-2 flex-wrap">
@@ -204,7 +296,7 @@ const Testimonials: React.FC = () => {
                       : 'bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600 border border-gray-200'
                   }`}
                 >
-                  {role}
+                  {t(`filters.roles.${role.toLowerCase()}`)}
                 </button>
               ))}
             </div>
@@ -212,9 +304,9 @@ const Testimonials: React.FC = () => {
 
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              Showing {filteredTestimonials.length} testimonials
+              {t('filters.showing', { count: filteredTestimonials.length })}
             </div>
-            <div className="flex items-center text-sm text-gray-500">
+            <div className="flex items-center text-sm text-gray-600">
               <svg
                 className="w-4 h-4 mr-1"
                 fill="none"
@@ -228,7 +320,7 @@ const Testimonials: React.FC = () => {
                   d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                 />
               </svg>
-              Click any video to watch
+              {t('filters.clickToWatch')}
             </div>
           </div>
         </div>
@@ -255,80 +347,80 @@ const Testimonials: React.FC = () => {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                No testimonials found
+                {t('empty.title')}
               </h3>
-              <p className="text-gray-500">
-                Try selecting a different role filter.
-              </p>
+              <p className="text-gray-600">{t('empty.subtitle')}</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredTestimonials.map(testimonial => (
-                <Card
-                  key={testimonial.id}
-                  className="overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer"
-                  onClick={() => handleVideoPlay(testimonial)}
-                >
-                  {/* Video Thumbnail */}
-                  <div className="relative aspect-video bg-gray-900">
-                    <img
-                      src={getYouTubeThumbnail(testimonial.youtubeId!)}
-                      alt={`${testimonial.name} testimonial`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={e => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `https://img.youtube.com/vi/${testimonial.youtubeId}/hqdefault.jpg`;
-                      }}
-                    />
+                <article key={testimonial.id} className="reveal-card">
+                  <Card
+                    className="overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer"
+                    onClick={() => handleVideoPlay(testimonial)}
+                  >
+                    {/* Video Thumbnail */}
+                    <div className="relative aspect-video bg-gray-900 overflow-hidden">
+                      <img
+                        src={getYouTubeThumbnail(testimonial.youtubeId!)}
+                        alt={`${testimonial.name} testimonial`}
+                        className="parallax-portrait absolute inset-0 w-full h-full object-cover"
+                        onError={e => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = `https://img.youtube.com/vi/${testimonial.youtubeId}/hqdefault.jpg`;
+                        }}
+                      />
 
-                    {/* Play Button */}
-                    <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all duration-200">
-                      <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                        <FaPlay className="text-gray-800 ml-1" />
+                      {/* Play Button */}
+                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all duration-200">
+                        <PlayButton
+                          size={48}
+                          ariaLabel={`Play ${testimonial.name} testimonial`}
+                        />
                       </div>
+
+                      {/* Featured Badge */}
+                      {testimonial.featured && (
+                        <div className="absolute top-3 left-3">
+                          <div className="bg-primary-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                            {t('featured.badge')}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Featured Badge */}
-                    {testimonial.featured && (
-                      <div className="absolute top-3 left-3">
-                        <div className="bg-primary-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                          Featured
+                    {/* Content */}
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          {testimonial.name.charAt(0)}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900 text-sm">
+                            {testimonial.name}
+                          </h3>
+                          <span
+                            className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                              testimonial.role === 'Student'
+                                ? 'bg-blue-100 text-blue-800'
+                                : testimonial.role === 'Parent'
+                                  ? 'bg-green-100 text-green-800'
+                                  : testimonial.role === 'Mentor'
+                                    ? 'bg-purple-100 text-purple-800'
+                                    : 'bg-orange-100 text-orange-800'
+                            }`}
+                          >
+                            {testimonial.role}
+                          </span>
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Content */}
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                        {testimonial.name.charAt(0)}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-gray-900 text-sm">
-                          {testimonial.name}
-                        </h3>
-                        <span
-                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                            testimonial.role === 'Student'
-                              ? 'bg-blue-100 text-blue-800'
-                              : testimonial.role === 'Parent'
-                                ? 'bg-green-100 text-green-800'
-                                : testimonial.role === 'Mentor'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : 'bg-orange-100 text-orange-800'
-                          }`}
-                        >
-                          {testimonial.role}
-                        </span>
-                      </div>
+                      <blockquote className="text-gray-600 text-sm italic leading-relaxed line-clamp-3">
+                        "{testimonial.quote[lang] ?? testimonial.quote.en}"
+                      </blockquote>
                     </div>
-
-                    <blockquote className="text-gray-600 text-sm italic leading-relaxed line-clamp-3">
-                      "{testimonial.quote}"
-                    </blockquote>
-                  </div>
-                </Card>
+                  </Card>
+                </article>
               ))}
             </div>
           )}
@@ -338,10 +430,9 @@ const Testimonials: React.FC = () => {
       {/* Enhanced Call to Action */}
       <section className="bg-primary-500 text-white section-padding">
         <div className="max-w-4xl mx-auto container-padding text-center">
-          <h2 className="heading-2 mb-4">Your Support Creates These Stories</h2>
+          <h2 className="heading-2 mb-4">{t('cta.title')}</h2>
           <p className="text-xl mb-8 text-primary-100">
-            Every testimonial represents a life transformed through education.
-            Your contribution can create the next success story.
+            {t('cta.description')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -351,7 +442,7 @@ const Testimonials: React.FC = () => {
               href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
               className="text-primary-500 border-white hover:bg-white"
             >
-              Become a Contributor
+              {t('cta.becomeContributor')}
             </Button>
             <Button
               variant="outline"
@@ -359,7 +450,7 @@ const Testimonials: React.FC = () => {
               href="/about"
               className="text-white border-white hover:bg-white hover:text-primary-500"
             >
-              Learn More About Us
+              {t('cta.learnMore')}
             </Button>
           </div>
         </div>

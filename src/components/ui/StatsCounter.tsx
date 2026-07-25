@@ -1,12 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { gsap, useGSAP, prefersReducedMotion } from '../../lib/gsap';
+import Tooltip from './Tooltip';
 
 interface StatsCounterProps {
   value: number;
   suffix?: string;
   prefix?: string;
   label: string;
-  duration?: number;
   className?: string;
+  /** Optional info-icon tooltip rendered next to the label. */
+  infoContent?: React.ReactNode;
+  /** Accessible label for the info-icon trigger. */
+  infoLabel?: string;
+  /** Optional cursor-following tooltip shown when hovering the number. */
+  hoverTip?: React.ReactNode;
 }
 
 const StatsCounter: React.FC<StatsCounterProps> = ({
@@ -14,58 +21,70 @@ const StatsCounter: React.FC<StatsCounterProps> = ({
   suffix = '',
   prefix = '',
   label,
-  duration = 2000,
   className = '',
+  infoContent,
+  infoLabel,
+  hoverTip,
 }) => {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const counterRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const numRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.5 }
-    );
+  useGSAP(
+    () => {
+      const num = numRef.current;
+      if (!num) return;
 
-    if (counterRef.current) {
-      observer.observe(counterRef.current);
-    }
+      const render = (v: number) => {
+        num.textContent = `${prefix}${Math.round(v).toLocaleString()}${suffix}`;
+      };
 
-    return () => observer.disconnect();
-  }, [isVisible]);
-
-  useEffect(() => {
-    if (!isVisible) return;
-
-    const increment = value / (duration / 16); // 60fps
-    let current = 0;
-
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= value) {
-        setCount(value);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(current));
+      // Reduced motion: show the final value immediately, no count-up.
+      if (prefersReducedMotion()) {
+        render(value);
+        return;
       }
-    }, 16);
 
-    return () => clearInterval(timer);
-  }, [isVisible, value, duration]);
+      const obj = { val: 0 };
+      render(0);
+      gsap.to(obj, {
+        val: value,
+        duration: 2,
+        ease: 'power1.out',
+        snap: { val: 1 },
+        onUpdate: () => render(obj.val),
+        scrollTrigger: {
+          trigger: rootRef.current,
+          start: 'top 85%',
+          once: true,
+        },
+      });
+    },
+    { scope: rootRef, dependencies: [value, prefix, suffix] }
+  );
+
+  const numberEl = (
+    <div
+      ref={numRef}
+      className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-500 mb-1"
+    >
+      {prefix}
+      {value.toLocaleString()}
+      {suffix}
+    </div>
+  );
 
   return (
-    <div ref={counterRef} className={`text-center ${className}`}>
-      <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-500 mb-1">
-        {prefix}
-        {(count ?? 0).toLocaleString()}
-        {suffix}
-      </div>
-      <div className="text-sm md:text-base text-gray-600 font-medium">
-        {label}
+    <div ref={rootRef} className={`text-center ${className}`}>
+      {hoverTip ? (
+        <Tooltip content={hoverTip} followCursor className="justify-center">
+          {numberEl}
+        </Tooltip>
+      ) : (
+        numberEl
+      )}
+      <div className="flex items-center justify-center gap-1.5 text-sm md:text-base text-gray-600 font-medium">
+        <span>{label}</span>
+        {infoContent && <Tooltip content={infoContent} label={infoLabel} />}
       </div>
     </div>
   );

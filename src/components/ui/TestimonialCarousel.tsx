@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import YouTubeEmbed from './YouTubeEmbed';
+import { useLanguage } from '../../i18n/useLanguage';
 import type { Testimonial } from '../../types';
 
 interface TestimonialCarouselProps {
@@ -9,6 +10,7 @@ interface TestimonialCarouselProps {
 const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
   testimonials,
 }) => {
+  const { lang } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -93,7 +95,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
               {/* Testimonial Info */}
               <div className="text-center">
                 <blockquote className="text-base italic text-gray-700 mb-3">
-                  "{testimonial.quote}"
+                  "{testimonial.quote[lang] ?? testimonial.quote.en}"
                 </blockquote>
                 <div className="text-sm text-gray-600">
                   <strong>{testimonial.name}</strong> • {testimonial.role} •{' '}
@@ -120,7 +122,10 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
 
         <div className="text-center mb-6">
           <blockquote className="text-lg italic text-gray-700 mb-4">
-            "{testimonials[currentIndex].quote}"
+            "
+            {testimonials[currentIndex].quote[lang] ??
+              testimonials[currentIndex].quote.en}
+            "
           </blockquote>
           <div className="text-sm text-gray-600">
             <strong>{testimonials[currentIndex].name}</strong> •{' '}

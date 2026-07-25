@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { HeroProps } from '../../types';
 import Button from './Button';
-import TypewriterText from './TypewriterText';
+import Blob from './Blob';
+import { gsap, useGSAP, SplitText, prefersReducedMotion } from '../../lib/gsap';
 import logoImage from '../../assets/images/logo.jpg';
+import spriteSparkle from '../../assets/images/sprites/01-sprite-sparkle.png';
+import spriteStar from '../../assets/images/sprites/02-sprite-smiling-star.png';
 
 const Hero: React.FC<HeroProps> = ({
   title,
@@ -11,6 +14,7 @@ const Hero: React.FC<HeroProps> = ({
   showLogo = false,
   primaryCTA,
   secondaryCTA,
+  taxNote,
   stats,
   backgroundImage,
   overlay = true,
@@ -20,6 +24,13 @@ const Hero: React.FC<HeroProps> = ({
   );
   const [isVisible, setIsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
+
+  const rootRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subheadRef = useRef<HTMLParagraphElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const spritesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!stats) return;
@@ -58,8 +69,108 @@ const Hero: React.FC<HeroProps> = ({
       }, 16);
     });
   }, [isVisible, stats]);
+
+  // Hero entrance: SplitText char reveal on the h1, then a fade-up cascade of
+  // the subheadline / subtitle / CTA. Floating sprites loop forever. All gated
+  // by matchMedia so reduced-motion gets instant, static end-states.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const tl = gsap.timeline();
+        let split: SplitText | null = null;
+
+        if (titleRef.current) {
+          split = new SplitText(titleRef.current, { type: 'chars' });
+          tl.from(split.chars, {
+            yPercent: 40,
+            rotationX: -90,
+            autoAlpha: 0,
+            stagger: 0.04,
+            transformOrigin: '0% 50% -50',
+            ease: 'back.out(1.7)',
+          });
+        }
+
+        const cascade = [
+          subheadRef.current,
+          subtitleRef.current,
+          ctaRef.current,
+        ].filter((el): el is NonNullable<typeof el> => el !== null);
+
+        if (cascade.length) {
+          tl.from(
+            cascade,
+            {
+              y: 20,
+              autoAlpha: 0,
+              stagger: 0.12,
+              duration: 0.6,
+              ease: 'power2.out',
+            },
+            '-=0.25'
+          );
+        }
+
+        // Infinite floating sprites + interactive hover pop.
+        const sprites = spritesRef.current
+          ? gsap.utils.toArray<HTMLElement>(spritesRef.current.children)
+          : [];
+        const canHover = window.matchMedia('(hover: hover)').matches;
+        const spriteCleanups: Array<() => void> = [];
+
+        sprites.forEach((s, i) => {
+          gsap.to(s, {
+            y: '-=20',
+            duration: 2 + i * 0.35,
+            yoyo: true,
+            repeat: -1,
+            ease: 'sine.inOut',
+            delay: i * 0.2,
+          });
+
+          // Hover pop: spin a full turn + scale up, then settle back to 1.
+          // (Only on hover-capable pointers; reduced-motion is already excluded
+          // by the enclosing matchMedia query.)
+          if (canHover) {
+            const onEnter = () => {
+              gsap
+                .timeline()
+                .to(s, {
+                  rotation: '+=360',
+                  scale: 1.5,
+                  duration: 0.4,
+                  ease: 'back.out(2)',
+                  overwrite: 'auto',
+                })
+                .to(s, {
+                  scale: 1,
+                  duration: 0.3,
+                  ease: 'power2.out',
+                });
+            };
+            s.addEventListener('mouseenter', onEnter);
+            spriteCleanups.push(() =>
+              s.removeEventListener('mouseenter', onEnter)
+            );
+          }
+        });
+
+        return () => {
+          spriteCleanups.forEach(fn => fn());
+          split?.revert();
+        };
+      });
+    },
+    { scope: rootRef, dependencies: [title] }
+  );
+
   return (
-    <section className="relative min-h-[60vh] flex items-center justify-center pt-20 md:pt-24">
+    <section
+      ref={rootRef}
+      className="relative min-h-[60vh] flex items-center justify-center pt-20 md:pt-24 overflow-hidden"
+    >
       {/* Background Image */}
       {backgroundImage && (
         <div
@@ -73,9 +184,62 @@ const Hero: React.FC<HeroProps> = ({
         />
       )}
 
-      {/* Overlay */}
+      {/* Overlay — dark scrim, above the bg image, below the sparkles/text. */}
       {overlay && (
-        <div className="absolute inset-0 bg-black bg-opacity-40 z-10" />
+        <div className="absolute inset-0 bg-black bg-opacity-40 z-base" />
+      )}
+
+      {/* Organic blob decor — soft, off-round colour washes anchored to the
+          corners, well off the focal area. z-bg keeps them behind the bg
+          image/overlay and every foreground layer (text, sprites). Purely
+          decorative and non-interactive (Blob is aria-hidden + .blob-decor). */}
+      <Blob
+        variant={0}
+        color="var(--brand-primary)"
+        size="42vmax"
+        className="absolute -top-[12%] -left-[14%] z-bg"
+      />
+      <Blob
+        variant={2}
+        color="var(--brand-signature)"
+        size="34vmax"
+        className="absolute -bottom-[16%] -right-[12%] z-bg"
+      />
+
+      {/* Floating decorative sprites (purely decorative). z-float sits above
+          the bg image + overlay but below the hero text (z-20). */}
+      {!prefersReducedMotion() && (
+        <div
+          ref={spritesRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-float"
+        >
+          <img
+            src={spriteSparkle}
+            alt=""
+            className="pointer-events-auto cursor-pointer absolute w-10 h-10 md:w-14 md:h-14 top-[14%] left-[8%] drop-shadow"
+          />
+          <img
+            src={spriteStar}
+            alt=""
+            className="pointer-events-auto cursor-pointer absolute w-12 h-12 md:w-16 md:h-16 top-[22%] right-[9%] drop-shadow"
+          />
+          <img
+            src={spriteSparkle}
+            alt=""
+            className="pointer-events-auto cursor-pointer absolute w-8 h-8 md:w-12 md:h-12 bottom-[18%] left-[14%] drop-shadow"
+          />
+          <img
+            src={spriteStar}
+            alt=""
+            className="pointer-events-auto cursor-pointer absolute w-9 h-9 md:w-12 md:h-12 bottom-[22%] right-[13%] drop-shadow"
+          />
+          <img
+            src={spriteSparkle}
+            alt=""
+            className="pointer-events-auto cursor-pointer hidden md:block absolute w-8 h-8 top-[46%] left-[46%] drop-shadow"
+          />
+        </div>
       )}
 
       {/* Content */}
@@ -96,17 +260,16 @@ const Hero: React.FC<HeroProps> = ({
           )}
 
           <h1
+            ref={titleRef}
+            aria-label={title}
             className={`${showLogo ? 'heading-2' : 'heading-1'} mb-4 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
           >
-            <TypewriterText
-              text={title}
-              className={backgroundImage ? 'text-white' : 'text-gray-900'}
-              speed={75}
-            />
+            {title}
           </h1>
 
           {subheadline && (
             <p
+              ref={subheadRef}
               className={`text-lg md:text-xl font-semibold mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
             >
               {subheadline}
@@ -115,20 +278,26 @@ const Hero: React.FC<HeroProps> = ({
 
           {subtitle && (
             <p
-              className={`body-large mb-6 max-w-2xl mx-auto ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}
+              ref={subtitleRef}
+              className={`body-large font-normal opacity-80 mb-6 prose-measure mx-auto ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}
             >
               {subtitle}
             </p>
           )}
 
           {(primaryCTA || secondaryCTA) && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+            <div
+              ref={ctaRef}
+              className="flex flex-col sm:flex-row gap-4 justify-center mt-6"
+            >
               {primaryCTA && (
                 <Button
                   href={primaryCTA.href}
                   variant="primary"
                   size="lg"
                   className="shimmer-btn"
+                  magnetic
+                  attention
                 >
                   {primaryCTA.text}
                 </Button>
@@ -144,6 +313,15 @@ const Hero: React.FC<HeroProps> = ({
                 </Button>
               )}
             </div>
+          )}
+
+          {/* 80G tax-exempt micro-copy directly under the primary CTA. */}
+          {primaryCTA && taxNote && (
+            <p
+              className={`mt-3 text-xs ${backgroundImage ? 'text-white/70' : 'text-gray-500'}`}
+            >
+              {taxNote}
+            </p>
           )}
 
           {/* Social Icons */}
@@ -198,7 +376,7 @@ const Hero: React.FC<HeroProps> = ({
           )}
 
           {/* Impact Stats */}
-          {stats && (
+          {stats && stats.length > 0 && (
             <div
               ref={statsRef}
               className={`grid grid-cols-1 ${stats.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-6 mt-8 pt-6`}

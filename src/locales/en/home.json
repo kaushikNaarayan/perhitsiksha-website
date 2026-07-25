@@ -1,0 +1,105 @@
+{
+  "hero": {
+    "title": "Perhitsiksha",
+    "subheadline": "450+ Success Stories. 700+ Global Contributors. One Mission.",
+    "subtitle": "No student should drop out because of a lack of funds. Perhitsiksha Foundation provides a lifeline of financial aid and career guidance to ensure talent never goes to waste.",
+    "primaryCta": "Become a Contributor",
+    "secondaryCta": "Explore our work"
+  },
+  "impact": {
+    "eyebrow": "Our Impact",
+    "title": "Real numbers. Real lives."
+  },
+  "problem": {
+    "eyebrow": "The Problem",
+    "title": "Talent is everywhere. Opportunity is not.",
+    "body1": "Across India, countless deserving children are forced to give up their education — not for a lack of ability, but for a lack of funds. Financial hardship, and the absence of guidance and emotional support, pushes promising students out of school before they can complete even their intermediate education.",
+    "body2": "When a child drops out, the cycle of poverty repeats for another generation. We exist to break that cycle."
+  },
+  "supporters": {
+    "label": "India's icons stand with our scholars. Will you?"
+  },
+  "whatWeDo": {
+    "title": "How we bridge the gap",
+    "subtitle": "We believe every deserving student should have access to quality education, regardless of their financial background.",
+    "videoTitle": "Perhitsiksha - What We Do"
+  },
+  "programs": {
+    "financialAid": {
+      "title": "Financial Aid",
+      "description": "Direct financial support for tuition, books, and living expenses to help students complete their education."
+    },
+    "mentorship": {
+      "title": "Mentorship",
+      "description": "One-on-one guidance from industry professionals to help students navigate their academic and career journey."
+    },
+    "careerGuidance": {
+      "title": "Career Guidance",
+      "description": "Comprehensive career counseling, interview preparation, and job placement assistance."
+    }
+  },
+  "registration": {
+    "title": "Officially Registered",
+    "description": "Perhitsiksha Foundation is now officially registered as Section 8 Company under the Companies Act, 2013, issued by the Ministry of Corporate Affairs, Central Registration Centre.",
+    "cinNumber": "CIN Number",
+    "dateOfIncorporation": "Date of Incorporation",
+    "panNumber": "PAN Number",
+    "tanNumber": "TAN Number",
+    "csrRegistrationNumber": "CSR Registration Number",
+    "csrCertifiedOn": "CSR Certified On",
+    "prevCertificate": "Previous certificate",
+    "nextCertificate": "Next certificate",
+    "viewCertificate": "View certificate"
+  },
+  "statsBand": {
+    "successStories": "Lives Transformed",
+    "globalContributors": "Global Contributors",
+    "successStoriesTip": "450+ deserving students supported since 2022 — real lives changed. Hear their stories in the testimonials below.",
+    "successStoriesTipLabel": "About lives transformed",
+    "contributorsInfo": "A contributor is anyone who powers a scholar's journey — our donors, mentors, and coordinators.",
+    "contributorsInfoLabel": "What counts as a contributor?"
+  },
+  "certificates": {
+    "incorporation": "Certificate of Incorporation",
+    "certificate12A": "12A Certificate",
+    "certificate80G": "80G Certificate",
+    "csrRegistration": "CSR Registration"
+  },
+  "scholars": {
+    "title": "Lives Transformed",
+    "subtitle": "Hear directly from the scholars whose futures changed because someone chose to invest in them.",
+    "seeAll": "See All Testimonials"
+  },
+  "supportersStories": {
+    "title": "Our Supporters",
+    "subtitle": "Contributors and mentors on why they stand behind our scholars."
+  },
+  "events": {
+    "eyebrow": "OUR LATEST UPDATES",
+    "title": "From Our Community"
+  },
+  "joinMission": {
+    "title": "Fund a Scholar",
+    "description": "Your contribution, however modest, significantly impacts a student's journey. Join us in empowering the next generation through the gift of education.",
+    "cta": "Become a Contributor",
+    "model": {
+      "title": "How your contribution works",
+      "amount": "≈ ₹1,000 / month",
+      "amountLabel": "Supports one child's education",
+      "direct": "Direct to the child",
+      "directLabel": "Funds go straight to the student's own bank account — no intermediaries in between.",
+      "transparent": "Fully transparent",
+      "transparentLabel": "Every contribution is tracked and reported, so you always know the impact you are creating."
+    },
+    "donor": {
+      "title": "Want to fund a scholar?",
+      "body": "Support a deserving student every month and watch their future take shape.",
+      "cta": "Become a Contributor"
+    },
+    "family": {
+      "title": "Need support for your child?",
+      "body": "If your family needs help to keep a promising student in school, reach out — we are here to listen.",
+      "cta": "Request Support"
+    }
+  }
+}

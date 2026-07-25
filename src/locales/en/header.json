@@ -1,0 +1,24 @@
+{
+  "brand": "Perhitsiksha",
+  "logoAlt": "Perhitsiksha Logo",
+  "nav": {
+    "home": "Home",
+    "testimonials": "Testimonials",
+    "about": "About",
+    "impact": "Impact",
+    "stories": "Stories",
+    "contribute": "Contribute"
+  },
+  "cta": "Contribute now",
+  "ctaAriaLabel": "Contribute now via WhatsApp",
+  "skipToContent": "Skip to content",
+  "menu": {
+    "toggle": "Toggle menu",
+    "close": "Close menu"
+  },
+  "social": {
+    "facebook": "Follow us on Facebook",
+    "youtube": "Subscribe to our YouTube channel",
+    "instagram": "Follow us on Instagram"
+  }
+}

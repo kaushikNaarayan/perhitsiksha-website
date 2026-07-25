@@ -1,0 +1,28 @@
+{
+  "orgName": "Perhitsiksha Foundation",
+  "logoAlt": "Perhitsiksha लोगो",
+  "registration": {
+    "section8": "कंपनी अधिनियम, 2013 के अंतर्गत धारा 8 कंपनी के रूप में पंजीकृत",
+    "cinLabel": "CIN:",
+    "incorporationLabel": "निगमन तिथि:",
+    "officeLabel": "पंजीकृत कार्यालय:"
+  },
+  "quickLinks": {
+    "title": "त्वरित लिंक",
+    "testimonials": "अनुभव",
+    "about": "हमारे बारे में",
+    "support": "छात्रों का सहयोग करें"
+  },
+  "connect": {
+    "title": "जुड़ें",
+    "contact": "संपर्क करें",
+    "privacy": "गोपनीयता नीति"
+  },
+  "social": {
+    "facebook": "फ़ेसबुक पर हमें फ़ॉलो करें",
+    "youtube": "हमारे यूट्यूब चैनल को सब्सक्राइब करें",
+    "instagram": "इंस्टाग्राम पर हमें फ़ॉलो करें"
+  },
+  "copyright": "© {{year}} Perhitsiksha. सर्वाधिकार सुरक्षित।",
+  "madeBy": "वेबसाइट <a>Material Lab</a> द्वारा बनाई गई"
+}

@@ -190,7 +190,7 @@ describe('VisitorCounter', () => {
     await waitFor(
       () => {
         // Invalid cache → component falls back to setViewCount(1)
-        expect(screen.getByText('1 views')).toBeInTheDocument();
+        expect(screen.getByText('1 view')).toBeInTheDocument();
       },
       { timeout: 3000 }
     );

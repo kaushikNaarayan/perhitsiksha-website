@@ -1,0 +1,17 @@
+{
+  "brand": "Perhitsiksha",
+  "taxNote": "All donations are 80G tax-exempt",
+  "cta": {
+    "becomeContributor": "Become a Contributor",
+    "seeAllTestimonials": "See All Testimonials",
+    "seeImpactStories": "See Impact Stories",
+    "learnMoreAboutUs": "Learn More About Us"
+  },
+  "carousel": {
+    "playVideo": "Play Video",
+    "play": "Play"
+  },
+  "tooltip": {
+    "moreInfo": "More information"
+  }
+}

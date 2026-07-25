@@ -1,0 +1,28 @@
+{
+  "orgName": "Perhitsiksha Foundation",
+  "logoAlt": "Perhitsiksha Logo",
+  "registration": {
+    "section8": "Registered as a Section 8 Company under the Companies Act, 2013",
+    "cinLabel": "CIN:",
+    "incorporationLabel": "Date of Incorporation:",
+    "officeLabel": "Registered Office:"
+  },
+  "quickLinks": {
+    "title": "Quick Links",
+    "testimonials": "Testimonials",
+    "about": "About Us",
+    "support": "Support Students"
+  },
+  "connect": {
+    "title": "Connect",
+    "contact": "Contact Us",
+    "privacy": "Privacy Policy"
+  },
+  "social": {
+    "facebook": "Follow us on Facebook",
+    "youtube": "Subscribe to our YouTube channel",
+    "instagram": "Follow us on Instagram"
+  },
+  "copyright": "© {{year}} Perhitsiksha. All rights reserved.",
+  "madeBy": "Website made by <a>Material Lab</a>"
+}

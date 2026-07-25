@@ -610,7 +610,7 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
   };
 
   return (
-    <div className={`flex items-center text-xs text-gray-500 ${className}`}>
+    <div className={`flex items-center text-xs text-gray-600 ${className}`}>
       <svg
         className="w-3 h-3 mr-1"
         fill="currentColor"
@@ -620,7 +620,9 @@ const VisitorCounter: React.FC<VisitorCounterProps> = ({ className = '' }) => {
         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
       </svg>
       <span className="font-medium">
-        {isLoading ? '...' : `${formatNumber(viewCount)} views`}
+        {isLoading
+          ? '...'
+          : `${formatNumber(viewCount)} ${viewCount === 1 ? 'view' : 'views'}`}
       </span>
     </div>
   );

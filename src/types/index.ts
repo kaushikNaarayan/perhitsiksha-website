@@ -7,7 +7,7 @@ export interface Testimonial {
   location: string;
   youtubeId?: string;
   thumbnail?: string;
-  quote: string;
+  quote: { en: string; hi?: string };
   featured?: boolean;
 }
 
@@ -93,6 +93,12 @@ export interface ButtonProps {
   onClick?: (event: React.MouseEvent) => void;
   href?: string;
   disabled?: boolean;
+  /** Opt-in: pull the button toward the cursor on hover devices. */
+  magnetic?: boolean;
+  /** Opt-in: periodic attention shake (inner span) every 12s. */
+  attention?: boolean;
+  /** Optional accessible label (falls through to the rendered element). */
+  'aria-label'?: string;
 }
 
 export interface CardProps {
@@ -115,6 +121,8 @@ export interface HeroProps {
     text: string;
     href: string;
   };
+  /** Optional ~12px muted note rendered under the primary CTA (e.g. 80G tax note). */
+  taxNote?: string;
   stats?: Array<{
     value: number;
     suffix?: string;

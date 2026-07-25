@@ -113,7 +113,7 @@ export function GalleryModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center"
+      className="fixed inset-0 z-modal bg-black bg-opacity-95 flex items-center justify-center"
       onClick={handleBackdropClick}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
