@@ -24,16 +24,39 @@
   --focus-ring: var(--blue-200);
   /* Surfaces that flip in dark (light defaults). */
   --surface-card: #ffffff; /* solid card ground */
-  --surface-muted: #f1f3f4; /* subtle alt / hover ground */
-  --border-subtle: #e8eaed; /* hairline dividers */
+  --surface-muted: #f1eae7; /* subtle alt / hover ground (warm, was cool #f1f3f4) */
+  --border-subtle: #e2ded9; /* hairline dividers (warm --grey-200, was cool #e8eaed) */
   --ink-strong: var(--grey-700); /* headings */
-  --ink-body: #5a5f66; /* body / subtext (AA on light) */
-  --ink-soft: #3c4043; /* secondary text */
+  --ink-body: #63605d; /* body / subtext — warm --grey-500, 6.25:1 on white (was cool #5a5f66) */
+  --ink-soft: #44423f; /* secondary text — warm --grey-600, 10.02:1 on white (was cool #3c4043) */
   --brand-link: var(--blue-200); /* link/accent ink */
-  /* Composition tokens (pe-gdu B3) --------------------------------- */
-  /* Corner radii — no sharp corners; cards/images/inputs at 16 or 24px. */
-  --radius-card: 24px; /* cards / large surfaces */
+  /* Composition tokens (pe-gdu B3; radius band + shadow/layout tokens
+     added pe-bta round 1 per audit pe-702 — see DS ds/tokens/effects.css
+     + spacing.css, mirrored here as the :root bridge layer) ----------- */
+  /* Corner radii — no sharp corners; cards/media/inputs at 12-18px,
+     24px (--radius-2xl) reserved for modals/overlays/drawers only. */
+  --radius-card: 16px; /* cards / large surfaces (was 24px) */
   --radius-media: 16px; /* images / inputs / chips */
+  --radius-pill: 999px; /* buttons / chips */
+  --radius-2xl: 24px; /* overlay layer ONLY — modal / drawer / popover */
+  /* Hard-block shadows — flat 0-blur underline at rest, soft diffused
+     lift on elevation/hover (mirrors ds/tokens/effects.css exactly). */
+  --shadow-sm: 0 0.0625rem 0 rgba(65, 61, 69, 0.2);
+  --shadow-md: 0 0.125rem 0 rgba(65, 61, 69, 0.2);
+  --shadow-lg: 0 3.23px 6.45px 0 rgba(20, 19, 19, 0.2);
+  --shadow-xl: 0 12px 28px -10px rgba(20, 19, 19, 0.28);
+  --shadow-overlay: 0 8px 28px -6px rgba(20, 19, 19, 0.28);
+  --shadow-drawer: -7px 0 20px rgba(20, 19, 19, 0.1);
+  /* Layout safe-margins + carousel/grid gutter (ds/tokens/spacing.css). */
+  --layout-margin-web: clamp(24px, 6vw, 100px);
+  --layout-gutter: 32px;
+  /* Anek weight axis (ds/tokens/typography.css) — used by the heading-*/
+  /* body-* Editorial-scale rules below. No 900; --fw-black caps at 800. */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
   /* Strict z-index scale. bg behind base; float (hero sparkles) above
      the bg image yet below hero text (z-20); header=100; modals/drawers=1000. */
   --z-bg: -1;
@@ -128,45 +151,44 @@
   /* ===============================================================
      Devanagari (Hindi) metric overrides — Anek Devanagari needs a
      little more leading and non-negative tracking to breathe. Tracking
-     is clamped to [0, 0.02em]; headings get slightly tighter leading.
+     is clamped to [0, 0.02em]. Per-heading-scale leading now comes from
+     the .heading-1/2/3 rules below (DS .ed-h1/h2/h3 values), which
+     replace the old flat 1.4 override (audit pe-702 gap #16 — cramped
+     mobile Devanagari leading).
      =============================================================== */
   :lang(hi) {
     line-height: 1.8;
     letter-spacing: 0;
   }
-
-  :lang(hi) h1,
-  :lang(hi) h2,
-  :lang(hi) h3,
-  :lang(hi) .heading-1,
-  :lang(hi) .heading-2,
-  :lang(hi) .heading-3 {
-    line-height: 1.4;
-    letter-spacing: 0.01em;
-  }
 }
 
 /* Custom component styles */
 @layer components {
+  /* Pill radius (--radius-pill) on all button styles — matches the
+     home-v3.html reference + Header/MobileCTA CTAs (audit pe-702 gap #13). */
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
   }
 
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-primary-500 font-semibold px-6 py-3 rounded-lg border-2 border-primary-500 transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply bg-white hover:bg-gray-50 text-primary-500 font-semibold px-6 py-3 rounded-full border-2 border-primary-500 transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
   }
 
   .btn-outline {
-    @apply bg-transparent hover:bg-primary-50 text-primary-500 font-medium px-4 py-2 rounded-md border border-primary-300 transition-colors duration-200;
+    @apply bg-transparent hover:bg-primary-50 text-primary-500 font-medium px-4 py-2 rounded-full border border-primary-300 transition-colors duration-200;
   }
 
   .card {
-    /* Radius bumped to --radius-card (24px) — no sharp corners (pe-gdu B3). */
-    @apply bg-white rounded-3xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden;
+    /* Radius corrected to the 12-18px band (--radius-card, 16px) — 24px is
+       reserved for modals/overlays only (audit pe-702 gap #3). */
+    @apply bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden;
   }
 
   .container-padding {
-    @apply px-4 sm:px-6 lg:px-8;
+    /* Desktop safe-margin — DS --layout-margin-web (audit pe-702 gap #6):
+       clamp(24px, 6vw, 100px), replacing the old px-4/6/8 steps which
+       capped at 32px. */
+    padding-inline: var(--layout-margin-web);
   }
 
   .section-padding {
@@ -178,24 +200,74 @@
     padding-block: clamp(4rem, 10vw, 8rem);
   }
 
+  /* Heading/body roles — now mirror the DS Editorial scale (.ed-h1/h2/h3/b1)
+     values verbatim, including the [lang="hi"] per-scale overrides, instead
+     of ad-hoc Tailwind text-size and leading utility pairings (audit pe-702
+     gap #4 and #16). Class names kept as heading-1/2/3/body-large/body-base
+     for call-site stability — 44 existing usages across pages/Hero don't
+     need renaming since the values now ARE the named DS scale. */
   .heading-1 {
-    @apply text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight;
+    font-weight: var(--fw-bold, 700);
+    font-size: 48px;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: var(--ink-strong);
+  }
+  [lang='hi'] .heading-1 {
+    font-weight: var(--fw-extrabold, 800);
+    font-size: 52px;
+    letter-spacing: 0;
+    line-height: 1.35;
   }
 
   .heading-2 {
-    @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight;
+    font-weight: var(--fw-semibold, 600);
+    font-size: 36px;
+    letter-spacing: 0;
+    line-height: 1.3;
+    color: var(--ink-strong);
+  }
+  [lang='hi'] .heading-2 {
+    font-weight: var(--fw-bold, 700);
+    font-size: 40px;
+    line-height: 1.4;
   }
 
   .heading-3 {
-    @apply text-2xl sm:text-3xl font-bold text-gray-900 leading-tight;
+    font-weight: var(--fw-medium, 500);
+    font-size: 24px;
+    letter-spacing: 0;
+    line-height: 1.4;
+    color: var(--ink-strong);
+  }
+  [lang='hi'] .heading-3 {
+    font-weight: var(--fw-semibold, 600);
+    font-size: 26px;
+    line-height: 1.5;
   }
 
   .body-large {
-    @apply text-lg sm:text-xl text-gray-600 leading-relaxed;
+    font-weight: var(--fw-regular, 400);
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--ink-body);
+  }
+  [lang='hi'] .body-large {
+    font-size: 20px;
+    letter-spacing: 0.01em;
+    line-height: 1.6;
   }
 
   .body-base {
-    @apply text-base text-gray-600 leading-relaxed;
+    font-weight: var(--fw-regular, 400);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink-body);
+  }
+  [lang='hi'] .body-base {
+    font-size: 18px;
+    letter-spacing: 0.01em;
+    line-height: 1.6;
   }
 }
 

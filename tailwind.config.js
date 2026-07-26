@@ -3,22 +3,24 @@ export default {
   // Dark mode is driven by an explicit `data-theme="dark"` on <html>
   // (set by ThemeToggle). Enables `dark:` utilities to target that attribute.
   darkMode: ['selector', '[data-theme="dark"]'],
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   // Portrait student-photo utilities (pe-gdu B3): kept in the bundle so they're
   // available for student/testimonial photo cards even where markup applies
   // them dynamically. See .portrait-3-4 / .photo-name-scrim in src/index.css.
-  safelist: ["portrait-3-4", "photo-name-scrim"],
+  safelist: ['portrait-3-4', 'photo-name-scrim'],
   theme: {
     extend: {
       colors: {
         primary: {
           // Canonical Perhitsiksha DS blue (pe-6wt migration: #0068B3 -> #0061EF).
           // Anchored on the DS token layer in src/index.css (:root --blue-*).
-          50: '#E9F0FE',
-          100: '#C7D9FD',
+          // 50 = the canonical --blue-050 pale UI tint (pe-bta round 1 — was a
+          // synthetic invented hex disconnected from the token ramp); 100 is a
+          // derived mid-tint between --blue-050 and the --blue-200 base (DS's
+          // own --blue-100 #00A4FF is a saturated accent hue, not a pale tint,
+          // so it's unsuitable for the soft-background role 100 plays here).
+          50: '#DCE7FF',
+          100: '#B8D2FF',
           200: '#9DBBFB',
           300: '#6693F8',
           400: '#3377F4',
@@ -53,36 +55,71 @@ export default {
           900: '#00231c',
         },
         gray: {
-          // Ramp darkened for WCAG AA (pe-09n): body/subtext grays now clear
-          // 4.5:1 on white. 600=#5A5F66 (6.4:1), 700=#3C4043 (10.5:1).
-          // Ramp kept monotonic; 800 nudged darker to stay below the new 700.
-          50: '#F8F9FA',
-          100: '#F1F3F4',
-          200: '#E8EAED',
-          300: '#DADCE0',
-          400: '#BDC1C6',
-          500: '#9AA0A6',
-          600: '#5A5F66', // ~6.4:1 on white — body/subtext floor
-          700: '#3C4043', // ~10.5:1 on white
-          800: '#2A2D30',
-          900: '#202124',
-        }
+          // Warm DS --grey-* ramp (pe-bta round 1 — was cool Material grey,
+          // #3C4043/#202124, per audit pe-702 gap #2). Anchored on the exact
+          // ds/tokens/colors.css --grey-100..800 steps, with two interpolated
+          // in-between stops (100, 500) to keep a 9-step Tailwind scale.
+          // Contrast re-verified (WCAG, on white) so the pe-09n AA hardening
+          // isn't regressed: 600 #63605D 6.25:1 (was 5A5F66 6.43:1), 700
+          // #44423F 10.02:1 (was 3C4043 10.47:1), 800 #2D2C2B 13.94:1 (was
+          // 2A2D30/202124 ~15-16:1) — all comfortably clear of the 4.5:1 floor.
+          50: '#F9F4F2', // DS --grey-100 — warm-white ground
+          100: '#F1EAE7', // interpolated
+          200: '#E2DED9', // DS --grey-200
+          300: '#C6C1B9', // DS --grey-300
+          400: '#A8A5A0', // DS --grey-400
+          500: '#8B8783', // interpolated
+          600: '#63605D', // DS --grey-500 "muted text" — body/subtext floor
+          700: '#44423F', // DS --grey-600
+          800: '#2D2C2B', // DS --grey-700 — the canonical text "black"
+          900: '#141313', // DS --grey-800 — deepest / illustration-face
+        },
       },
       fontFamily: {
         // Canonical DS type: Anek (script-routed Latin + Devanagari; browser picks glyphs by lang).
-        'sans': ['"Anek Latin"', '"Anek Devanagari"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        'display': ['"Anek Latin"', '"Anek Devanagari"', 'system-ui', 'sans-serif'],
+        sans: [
+          '"Anek Latin"',
+          '"Anek Devanagari"',
+          'system-ui',
+          '-apple-system',
+          'Segoe UI',
+          'sans-serif',
+        ],
+        display: [
+          '"Anek Latin"',
+          '"Anek Devanagari"',
+          'system-ui',
+          'sans-serif',
+        ],
       },
       spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
-        '128': '32rem',
+        18: '4.5rem',
+        88: '22rem',
+        128: '32rem',
       },
-      // Corner radii — mirror the --radius-* DS tokens (pe-gdu B3). No sharp
-      // corners: cards at 24px, media/inputs/chips at 16px.
+      // Corner radii — mirror the --radius-* DS tokens (pe-gdu B3; band
+      // corrected pe-bta round 1 per audit pe-702 gap #3 — cards sit in the
+      // 12-18px band, 24px (--radius-2xl) is reserved for modals/overlays).
       borderRadius: {
-        card: 'var(--radius-card)', // 24px
-        media: 'var(--radius-media)', // 16px
+        card: 'var(--radius-card)', // 16px — cards / large surfaces
+        media: 'var(--radius-media)', // 16px — images / inputs / chips
+        overlay: 'var(--radius-2xl)', // 24px — modals / drawers / popovers ONLY
+      },
+      // Hard-block shadow bridge (pe-bta round 1, audit pe-702 gap #1) — the
+      // plain `shadow-sm/md/lg/xl` utilities now resolve to the canonical DS
+      // effects.css tokens (flat 0-blur underline at rest, soft lift on
+      // elevation/hover) instead of Tailwind's default blurred shadows, so
+      // every existing shadow-* usage across the app inherits conformance.
+      boxShadow: {
+        sm: 'var(--shadow-sm)',
+        DEFAULT: 'var(--shadow-md)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+        xl: 'var(--shadow-xl)',
+        '2xl': 'var(--shadow-overlay)',
+        overlay: 'var(--shadow-overlay)',
+        drawer: 'var(--shadow-drawer)',
+        none: 'none',
       },
       // Strict z-index scale — mirror the --z-* DS tokens (pe-gdu B3).
       zIndex: {
@@ -93,11 +130,11 @@ export default {
         modal: 'var(--z-modal)', // 1000
       },
       fontSize: {
-        'xs': '0.75rem',
-        'sm': '0.875rem',
-        'base': '1rem',
-        'lg': '1.125rem',
-        'xl': '1.25rem',
+        xs: '0.75rem',
+        sm: '0.875rem',
+        base: '1rem',
+        lg: '1.125rem',
+        xl: '1.25rem',
         '2xl': '1.5rem',
         '3xl': '1.875rem',
         '4xl': '2.25rem',
@@ -109,7 +146,7 @@ export default {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.6s ease-out',
         'scale-in': 'scaleIn 0.3s ease-out',
-        'counter': 'counter 2s ease-out',
+        counter: 'counter 2s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -132,7 +169,5 @@ export default {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
-}
+  plugins: [require('@tailwindcss/typography')],
+};
