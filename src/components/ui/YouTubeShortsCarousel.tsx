@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import VideoModal from './VideoModal';
+import { prefersReducedMotion } from '../../lib/gsap';
 
 interface CelebrityEndorsement {
   id: string;
@@ -23,8 +24,13 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   endorsements,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const targetVelocityRef = useRef(AUTO_SCROLL_VELOCITY);
-  const velocityRef = useRef(AUTO_SCROLL_VELOCITY);
+  // Gate the auto-scroll marquee on prefers-reduced-motion (audit pe-702 gap
+  // #9) — this loop is a manual rAF/transform animation, not CSS, so the
+  // global @media rule in index.css can't stop it; it needs its own check.
+  const reducedMotionRef = useRef(prefersReducedMotion());
+  const restVelocity = reducedMotionRef.current ? 0 : AUTO_SCROLL_VELOCITY;
+  const targetVelocityRef = useRef(restVelocity);
+  const velocityRef = useRef(restVelocity);
   const positionRef = useRef(0);
   const lastTimeRef = useRef<number>(Date.now());
   const halfWidthRef = useRef(0);
@@ -126,7 +132,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   };
 
   const handleMouseLeave = () => {
-    targetVelocityRef.current = AUTO_SCROLL_VELOCITY;
+    targetVelocityRef.current = restVelocity;
   };
 
   // Drag handlers
@@ -180,7 +186,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       );
     } else {
       // Resume auto-scroll if no significant momentum
-      targetVelocityRef.current = AUTO_SCROLL_VELOCITY;
+      targetVelocityRef.current = restVelocity;
     }
 
     dragVelocityRef.current = 0;
@@ -280,7 +286,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       celebrityName: '',
     });
     // Resume carousel when modal closes
-    targetVelocityRef.current = AUTO_SCROLL_VELOCITY;
+    targetVelocityRef.current = restVelocity;
   };
 
   const getYouTubeShortThumbnail = (videoId: string) => {
@@ -296,7 +302,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
         aria-label="Celebrity endorsements carousel - drag to scroll or use arrow keys"
         aria-roledescription="carousel"
         tabIndex={0}
-        className="flex gap-4 pb-4 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded"
+        className="flex gap-8 pb-4 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onMouseDown={handleMouseDown}
@@ -310,7 +316,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       >
         <div
           ref={containerRef}
-          className="flex gap-4"
+          className="flex gap-8"
           style={{
             willChange: 'transform',
             userSelect: 'none',

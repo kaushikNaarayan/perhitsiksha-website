@@ -239,17 +239,9 @@ const Testimonials: React.FC = () => {
                             {testimonial.name}
                           </h3>
                           <div className="flex items-center gap-2">
-                            <span
-                              className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                                testimonial.role === 'Student'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : testimonial.role === 'Parent'
-                                    ? 'bg-green-100 text-green-800'
-                                    : testimonial.role === 'Mentor'
-                                      ? 'bg-purple-100 text-purple-800'
-                                      : 'bg-orange-100 text-orange-800'
-                              }`}
-                            >
+                            {/* One consistent accent per surface, not a
+                                role-keyed rainbow (audit pe-702 gap #10). */}
+                            <span className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-600">
                               {testimonial.role}
                             </span>
                             <span className="text-sm text-gray-600">
@@ -399,17 +391,9 @@ const Testimonials: React.FC = () => {
                           <h3 className="font-bold text-gray-900 text-sm">
                             {testimonial.name}
                           </h3>
-                          <span
-                            className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                              testimonial.role === 'Student'
-                                ? 'bg-blue-100 text-blue-800'
-                                : testimonial.role === 'Parent'
-                                  ? 'bg-green-100 text-green-800'
-                                  : testimonial.role === 'Mentor'
-                                    ? 'bg-purple-100 text-purple-800'
-                                    : 'bg-orange-100 text-orange-800'
-                            }`}
-                          >
+                          {/* One consistent accent per surface, not a
+                              role-keyed rainbow (audit pe-702 gap #10). */}
+                          <span className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-600">
                             {testimonial.role}
                           </span>
                         </div>

@@ -124,25 +124,28 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
               {/* Navigation Arrows on Image */}
               {events.length > 1 && (
                 <>
+                  {/* Smaller + closer to the edge on mobile so the arrows sit
+                      clear of the play-button/media centre (audit pe-702 gap
+                      #15 — Gemini review: mobile arrows overlapping video). */}
                   <button
                     onClick={e => {
                       e.stopPropagation();
                       goToPrevious();
                     }}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 z-10"
+                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 z-10"
                     aria-label="Previous event"
                   >
-                    <FaChevronLeft className="w-5 h-5" />
+                    <FaChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <button
                     onClick={e => {
                       e.stopPropagation();
                       goToNext();
                     }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 z-10"
+                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 z-10"
                     aria-label="Next event"
                   >
-                    <FaChevronRight className="w-5 h-5" />
+                    <FaChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </>
               )}

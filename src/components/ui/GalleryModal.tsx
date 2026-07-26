@@ -150,10 +150,10 @@ export function GalleryModal({
             e.stopPropagation();
             handlePrevious();
           }}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70"
+          className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-gray-300 transition-colors p-2 sm:p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70"
           aria-label="Previous image"
         >
-          <FaChevronLeft className="text-2xl" />
+          <FaChevronLeft className="text-xl sm:text-2xl" />
         </button>
       )}
 
@@ -173,10 +173,10 @@ export function GalleryModal({
             e.stopPropagation();
             handleNext();
           }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70"
+          className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-gray-300 transition-colors p-2 sm:p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70"
           aria-label="Next image"
         >
-          <FaChevronRight className="text-2xl" />
+          <FaChevronRight className="text-xl sm:text-2xl" />
         </button>
       )}
 

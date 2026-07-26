@@ -36,7 +36,7 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
 
       const cardStep = () => {
         const first = el.querySelector<HTMLElement>('[data-peek-card]');
-        const gap = 16;
+        const gap = 32; // matches the gap-8 gutter below (DS --layout-gutter)
         return first ? first.offsetWidth + gap : el.clientWidth * 0.8;
       };
 
@@ -103,7 +103,7 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
       <div className="relative">
         <div
           ref={carouselRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 px-4"
+          className="flex gap-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 px-4"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
@@ -162,17 +162,10 @@ const PeekCarousel: React.FC<PeekCarouselProps> = ({ testimonials }) => {
                   {testimonial.name}
                 </h3>
                 <div className="flex items-center justify-center gap-2 mb-3">
-                  <span
-                    className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
-                      testimonial.role === 'Student'
-                        ? 'bg-blue-100 text-blue-800'
-                        : testimonial.role === 'Parent'
-                          ? 'bg-green-100 text-green-800'
-                          : testimonial.role === 'Mentor'
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-orange-100 text-orange-800'
-                    }`}
-                  >
+                  {/* One consistent accent per surface, not a role-keyed
+                      rainbow (audit pe-702 gap #10 — DS never mixes hues
+                      in one frame). */}
+                  <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-600">
                     {testimonial.role}
                   </span>
                   <span className="text-sm text-gray-600">

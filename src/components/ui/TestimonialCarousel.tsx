@@ -69,7 +69,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
       <div className="md:hidden">
         <div
           ref={carouselRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4"
+          className="flex gap-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -138,7 +138,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
         <div className="flex justify-center items-center space-x-4">
           <button
             onClick={prevSlide}
-            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             aria-label="Previous testimonial"
           >
             <svg
@@ -161,7 +161,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                className={`w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
                   index === currentIndex
                     ? 'bg-primary-500 w-8'
                     : 'bg-gray-300 hover:bg-gray-400'
@@ -173,7 +173,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
 
           <button
             onClick={nextSlide}
-            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             aria-label="Next testimonial"
           >
             <svg

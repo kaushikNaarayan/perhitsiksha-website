@@ -119,7 +119,7 @@ const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
       <div className="md:hidden">
         <div
           ref={carouselRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4"
+          className="flex gap-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -259,7 +259,7 @@ const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
               <button
                 key={index}
                 onClick={() => goToSlide(index * 4)}
-                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                className={`w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
                   Math.floor(currentIndex / 4) === index
                     ? 'bg-primary-500 w-8'
                     : 'bg-gray-300 hover:bg-gray-400'
