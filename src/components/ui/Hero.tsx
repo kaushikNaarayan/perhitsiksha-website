@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { HeroProps } from '../../types';
 import Button from './Button';
 import Blob from './Blob';
@@ -19,6 +20,7 @@ const Hero: React.FC<HeroProps> = ({
   backgroundImage,
   overlay = true,
 }) => {
+  const { t } = useTranslation('header');
   const [animatedStats, setAnimatedStats] = useState<Record<number, number>>(
     {}
   );
@@ -330,7 +332,7 @@ const Hero: React.FC<HeroProps> = ({
               <a
                 href="https://www.facebook.com/share/19uSggzByG/"
                 className={`${backgroundImage ? 'text-gray-200 hover:text-white' : 'text-gray-700 hover:text-primary-500'} transition-colors duration-200`}
-                aria-label="Follow us on Facebook"
+                aria-label={t('social.facebook')}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -345,7 +347,7 @@ const Hero: React.FC<HeroProps> = ({
               <a
                 href="https://www.youtube.com/@PerhitSikshaFoundation"
                 className={`${backgroundImage ? 'text-gray-200 hover:text-white' : 'text-gray-700 hover:text-primary-500'} transition-colors duration-200`}
-                aria-label="Subscribe to our YouTube channel"
+                aria-label={t('social.youtube')}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -360,7 +362,7 @@ const Hero: React.FC<HeroProps> = ({
               <a
                 href="https://www.instagram.com/perhit.siksha/"
                 className={`${backgroundImage ? 'text-gray-200 hover:text-white' : 'text-gray-700 hover:text-primary-500'} transition-colors duration-200`}
-                aria-label="Follow us on Instagram"
+                aria-label={t('social.instagram')}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -384,7 +386,7 @@ const Hero: React.FC<HeroProps> = ({
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
                   <div
-                    className={`text-2xl md:text-3xl lg:text-4xl font-bold mb-1 ${backgroundImage ? 'text-white' : 'text-primary-500'}`}
+                    className={`text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums ${backgroundImage ? 'text-white' : 'text-primary-500'}`}
                   >
                     {stat.prefix || ''}
                     {(Number(animatedStats[index]) || 0).toLocaleString()}

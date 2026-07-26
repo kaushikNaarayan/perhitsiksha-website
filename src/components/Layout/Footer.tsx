@@ -165,7 +165,10 @@ const Footer: React.FC = () => {
                       href="https://www.materiallab.io/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300 transition-colors duration-200 font-medium"
+                      // primary-300 (not -500) — the footer ground is dark
+                      // (bg-gray-900), and -500 only clears 3.5:1 there;
+                      // -300 holds 6.3:1 AA while staying the brand blue hue.
+                      className="text-primary-300 hover:text-primary-200 transition-colors duration-200 font-medium"
                     />
                   ),
                 }}

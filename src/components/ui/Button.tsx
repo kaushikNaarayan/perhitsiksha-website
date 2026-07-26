@@ -80,8 +80,11 @@ const Button: React.FC<ButtonProps> = ({
     { scope: rootRef, dependencies: [magnetic, attention] }
   );
 
+  // Pill radius (--radius-pill) — matches the home-v3.html reference +
+  // Header/MobileCTA CTAs, which already ship as rounded-full (audit
+  // pe-702 gap #13; this component was the one holdout still on rounded-lg).
   const baseClasses =
-    'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shimmer-btn';
+    'inline-flex items-center justify-center font-semibold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shimmer-btn';
 
   const variantClasses = {
     primary:

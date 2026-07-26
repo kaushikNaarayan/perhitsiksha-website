@@ -65,7 +65,7 @@ const StatsCounter: React.FC<StatsCounterProps> = ({
   const numberEl = (
     <div
       ref={numRef}
-      className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-500 mb-1"
+      className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-500 mb-1 tabular-nums"
     >
       {prefix}
       {value.toLocaleString()}
