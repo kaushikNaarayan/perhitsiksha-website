@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import VideoModal from './VideoModal';
 
 interface CelebrityEndorsement {
@@ -15,6 +16,7 @@ interface EnhancedCarouselProps {
 const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
   endorsements,
 }) => {
+  const { t } = useTranslation('celebrity');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalVideo, setModalVideo] = useState<{
     isOpen: boolean;
@@ -153,7 +155,7 @@ const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
                   {/* Thumbnail */}
                   <img
                     src={getYouTubeShortThumbnail(celebrity.videoId)}
-                    alt={`${celebrity.name} endorsement`}
+                    alt={t('endorsementAlt', { name: celebrity.name })}
                     className="w-full h-full object-cover"
                     onError={e => {
                       const target = e.target as HTMLImageElement;
@@ -219,7 +221,7 @@ const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
                     {/* Thumbnail */}
                     <img
                       src={getYouTubeShortThumbnail(celebrity.videoId)}
-                      alt={`${celebrity.name} endorsement`}
+                      alt={t('endorsementAlt', { name: celebrity.name })}
                       className="w-full h-full object-cover"
                       onError={e => {
                         const target = e.target as HTMLImageElement;
@@ -264,7 +266,7 @@ const EnhancedCarousel: React.FC<EnhancedCarouselProps> = ({
                     ? 'bg-primary-500 w-8'
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
-                aria-label={`Go to slide ${index + 1}`}
+                aria-label={t('goToSlideAria', { index: index + 1 })}
               />
             )
           )}

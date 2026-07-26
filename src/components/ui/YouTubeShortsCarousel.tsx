@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import VideoModal from './VideoModal';
 import { prefersReducedMotion } from '../../lib/gsap';
 
@@ -23,6 +24,7 @@ const VELOCITY_THRESHOLD = 0.5; // Minimum velocity to apply momentum
 const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   endorsements,
 }) => {
+  const { t } = useTranslation('celebrity');
   const containerRef = useRef<HTMLDivElement>(null);
   // Gate the auto-scroll marquee on prefers-reduced-motion (audit pe-702 gap
   // #9) — this loop is a manual rAF/transform animation, not CSS, so the
@@ -345,7 +347,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                   {/* Thumbnail */}
                   <img
                     src={getYouTubeShortThumbnail(celebrity.videoId)}
-                    alt={`${celebrity.name} endorsement`}
+                    alt={t('endorsementAlt', { name: celebrity.name })}
                     className="w-full h-full object-cover"
                     onError={e => {
                       // Fallback chain: sddefault → hqdefault → default → prevent further errors

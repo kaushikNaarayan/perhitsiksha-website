@@ -11,6 +11,8 @@ import enHome from '../locales/en/home.json';
 import enAbout from '../locales/en/about.json';
 import enTestimonials from '../locales/en/testimonials.json';
 import enDonation from '../locales/en/donation.json';
+import enCelebrity from '../locales/en/celebrity.json';
+import enPrivacy from '../locales/en/privacy.json';
 
 // Hindi namespaces (placeholder: mirrors English until real translations land)
 import hiCommon from '../locales/hi/common.json';
@@ -21,6 +23,8 @@ import hiHome from '../locales/hi/home.json';
 import hiAbout from '../locales/hi/about.json';
 import hiTestimonials from '../locales/hi/testimonials.json';
 import hiDonation from '../locales/hi/donation.json';
+import hiCelebrity from '../locales/hi/celebrity.json';
+import hiPrivacy from '../locales/hi/privacy.json';
 
 export const supportedLngs = ['en', 'hi'] as const;
 
@@ -33,6 +37,8 @@ export const namespaces = [
   'about',
   'testimonials',
   'donation',
+  'celebrity',
+  'privacy',
 ] as const;
 
 // Vite bundles the JSON at build time, so we pass everything via `resources`
@@ -47,6 +53,8 @@ const resources = {
     about: enAbout,
     testimonials: enTestimonials,
     donation: enDonation,
+    celebrity: enCelebrity,
+    privacy: enPrivacy,
   },
   hi: {
     common: hiCommon,
@@ -57,6 +65,8 @@ const resources = {
     about: hiAbout,
     testimonials: hiTestimonials,
     donation: hiDonation,
+    celebrity: hiCelebrity,
+    privacy: hiPrivacy,
   },
 } as const;
 

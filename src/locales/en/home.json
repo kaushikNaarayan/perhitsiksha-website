@@ -13,7 +13,7 @@
   "problem": {
     "eyebrow": "The Problem",
     "title": "Talent is everywhere. Opportunity is not.",
-    "body1": "Across India, countless deserving children are forced to give up their education — not for a lack of ability, but for a lack of funds. Financial hardship, and the absence of guidance and emotional support, pushes promising students out of school before they can complete even their intermediate education.",
+    "body1": "Across India, countless promising children are forced to give up their education: not for a lack of ability, but for a lack of funds. Financial hardship, and the absence of guidance and emotional support, pushes promising students out of school before they can complete even their intermediate education.",
     "body2": "When a child drops out, the cycle of poverty repeats for another generation. We exist to break that cycle."
   },
   "supporters": {
@@ -21,7 +21,7 @@
   },
   "whatWeDo": {
     "title": "How we bridge the gap",
-    "subtitle": "We believe every deserving student should have access to quality education, regardless of their financial background.",
+    "subtitle": "We believe every promising student should have access to quality education, regardless of their financial background.",
     "videoTitle": "Perhitsiksha - What We Do"
   },
   "programs": {
@@ -54,7 +54,7 @@
   "statsBand": {
     "successStories": "Lives Transformed",
     "globalContributors": "Global Contributors",
-    "successStoriesTip": "450+ deserving students supported since 2022 — real lives changed. Hear their stories in the testimonials below.",
+    "successStoriesTip": "450+ promising students supported since 2022: real lives changed. Hear their stories in the testimonials below.",
     "successStoriesTipLabel": "About lives transformed",
     "contributorsInfo": "A contributor is anyone who powers a scholar's journey — our donors, mentors, and coordinators.",
     "contributorsInfoLabel": "What counts as a contributor?"
@@ -92,13 +92,13 @@
       "amount": "≈ ₹1,000 / month",
       "amountLabel": "Supports one child's education",
       "direct": "Direct to the child",
-      "directLabel": "Funds go straight to the student's own bank account — no intermediaries in between.",
+      "directLabel": "Funds go straight to the student's own bank account, with no intermediaries in between.",
       "transparent": "Fully transparent",
       "transparentLabel": "Every contribution is tracked and reported, so you always know the impact you are creating."
     },
     "donor": {
       "title": "Want to fund a scholar?",
-      "body": "Support a deserving student every month and watch their future take shape.",
+      "body": "Support a promising student every month and watch their future take shape.",
       "cta": "Become a Contributor"
     },
     "family": {
