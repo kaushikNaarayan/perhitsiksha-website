@@ -133,6 +133,32 @@ export interface HeroProps {
   overlay?: boolean;
 }
 
+export interface HeroEditorialProps {
+  eyebrow: string;
+  /** Full headline sentence, e.g. "No student should drop out because of a lack of funds." */
+  title: string;
+  /** The single orange-signature accent word/phrase within `title` (v3 `.pop`), e.g. "funds." — must appear verbatim as a substring of `title`. */
+  accentWord: string;
+  lede: string;
+  primaryCTA?: {
+    text: string;
+    href: string;
+  };
+  secondaryCTA?: {
+    text: string;
+    href: string;
+  };
+  taxNote?: string;
+  stats?: Array<{
+    value: number;
+    suffix?: string;
+    prefix?: string;
+    label: string;
+  }>;
+  /** The hero media — typically a <PhotoFrame><KidStackCarousel .../></PhotoFrame>. */
+  media?: React.ReactNode;
+}
+
 export interface YouTubeEmbedProps {
   videoId: string;
   title: string;

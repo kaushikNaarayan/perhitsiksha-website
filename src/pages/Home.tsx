@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import Hero from '../components/ui/Hero';
+import HeroEditorial from '../components/ui/HeroEditorial';
+import PhotoFrame from '../components/ui/PhotoFrame';
+import KidStackCarousel from '../components/ui/KidStackCarousel';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import YouTubeEmbed from '../components/ui/YouTubeEmbed';
@@ -8,7 +10,7 @@ import PeekCarousel from '../components/ui/PeekCarousel';
 import EventsCarousel from '../components/ui/EventsCarousel';
 import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
 import ScrollProgress from '../components/ui/ScrollProgress';
-import StatsCounter from '../components/ui/StatsCounter';
+import StatBand from '../components/ui/StatBand';
 import {
   gsap,
   useGSAP,
@@ -24,8 +26,22 @@ import facebookEventsData from '../data/facebook-events.json';
 import celebrityEndorsementsData from '../data/celebrity-endorsements.json';
 import type { Event } from '../types';
 
-// Import images
-import heroBgImage from '../assets/images/hero-bg.png';
+// Generic/anonymous stock portraits for the hero "kid-stack" carousel — no
+// real student photos here (real students are gated behind pe-tsu until the
+// ingested-application pipeline, pe-dfm, lands).
+import portraitFlower from '../assets/images/portraits/portrait-flower.jpg';
+import portraitBook from '../assets/images/portraits/portrait-book.jpg';
+import portraitStudy from '../assets/images/portraits/portrait-study.jpg';
+import portraitSchoolgirl from '../assets/images/portraits/portrait-schoolgirl.jpg';
+import portraitCollegegirl from '../assets/images/portraits/portrait-collegegirl.jpg';
+
+const heroKidStackImages = [
+  portraitFlower,
+  portraitBook,
+  portraitStudy,
+  portraitSchoolgirl,
+  portraitCollegegirl,
+];
 
 const certificates = [
   {
@@ -237,12 +253,15 @@ const Home: React.FC = () => {
   return (
     <div ref={rootRef}>
       <ScrollProgress />
-      {/* Hero Section */}
-      <Hero
+      {/* Hero Section — v3 warm-white editorial layout: eyebrow -> headline
+          (one orange-signature word) -> lede -> CTAs -> inline stats, with
+          the kid-stack portrait carousel as a side media column instead of
+          a full-bleed background photo. */}
+      <HeroEditorial
+        eyebrow={t('hero.eyebrow')}
         title={t('hero.title')}
-        subheadline={t('hero.subheadline')}
-        subtitle={t('hero.subtitle')}
-        showLogo={true}
+        accentWord={t('hero.accentWord')}
+        lede={t('hero.lede')}
         primaryCTA={{
           text: t('hero.primaryCta'),
           // Sentinel href: DonationDrawer intercepts clicks on a[href="#donate"]
@@ -250,9 +269,22 @@ const Home: React.FC = () => {
           href: DONATE_HREF,
         }}
         taxNote={t('common:taxNote')}
-        stats={[]}
-        backgroundImage={heroBgImage}
-        overlay={false}
+        stats={[
+          { value: 450, suffix: '+', label: t('statsBand.successStories') },
+          {
+            value: 700,
+            suffix: '+',
+            label: t('statsBand.globalContributors'),
+          },
+        ]}
+        media={
+          <PhotoFrame>
+            <KidStackCarousel
+              images={heroKidStackImages}
+              ariaLabel="Students Perhitsiksha supports — swipe, drag, or use the arrow keys to browse"
+            />
+          </PhotoFrame>
+        }
       />
 
       {/* Celebrated Voices — public figures who lent their voice (org's own YouTube-channel videos) */}
@@ -398,21 +430,32 @@ const Home: React.FC = () => {
             {t('impact.eyebrow')}
           </p>
           <h2 className="heading-2 mb-8">{t('impact.title')}</h2>
-          <div className="grid grid-cols-2 gap-8 max-w-3xl mx-auto">
-            <StatsCounter
-              value={450}
-              suffix="+"
-              label={t('statsBand.successStories')}
-              hoverTip={t('statsBand.successStoriesTip')}
-            />
-            <StatsCounter
-              value={700}
-              suffix="+"
-              label={t('statsBand.globalContributors')}
-              infoContent={t('statsBand.contributorsInfo')}
-              infoLabel={t('statsBand.contributorsInfoLabel')}
-            />
-          </div>
+          <StatBand
+            className="max-w-3xl mx-auto"
+            items={[
+              {
+                value: 450,
+                suffix: '+',
+                label: t('statsBand.successStories'),
+                hoverTip: t('statsBand.successStoriesTip'),
+              },
+              {
+                value: 700,
+                suffix: '+',
+                label: t('statsBand.globalContributors'),
+                infoContent: t('statsBand.contributorsInfo'),
+                infoLabel: t('statsBand.contributorsInfoLabel'),
+              },
+              {
+                display: t('statsBand.taxExemptDisplay'),
+                label: t('statsBand.taxExempt'),
+              },
+              {
+                display: t('statsBand.section8Display'),
+                label: t('statsBand.registeredNgo'),
+              },
+            ]}
+          />
         </div>
       </section>
 
