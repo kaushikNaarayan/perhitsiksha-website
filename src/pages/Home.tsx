@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FaHandHoldingHeart, FaUserFriends, FaBriefcase } from 'react-icons/fa';
+import joinMissionIllustration from '../assets/images/illustrations/join-mission.png';
 import HeroEditorial from '../components/ui/HeroEditorial';
 import PhotoFrame from '../components/ui/PhotoFrame';
 import KidStackCarousel from '../components/ui/KidStackCarousel';
@@ -11,12 +13,7 @@ import EventsCarousel from '../components/ui/EventsCarousel';
 import YouTubeShortsCarousel from '../components/ui/YouTubeShortsCarousel';
 import ScrollProgress from '../components/ui/ScrollProgress';
 import StatBand from '../components/ui/StatBand';
-import {
-  gsap,
-  useGSAP,
-  ScrollTrigger,
-  prefersReducedMotion,
-} from '../lib/gsap';
+import { gsap, useGSAP, ScrollTrigger } from '../lib/gsap';
 import { useDonationDrawer, DONATE_HREF } from '../context/DonationContext';
 import type { Testimonial } from '../types';
 
@@ -75,13 +72,7 @@ const Home: React.FC = () => {
   const [supporterTestimonials, setSupporterTestimonials] = useState<
     Testimonial[]
   >([]);
-  const [certIndex, setCertIndex] = useState(0);
-  const [certPaused, setCertPaused] = useState(false);
-
   const rootRef = useRef<HTMLDivElement>(null);
-  const certImgsRef = useRef<HTMLDivElement>(null);
-  const certLinkRef = useRef<HTMLAnchorElement>(null);
-  const certUnderlineRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     // Scholars = students (the "Lives Transformed" proof carousel).
@@ -96,20 +87,23 @@ const Home: React.FC = () => {
     );
   }, []);
 
-  // Auto-rotate certificates every 5s
-  useEffect(() => {
-    if (certPaused) return;
-    const timer = setInterval(() => {
-      setCertIndex(prev => (prev + 1) % certificates.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [certPaused]);
-
+  // v3 assigns each program card its own tint (orange/blue/green) via a
+  // `.card-chip` blob icon — see home-v3.html's `.card.orange/.blue/.green`.
   const programs = [
-    { id: 'financialAid' },
-    { id: 'mentorship' },
-    { id: 'careerGuidance' },
+    {
+      id: 'financialAid',
+      tint: 'orange' as const,
+      icon: FaHandHoldingHeart,
+    },
+    { id: 'mentorship', tint: 'blue' as const, icon: FaUserFriends },
+    { id: 'careerGuidance', tint: 'green' as const, icon: FaBriefcase },
   ];
+
+  const programChipTint: Record<string, string> = {
+    orange: 'bg-[rgba(255,115,0,0.12)] text-[#FF7300]',
+    blue: 'bg-primary-500/10 text-primary-600',
+    green: 'bg-[rgba(1,166,82,0.12)] text-[#01A652]',
+  };
 
   // Page-level GSAP scope. Because it's scoped to rootRef, every ScrollTrigger
   // created here auto-reverts on unmount/route-change (SPA leak fix).
@@ -140,37 +134,8 @@ const Home: React.FC = () => {
           });
         }
 
-        // Certificate "View certificate" underline micro-interaction.
-        const link = certLinkRef.current;
-        const underline = certUnderlineRef.current;
-        const onEnter = () => {
-          gsap.to(underline, {
-            scaleX: 1,
-            transformOrigin: 'left center',
-            duration: 0.35,
-            ease: 'power2.out',
-          });
-        };
-        const onLeave = () => {
-          gsap.to(underline, {
-            scaleX: 0,
-            transformOrigin: 'right center',
-            duration: 0.35,
-            ease: 'power2.in',
-          });
-        };
-        if (link && underline) {
-          gsap.set(underline, { scaleX: 0, transformOrigin: 'left center' });
-          link.addEventListener('mouseenter', onEnter);
-          link.addEventListener('mouseleave', onLeave);
-        }
-
         return () => {
           batch.forEach(st => st.kill());
-          if (link) {
-            link.removeEventListener('mouseenter', onEnter);
-            link.removeEventListener('mouseleave', onLeave);
-          }
         };
       });
 
@@ -211,43 +176,6 @@ const Home: React.FC = () => {
       scope: rootRef,
       dependencies: [scholarTestimonials.length, supporterTestimonials.length],
     }
-  );
-
-  // Certificate carousel scale/fade transition, driven by certIndex.
-  useGSAP(
-    () => {
-      const container = certImgsRef.current;
-      if (!container) return;
-      const imgs = gsap.utils.toArray<HTMLElement>(
-        container.querySelectorAll('img')
-      );
-      if (!imgs.length) return;
-
-      if (prefersReducedMotion()) {
-        imgs.forEach((img, i) => {
-          gsap.set(img, { autoAlpha: i === certIndex ? 1 : 0, scale: 1 });
-        });
-        return;
-      }
-
-      imgs.forEach((img, i) => {
-        if (i === certIndex) {
-          gsap.fromTo(
-            img,
-            { autoAlpha: 0, scale: 1.1 },
-            { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'expo.out' }
-          );
-        } else {
-          gsap.to(img, {
-            autoAlpha: 0,
-            scale: 0.9,
-            duration: 0.5,
-            ease: 'power2.out',
-          });
-        }
-      });
-    },
-    { scope: certImgsRef, dependencies: [certIndex] }
   );
 
   return (
@@ -294,10 +222,12 @@ const Home: React.FC = () => {
             <h2 className="heading-2 mb-0">
               {t('celebrityEndorsements.title')}
             </h2>
-            <p className="body-large mb-0.5 sm:mb-2 prose-measure mx-auto">
+            <p className="body-large mb-6 sm:mb-8 prose-measure mx-auto">
               {t('celebrityEndorsements.subtitle')}
             </p>
-            <YouTubeShortsCarousel endorsements={celebrityEndorsementsData} />
+            <Card className="p-4 sm:p-6" hover={false}>
+              <YouTubeShortsCarousel endorsements={celebrityEndorsementsData} />
+            </Card>
           </div>
         </section>
       )}
@@ -358,19 +288,28 @@ const Home: React.FC = () => {
               </svg>
 
               <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {programs.map(program => (
-                  <Card
-                    key={program.id}
-                    className="reveal-card p-4 text-center"
-                  >
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      {t(`programs.${program.id}.title`)}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {t(`programs.${program.id}.description`)}
-                    </p>
-                  </Card>
-                ))}
+                {programs.map(program => {
+                  const Icon = program.icon;
+                  return (
+                    <Card
+                      key={program.id}
+                      className="reveal-card p-6 text-center"
+                    >
+                      <span
+                        className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl ${programChipTint[program.tint]}`}
+                        aria-hidden="true"
+                      >
+                        <Icon />
+                      </span>
+                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                        {t(`programs.${program.id}.title`)}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {t(`programs.${program.id}.description`)}
+                      </p>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
 
@@ -459,334 +398,88 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Official Registration Announcement */}
+      {/* Officially Registered — v3's calm, light 2-col treatment: copy +
+          doc-chip pill row on the left, a static registered-facts card on
+          the right. Content is a 1:1 match with the previous rotating
+          carousel (same registration and certificates locale keys), this
+          is a pure layout/visual swap per the design-fidelity spec. */}
       <section className="bg-white section-fluid">
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 ring-1 ring-primary-400/20 shadow-xl">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div>
+              <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
+                {t('registration.title')}
+              </p>
+              <h2 className="heading-2 mb-4">{t('registration.title')}</h2>
+              <p className="body-large text-gray-600 mb-8 max-w-xl">
+                {t('registration.description')}
+              </p>
 
-            <div className="relative z-10 p-8 md:p-12 lg:p-16">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-                {/* Certificate Carousel */}
-                <div
-                  className="lg:col-span-5"
-                  onMouseEnter={() => setCertPaused(true)}
-                  onMouseLeave={() => setCertPaused(false)}
-                >
-                  <div className="relative">
-                    <a
-                      ref={certLinkRef}
-                      href={certificates[certIndex].link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block group"
-                    >
-                      <div
-                        ref={certImgsRef}
-                        className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl"
-                      >
-                        {certificates.map((cert, i) => (
-                          <img
-                            key={cert.labelKey}
-                            src={cert.image}
-                            alt={t(`certificates.${cert.labelKey}`)}
-                            style={{ opacity: i === certIndex ? 1 : 0 }}
-                            className="absolute inset-0 w-full h-full object-cover"
-                          />
-                        ))}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <p className="text-white text-sm font-semibold drop-shadow-lg">
-                            {t(
-                              `certificates.${certificates[certIndex].labelKey}`
-                            )}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* View certificate — underline micro-interaction */}
-                      <span className="mt-3 inline-flex flex-col items-start text-white text-sm font-semibold">
-                        {t('registration.viewCertificate')}
-                        <span
-                          ref={certUnderlineRef}
-                          className="mt-0.5 h-0.5 w-full bg-white"
-                          style={{ transformOrigin: 'left center' }}
-                        />
-                      </span>
-                    </a>
-
-                    {/* Prev/Next arrows */}
-                    <button
-                      onClick={e => {
-                        e.preventDefault();
-                        setCertIndex(
-                          (certIndex - 1 + certificates.length) %
-                            certificates.length
-                        );
-                      }}
-                      className="group absolute left-2 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-white"
-                      aria-label={t('registration.prevCertificate')}
-                    >
-                      <span className="w-8 h-8 rounded-full bg-black/30 group-hover:bg-black/50 flex items-center justify-center transition-colors">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 19l-7-7 7-7"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      onClick={e => {
-                        e.preventDefault();
-                        setCertIndex((certIndex + 1) % certificates.length);
-                      }}
-                      className="group absolute right-2 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-white"
-                      aria-label={t('registration.nextCertificate')}
-                    >
-                      <span className="w-8 h-8 rounded-full bg-black/30 group-hover:bg-black/50 flex items-center justify-center transition-colors">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-
-                    {/* Dots */}
-                    <div className="flex justify-center mt-3">
-                      {certificates.map((cert, i) => (
-                        <button
-                          key={cert.labelKey}
-                          onClick={() => setCertIndex(i)}
-                          className="group min-w-[44px] min-h-[44px] flex items-center justify-center"
-                          aria-label={t(`certificates.${cert.labelKey}`)}
-                        >
-                          <span
-                            className={`block w-2 h-2 rounded-full transition-all ${i === certIndex ? 'bg-white scale-125' : 'bg-white/40 group-hover:bg-white/60'}`}
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Certificate Details */}
-                <div className="lg:col-span-7">
-                  <h2 className="text-4xl sm:text-5xl lg:text-6xl leading-tight font-bold text-gray-900 mb-4">
-                    {t('registration.title')}
-                  </h2>
-                  <p className="text-lg sm:text-xl text-white/90 max-w-2xl mb-8">
-                    {t('registration.description')}
-                  </p>
-
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-white">
-                            {t('registration.cinNumber')}
-                          </p>
-                          <p className="text-xs text-white/80 font-mono">
-                            U85500UP2025NPL237759
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-white">
-                            {t('registration.dateOfIncorporation')}
-                          </p>
-                          <p className="text-xs text-white/80">
-                            December 6, 2025
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-white">
-                            {t('registration.panNumber')}
-                          </p>
-                          <p className="text-xs text-white/80 font-mono">
-                            AAQCP4229F
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-white">
-                            {t('registration.tanNumber')}
-                          </p>
-                          <p className="text-xs text-white/80 font-mono">
-                            LKNP13723D
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-white">
-                            {t('registration.csrRegistrationNumber')}
-                          </p>
-                          <p className="text-xs text-white/80 font-mono">
-                            CSR00108984
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur ring-1 ring-white/20 flex items-center justify-center text-white">
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-white">
-                            {t('registration.csrCertifiedOn')}
-                          </p>
-                          <p className="text-xs text-white/80">April 1, 2026</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 flex flex-wrap gap-3">
-                      {certificates.map((cert, i) => (
-                        <a
-                          key={cert.labelKey}
-                          href={cert.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={e => {
-                            e.preventDefault();
-                            setCertIndex(i);
-                            window.open(cert.link, '_blank');
-                          }}
-                          className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all shadow-lg hover:shadow-xl ${i === certIndex ? 'bg-white text-primary-600 hover:bg-white/90' : 'bg-white/10 text-white border border-white/30 hover:bg-white/20'}`}
-                        >
-                          {t(`certificates.${cert.labelKey}`)}
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                            />
-                          </svg>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+              {/* Doc-chip pill row — links to each certificate/PDF */}
+              <div className="flex flex-wrap gap-3">
+                {certificates.map(cert => (
+                  <a
+                    key={cert.labelKey}
+                    href={cert.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-gray-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-900 transition-colors hover:border-[#FF7300] hover:text-[#FF7300]"
+                  >
+                    {t(`certificates.${cert.labelKey}`)}
+                  </a>
+                ))}
               </div>
             </div>
+
+            {/* Registered facts card */}
+            <Card className="p-6 sm:p-8 bg-gray-50" hover={false}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                    {t('registration.cinNumber')}
+                  </p>
+                  <p className="font-bold text-gray-900 font-mono break-words">
+                    U85500UP2025NPL237759
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                    {t('registration.panNumber')}
+                  </p>
+                  <p className="font-bold text-gray-900 font-mono">
+                    AAQCP4229F
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                    {t('registration.tanNumber')}
+                  </p>
+                  <p className="font-bold text-gray-900 font-mono">
+                    LKNP13723D
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                    {t('registration.csrRegistrationNumber')}
+                  </p>
+                  <p className="font-bold text-gray-900 font-mono">
+                    CSR00108984
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                    {t('registration.dateOfIncorporation')}
+                  </p>
+                  <p className="font-bold text-gray-900">December 6, 2025</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                    {t('registration.csrCertifiedOn')}
+                  </p>
+                  <p className="font-bold text-gray-900">April 1, 2026</p>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
@@ -890,6 +583,33 @@ const Home: React.FC = () => {
                 {t('joinMission.family.cta')}
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Closing strip — v3's simpler generic "Join our mission" band,
+          reserved for the very final CTA (the donor/family two-pathway
+          block above stays as its own, richer, WhatsApp-linked feature). */}
+      <section className="bg-gray-50 py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto container-padding">
+          <div className="rounded-2xl bg-primary-500 text-white shadow-xl overflow-hidden grid md:grid-cols-2 items-center">
+            <div className="p-8 sm:p-12">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3">
+                {t('joinMission.title')}
+              </h2>
+              <p className="text-white/90 mb-6">
+                {t('joinMission.description')}
+              </p>
+              <Button variant="secondary" size="lg" onClick={openDonation}>
+                {t('joinMission.cta')}
+              </Button>
+            </div>
+            <img
+              src={joinMissionIllustration}
+              alt=""
+              aria-hidden="true"
+              className="hidden md:block w-full h-full object-contain p-8"
+            />
           </div>
         </div>
       </section>

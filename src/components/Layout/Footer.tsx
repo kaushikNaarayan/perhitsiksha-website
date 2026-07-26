@@ -25,6 +25,9 @@ const Footer: React.FC = () => {
               <span className="text-xl font-bold">{t('orgName')}</span>
             </div>
             <div className="text-gray-300 mb-4 max-w-md text-sm">
+              <p className="mb-1 text-primary-300 font-medium">
+                {t('registration.motto')}
+              </p>
               <p className="mb-1">{t('registration.section8')}</p>
               <p className="mb-1">
                 <span className="font-medium">
