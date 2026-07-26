@@ -221,7 +221,7 @@ const About: React.FC = () => {
           </div>
 
           {/* Core Principles */}
-          <div className="bg-white rounded-3xl p-8 shadow-sm">
+          <div className="bg-white rounded-2xl p-8 shadow-sm">
             <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
               {t('visionMission.howWeMakeItHappen.title')}
             </h3>
