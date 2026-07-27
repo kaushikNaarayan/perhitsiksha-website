@@ -771,7 +771,9 @@ const Home: React.FC = () => {
         className="bg-primary-500 text-white section-fluid"
       >
         <div className="max-w-5xl mx-auto container-padding text-center">
-          <h2 className="heading-2 mb-4">{t('joinMission.title')}</h2>
+          <h2 className="heading-2 mb-4 text-white">
+            {t('joinMission.title')}
+          </h2>
           <p className="text-lg sm:text-xl text-white leading-relaxed mb-10 prose-measure mx-auto">
             {t('joinMission.description')}
           </p>
