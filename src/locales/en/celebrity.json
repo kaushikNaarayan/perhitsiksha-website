@@ -1,4 +1,7 @@
 {
   "endorsementAlt": "{{name}} endorsement",
-  "goToSlideAria": "Go to slide {{index}}"
+  "goToSlideAria": "Go to slide {{index}}",
+  "carouselRegionAria": "Celebrity endorsements carousel - drag to scroll or use arrow keys",
+  "supportsMessage": "{{name}} supports Perhitsiksha",
+  "shortsLabel": "Shorts"
 }

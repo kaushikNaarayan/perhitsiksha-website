@@ -13,5 +13,16 @@
   },
   "tooltip": {
     "moreInfo": "More information"
+  },
+  "video": {
+    "closeAria": "Close video",
+    "mobileFallback": "Facebook videos work best in the Facebook app",
+    "watchOnFacebook": "Watch on Facebook"
+  },
+  "gallery": {
+    "closeAria": "Close gallery",
+    "previousImageAria": "Previous image",
+    "nextImageAria": "Next image",
+    "goToImageAria": "Go to image {{index}}"
   }
 }

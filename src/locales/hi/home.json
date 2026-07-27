@@ -81,7 +81,10 @@
   },
   "events": {
     "eyebrow": "हमारे नवीनतम अपडेट",
-    "title": "हमारे समुदाय से"
+    "title": "हमारे समुदाय से",
+    "previousEventAria": "पिछला आयोजन",
+    "nextEventAria": "अगला आयोजन",
+    "goToEventAria": "आयोजन {{index}} पर जाएँ"
   },
   "joinMission": {
     "title": "एक विद्यार्थी की शिक्षा में योगदान दें",

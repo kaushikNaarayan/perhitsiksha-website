@@ -273,7 +273,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
     setModalVideo({
       isOpen: true,
       videoId: celebrity.videoId,
-      title: `${celebrity.name} supports Perhitsiksha`,
+      title: t('supportsMessage', { name: celebrity.name }),
       celebrityName: celebrity.name,
     });
     // Pause carousel when modal opens
@@ -301,7 +301,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       {/* Carousel Container */}
       <div
         role="region"
-        aria-label="Celebrity endorsements carousel - drag to scroll or use arrow keys"
+        aria-label={t('carouselRegionAria')}
         aria-roledescription="carousel"
         tabIndex={0}
         className="flex gap-8 pb-4 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded"
@@ -379,7 +379,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
                   {/* YouTube Shorts indicator */}
                   <div className="absolute top-3 right-3">
                     <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-                      Shorts
+                      {t('shortsLabel')}
                     </div>
                   </div>
                 </div>

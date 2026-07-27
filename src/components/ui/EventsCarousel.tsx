@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -18,6 +19,7 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
   events,
   autoRotateInterval = 4000,
 }) => {
+  const { t } = useTranslation('home');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -133,7 +135,7 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
                       goToPrevious();
                     }}
                     className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 z-10"
-                    aria-label="Previous event"
+                    aria-label={t('events.previousEventAria')}
                   >
                     <FaChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
@@ -143,7 +145,7 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
                       goToNext();
                     }}
                     className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 z-10"
-                    aria-label="Next event"
+                    aria-label={t('events.nextEventAria')}
                   >
                     <FaChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
@@ -207,7 +209,7 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
                   ? 'bg-primary-600 w-8 h-3'
                   : 'bg-gray-300 w-3 h-3 hover:bg-gray-400'
               }`}
-              aria-label={`Go to event ${index + 1}`}
+              aria-label={t('events.goToEventAria', { index: index + 1 })}
               aria-current={index === currentIndex ? 'true' : 'false'}
             />
           ))}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import type { MediaItem } from '../../types';
 import { MediaViewer } from './MediaViewer';
@@ -30,6 +31,7 @@ export function GalleryModal({
   initialIndex = 0,
   eventTitle,
 }: GalleryModalProps) {
+  const { t } = useTranslation('common');
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -126,7 +128,7 @@ export function GalleryModal({
           onClose();
         }}
         className="absolute top-4 right-4 z-[60] text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black bg-opacity-70 hover:bg-opacity-90 shadow-lg"
-        aria-label="Close gallery"
+        aria-label={t('gallery.closeAria')}
       >
         <FaTimes className="text-3xl" />
       </button>
@@ -151,7 +153,7 @@ export function GalleryModal({
             handlePrevious();
           }}
           className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-gray-300 transition-colors p-2 sm:p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70"
-          aria-label="Previous image"
+          aria-label={t('gallery.previousImageAria')}
         >
           <FaChevronLeft className="text-xl sm:text-2xl" />
         </button>
@@ -174,7 +176,7 @@ export function GalleryModal({
             handleNext();
           }}
           className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-gray-300 transition-colors p-2 sm:p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70"
-          aria-label="Next image"
+          aria-label={t('gallery.nextImageAria')}
         >
           <FaChevronRight className="text-xl sm:text-2xl" />
         </button>
@@ -195,7 +197,7 @@ export function GalleryModal({
                   ? 'bg-white w-8'
                   : 'bg-white bg-opacity-50 hover:bg-opacity-75'
               }`}
-              aria-label={`Go to image ${index + 1}`}
+              aria-label={t('gallery.goToImageAria', { index: index + 1 })}
             />
           ))}
         </div>

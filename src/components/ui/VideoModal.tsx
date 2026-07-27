@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { gsap, useGSAP, prefersReducedMotion } from '../../lib/gsap';
 
 interface VideoModalProps {
@@ -20,6 +21,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
   celebrityName,
   platform = 'youtube',
 }) => {
+  const { t } = useTranslation('common');
+
   // Keep the modal mounted through its GSAP exit animation.
   const [mounted, setMounted] = useState(isOpen);
 
@@ -166,7 +169,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
           <button
             onClick={onClose}
             className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded"
-            aria-label="Close video"
+            aria-label={t('video.closeAria')}
           >
             <svg
               className="w-6 h-6"
@@ -199,7 +202,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
                 <p className="text-white text-sm mb-4">
-                  Facebook videos work best in the Facebook app
+                  {t('video.mobileFallback')}
                 </p>
                 <a
                   href={content.videoUrl}
@@ -215,7 +218,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
                   >
                     <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
                   </svg>
-                  Watch on Facebook
+                  {t('video.watchOnFacebook')}
                 </a>
               </div>
             </div>

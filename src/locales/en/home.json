@@ -81,7 +81,10 @@
   },
   "events": {
     "eyebrow": "OUR LATEST UPDATES",
-    "title": "From Our Community"
+    "title": "From Our Community",
+    "previousEventAria": "Previous event",
+    "nextEventAria": "Next event",
+    "goToEventAria": "Go to event {{index}}"
   },
   "joinMission": {
     "title": "Fund a Scholar",

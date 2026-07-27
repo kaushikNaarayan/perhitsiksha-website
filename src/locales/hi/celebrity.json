@@ -1,4 +1,7 @@
 {
   "endorsementAlt": "{{name}} का समर्थन",
-  "goToSlideAria": "स्लाइड {{index}} पर जाएँ"
+  "goToSlideAria": "स्लाइड {{index}} पर जाएँ",
+  "carouselRegionAria": "प्रतिष्ठित हस्तियों का समर्थन कैरोसेल - स्क्रॉल करने के लिए खींचें या ऐरो कीज़ का उपयोग करें",
+  "supportsMessage": "{{name}} पेरहित शिक्षा का समर्थन करते हैं",
+  "shortsLabel": "शॉर्ट्स"
 }

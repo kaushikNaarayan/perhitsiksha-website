@@ -13,5 +13,16 @@
   },
   "tooltip": {
     "moreInfo": "अधिक जानकारी"
+  },
+  "video": {
+    "closeAria": "वीडियो बंद करें",
+    "mobileFallback": "फेसबुक वीडियो फेसबुक ऐप में सबसे बेहतर चलते हैं",
+    "watchOnFacebook": "फेसबुक पर देखें"
+  },
+  "gallery": {
+    "closeAria": "गैलरी बंद करें",
+    "previousImageAria": "पिछली तस्वीर",
+    "nextImageAria": "अगली तस्वीर",
+    "goToImageAria": "तस्वीर {{index}} पर जाएँ"
   }
 }
