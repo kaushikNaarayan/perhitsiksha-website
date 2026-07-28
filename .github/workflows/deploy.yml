@@ -130,7 +130,7 @@ jobs:
         ok=""
         for i in $(seq 1 10); do
           sleep 30
-          served=$(curl -fsS "$ORG_URL" 2>/dev/null | grep -oE 'assets/index-[A-Za-z0-9_-]+\.js' | head -1 || true)
+          served=$(curl -fsSL "$ORG_URL" 2>/dev/null | grep -oE 'assets/index-[A-Za-z0-9_-]+\.js' | head -1 || true)
           echo "  org-pages attempt $i — served: ${served:-<none>}"
           if [ "$served" = "$BUILT" ]; then
             ok=1; echo "✅ Org Pages serves the freshly-built bundle — deploy took."; break
