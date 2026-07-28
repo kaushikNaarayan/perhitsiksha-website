@@ -212,6 +212,72 @@ function validateUrls(events) {
 }
 
 /**
+ * PII DENYLIST — safety gate, do not remove without reading pw-ky2.
+ *
+ * The Facebook sync (.github/workflows/sync-facebook-events.yml, cron '0 8 * * *')
+ * re-imports whatever is on the source Facebook post, every day, with no
+ * document-type filtering. On 2026-04-19 it imported two scanned CBSE Class X
+ * result documents for named minors — photo, roll number, candidate name, both
+ * parents' names, date of birth, school and marks — and wired one as an event
+ * thumbnail. They were live on the public site for roughly three months.
+ *
+ * They were removed by hand. Without this gate the very next scheduled sync
+ * would silently restore them, because the source post is unchanged.
+ *
+ * This deliberately FAILS the validation step, which stops the workflow from
+ * committing anything at all — including otherwise-legitimate new events. That
+ * is intentional and fail-closed: while the source post still carries a child's
+ * identity documents, continuing to auto-ingest from it is worse than pausing
+ * the sync. The real fix is removing the images at the Facebook source; this
+ * gate is the seatbelt, not the fix.
+ */
+const BLOCKED_EVENT_IDS = new Set([
+  '103024869002738-936085909054447', // CBSE result documents for two named minors
+]);
+
+const BLOCKED_IMAGE_FILES = new Set([
+  '103024869002738-936085909054447-936093189053719.jpg',
+  '103024869002738-936085909054447-936093172387054.jpg',
+]);
+
+function validatePiiDenylist(events) {
+  console.log('\nChecking PII denylist...');
+  const violations = [];
+
+  for (const event of events) {
+    if (BLOCKED_EVENT_IDS.has(event.id)) {
+      violations.push(`Event "${event.id}" is on the PII denylist and must not be published.`);
+    }
+
+    const paths = [
+      event.image,
+      event.thumbnailImage,
+      ...(event.media?.map((m) => m.url) ?? []),
+      ...(event.media?.map((m) => m.thumbnail) ?? []),
+    ].filter(Boolean);
+
+    for (const p of paths) {
+      const filename = String(p).split('/').pop();
+      if (BLOCKED_IMAGE_FILES.has(filename)) {
+        violations.push(`Event "${event.id}" references denylisted image ${filename}.`);
+      }
+    }
+  }
+
+  if (violations.length > 0) {
+    console.error('\n\u274c PII DENYLIST VIOLATION \u2014 refusing to publish.');
+    violations.forEach((v) => console.error(`  - ${v}`));
+    console.error('\nThese items contain a minor\'s identity documents. The sync has been');
+    console.error('stopped on purpose. Remove them at the Facebook source, then update the');
+    console.error('denylist in this file. See bead pw-ky2 before changing anything here.');
+    return false;
+  }
+
+  console.log('\u2713 PII denylist check passed');
+  return true;
+}
+
+/**
  * Prints validation summary
  */
 function printSummary(events) {
@@ -251,10 +317,11 @@ async function main() {
     const structureValid = validateEventsStructure(events);
     const consistencyValid = await validateDataConsistency(events);
     const urlsValid = validateUrls(events);
+    const piiClean = validatePiiDenylist(events);
 
     printSummary(events);
 
-    if (structureValid && consistencyValid && urlsValid) {
+    if (structureValid && consistencyValid && urlsValid && piiClean) {
       console.log('\n✅ All validations passed!');
       console.log('   Events data is ready to use.');
       return;
