@@ -327,11 +327,13 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
           {duplicatedEndorsements.map((celebrity, index) => (
             <div key={`${celebrity.id}-${index}`} className="flex-none w-64">
               {/* Celebrity Info */}
-              <div className="pb-3 text-center">
-                <h3 className="font-semibold text-gray-900 text-lg mb-1">
+              <div className="pb-1.5 text-center">
+                <h3 className="font-semibold text-gray-900 text-base sm:text-lg mb-0.5">
                   {celebrity.name}
                 </h3>
-                <p className="text-sm text-gray-600">{celebrity.profession}</p>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  {celebrity.profession}
+                </p>
               </div>
 
               {/* Video Container - Portrait aspect ratio */}

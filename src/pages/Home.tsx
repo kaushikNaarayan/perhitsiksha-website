@@ -259,10 +259,10 @@ const Home: React.FC = () => {
       {celebrityEndorsementsData.length > 0 && (
         <section className="bg-primary-50 border-y border-primary-100 pt-0 pb-16 sm:pb-20 lg:pb-24">
           <div className="max-w-6xl mx-auto container-padding text-center">
-            <h2 className="heading-2 mb-0.5 sm:mb-1">
+            <h2 className="heading-2 mb-0">
               {t('celebrityEndorsements.title')}
             </h2>
-            <p className="body-large mb-2 sm:mb-3 prose-measure mx-auto">
+            <p className="body-large mb-0.5 sm:mb-2 prose-measure mx-auto">
               {t('celebrityEndorsements.subtitle')}
             </p>
             <YouTubeShortsCarousel endorsements={celebrityEndorsementsData} />

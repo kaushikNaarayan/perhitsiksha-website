@@ -171,7 +171,7 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <section
       ref={rootRef}
-      className="relative min-h-[40vh] flex items-center justify-center pt-2 sm:pt-4 md:pt-6 overflow-hidden"
+      className="relative min-h-[40vh] flex items-center justify-center pt-1 sm:pt-3 overflow-hidden"
     >
       {/* Background Image */}
       {backgroundImage && (
@@ -252,11 +252,11 @@ const Hero: React.FC<HeroProps> = ({
         >
           {/* Logo Section */}
           {showLogo && (
-            <div className="mb-3 sm:mb-6 flex justify-center">
+            <div className="mb-1.5 sm:mb-3 flex justify-center">
               <img
                 src={logoImage}
                 alt="Perhitsiksha Logo"
-                className="w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-2xl object-cover shadow-lg"
+                className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-2xl object-cover shadow-lg"
               />
             </div>
           )}
@@ -264,7 +264,7 @@ const Hero: React.FC<HeroProps> = ({
           <h1
             ref={titleRef}
             aria-label={title}
-            className={`${showLogo ? 'heading-2' : 'heading-1'} mb-2 sm:mb-4 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
+            className={`${showLogo ? 'heading-2' : 'heading-1'} mb-1.5 sm:mb-2 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
           >
             {title}
           </h1>
@@ -272,7 +272,7 @@ const Hero: React.FC<HeroProps> = ({
           {subheadline && (
             <p
               ref={subheadRef}
-              className={`text-lg md:text-xl font-semibold mb-3 sm:mb-6 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
+              className={`text-base sm:text-lg md:text-xl font-semibold mb-1.5 sm:mb-3 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
             >
               {subheadline}
             </p>
@@ -281,7 +281,7 @@ const Hero: React.FC<HeroProps> = ({
           {subtitle && (
             <p
               ref={subtitleRef}
-              className={`body-large font-normal opacity-80 mb-3 sm:mb-6 prose-measure mx-auto ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}
+              className={`body-large font-normal opacity-80 mb-2 sm:mb-3 prose-measure mx-auto ${showLogo ? '!leading-snug sm:!leading-normal' : ''} ${backgroundImage ? 'text-gray-100' : 'text-gray-600'}`}
             >
               {subtitle}
             </p>
@@ -290,14 +290,14 @@ const Hero: React.FC<HeroProps> = ({
           {(primaryCTA || secondaryCTA) && (
             <div
               ref={ctaRef}
-              className="flex flex-col sm:flex-row gap-4 justify-center mt-3 sm:mt-6"
+              className="flex flex-col sm:flex-row gap-4 justify-center mt-2 sm:mt-3"
             >
               {primaryCTA && (
                 <Button
                   href={primaryCTA.href}
                   variant="primary"
                   size="lg"
-                  className="shimmer-btn"
+                  className="shimmer-btn !py-3 !text-base sm:!py-4 sm:!text-lg"
                   magnetic
                   attention
                 >
@@ -320,7 +320,7 @@ const Hero: React.FC<HeroProps> = ({
           {/* 80G tax-exempt micro-copy directly under the primary CTA. */}
           {primaryCTA && taxNote && (
             <p
-              className={`mt-1.5 sm:mt-3 text-xs ${backgroundImage ? 'text-white/70' : 'text-gray-500'}`}
+              className={`mt-0.5 sm:mt-1.5 text-xs ${backgroundImage ? 'text-white/70' : 'text-gray-500'}`}
             >
               {taxNote}
             </p>
@@ -328,7 +328,7 @@ const Hero: React.FC<HeroProps> = ({
 
           {/* Social Icons */}
           {primaryCTA && (
-            <div className="flex justify-center space-x-6 mt-2 sm:mt-4">
+            <div className="flex justify-center space-x-6 mt-1 sm:mt-2">
               <a
                 href="https://www.facebook.com/share/19uSggzByG/"
                 className={`${backgroundImage ? 'text-gray-200 hover:text-white' : 'text-gray-700 hover:text-primary-500'} transition-colors duration-200`}

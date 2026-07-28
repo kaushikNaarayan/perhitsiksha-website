@@ -46,8 +46,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <Footer />
 
-      {/* Thumb-reach CTA for small screens; suppressed while the menu is open. */}
-      <MobileCTA hidden={isMenuOpen} />
+      {/* Thumb-reach CTA for small screens; suppressed while the menu is open
+          and, at rest on first load, until the visitor has scrolled — the
+          hero already carries a CTA there, so the sticky bar is redundant
+          (and would cover content) at the very top of the page. */}
+      <MobileCTA hidden={isMenuOpen || !scrolled} />
 
       {/* Global donation drawer — opened by any Contribute CTA. */}
       <DonationDrawer />
