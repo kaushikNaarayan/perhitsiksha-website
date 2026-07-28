@@ -208,14 +208,20 @@
      need renaming since the values now ARE the named DS scale. */
   .heading-1 {
     font-weight: var(--fw-bold, 700);
-    font-size: 48px;
+    /* Fluid mobile->desktop scale — flat 48px had no mobile breakpoint and
+       forced mid-word breaks on EN mobile (audit pw-3re / bead pw-udj). Floor
+       chosen so the longest hero headline word never overflows a 342px
+       content column (390px viewport - 24px*2 --layout-margin-web); ceiling
+       matches the pre-existing 48px desktop value, reached ~914px so lg:
+       (1024px) desktop stays unchanged. */
+    font-size: clamp(2rem, 1rem + 3.5vw, 3rem);
     letter-spacing: -0.01em;
     line-height: 1.2;
     color: var(--ink-strong);
   }
   [lang='hi'] .heading-1 {
     font-weight: var(--fw-extrabold, 800);
-    font-size: 52px;
+    font-size: clamp(2.125rem, 1rem + 3.9vw, 3.25rem);
     letter-spacing: 0;
     line-height: 1.35;
   }

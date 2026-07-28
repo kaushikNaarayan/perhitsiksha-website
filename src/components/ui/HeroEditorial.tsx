@@ -63,6 +63,13 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
           );
         }
 
+        // SplitText wraps every character in its own inline element, which
+        // removes the browser's normal keep-word-together line-breaking —
+        // left in place after the entrance plays, it can reflow a headline
+        // with a break mid-word. Revert once the cascade finishes so the
+        // heading returns to plain text for the rest of its life.
+        tl.eventCallback('onComplete', () => split?.revert());
+
         return () => split?.revert();
       });
     },
