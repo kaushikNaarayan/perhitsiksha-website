@@ -26,7 +26,16 @@ jobs:
         
     - name: Install dependencies
       run: npm ci
-      
+
+    # Blocking on purpose (no continue-on-error): this reuses the PII denylist
+    # in scripts/validate-events-data.js (see pw-ky2) against the events data
+    # as it stands after this PR's changes, whole-file rather than diff-only —
+    # the denylist is keyed on known-bad event IDs/image filenames, so it must
+    # assert "the committed file doesn't contain them" regardless of which PR
+    # last touched the file. A red run here must fail the job. See pw-djx.
+    - name: PII denylist check
+      run: npm run validate:events
+
     - name: Run ESLint
       run: npm run lint
       
