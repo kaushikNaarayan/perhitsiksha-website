@@ -80,7 +80,11 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
           <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-3">
             {eyebrow}
           </p>
-          <h1 ref={titleRef} className="heading-1 text-gray-900 mb-4">
+          <h1
+            key={`${title}::${accentWord ?? ''}`}
+            ref={titleRef}
+            className="heading-1 text-gray-900 mb-4"
+          >
             {titlePrefix}
             <span style={{ color: 'var(--brand-signature)' }}>
               {titleAccent}
