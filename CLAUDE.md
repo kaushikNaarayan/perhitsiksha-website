@@ -155,8 +155,10 @@ FACEBOOK_ACCESS_TOKEN       # Long-lived Page Access Token (stored in GitHub Sec
 - UI mode: `npx playwright test --ui` for interactive debugging
 
 **Test Isolation:**
-- Note: Some tests have mock isolation issues with live Supabase in CI
-- Production deploys skip unit tests but run lint, type-check, and build
+- Note: 8/10 tests in `VisitorCounter.test.tsx` are quarantined with `it.skip` — a
+  module-load-order mock isolation issue (pw-rld), not a suite-wide skip
+- Production and staging deploys run `npm run test -- --run` for real (deploy.yml,
+  deploy-staging.yml) in addition to lint, type-check, and build
 
 ### Deployment Architecture
 

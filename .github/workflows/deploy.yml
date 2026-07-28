@@ -41,11 +41,15 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Run tests (skip problematic tests)
+    - name: Run tests
       env:
         VITE_COUNTER_WORKSPACE: ${{ secrets.PROD_COUNTER_WORKSPACE || 'perhitsiksha' }}
         VITE_ENVIRONMENT: production
-      run: echo "Skipping tests due to mock isolation issues with live database. Functionality verified on staging."
+      # 8/10 VisitorCounter tests are quarantined with it.skip (pw-rld: mock
+      # isolation issue with a module-load-order singleton). This actually
+      # runs vitest — it is no longer an echo — so it fails loudly on any
+      # non-quarantined regression instead of reporting a fake green.
+      run: npm run test -- --run
       
     - name: Run linting
       run: npm run lint
