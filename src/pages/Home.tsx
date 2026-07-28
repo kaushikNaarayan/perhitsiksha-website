@@ -360,17 +360,16 @@ const Home: React.FC = () => {
       )}
 
       {/* Our Impact — full-bleed stats ribbon */}
-      <section
-        id="impact"
-        className="w-full bg-primary-50 border-y border-primary-100 py-12 sm:py-16"
-      >
+      <section id="impact" className="w-full bg-primary-500 py-12 sm:py-16">
         <div className="max-w-5xl mx-auto container-padding text-center">
-          <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
+          <p className="text-sm font-semibold text-white/80 uppercase tracking-wide mb-2">
             {t('impact.eyebrow')}
           </p>
-          <h2 className="heading-2 mb-8">{t('impact.title')}</h2>
+          <h2 className="heading-2 mb-8 text-white">{t('impact.title')}</h2>
           <StatBand
             className="max-w-3xl mx-auto"
+            numberClassName="text-white"
+            labelClassName="text-white/80"
             items={[
               {
                 value: 450,

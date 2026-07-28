@@ -10,7 +10,7 @@ that is true.
    here is cleared for publication.
 2. **Do not delete anything in this folder.** If you believe a file should go,
    raise it rather than removing it.
-3. To take a file *out* of here, you need positive provenance — a licence, an
+3. To take a file _out_ of here, you need positive provenance — a licence, an
    invoice, a release, or a named person who can say where it came from.
    "We could not find evidence against it" is not clearance.
 
@@ -20,7 +20,7 @@ Perhitsiksha is an NGO and much of its imagery is of identifiable minors. Two
 separate rules apply and they are easy to confuse:
 
 - **IP / ownership** — whether we have the right to publish the image at all.
-- **Safeguarding consent** — whether *these particular* children may be shown.
+- **Safeguarding consent** — whether _these particular_ children may be shown.
 
 An ownership ruling does not grant consent, and consent does not grant ownership.
 Neither one alone clears a file.

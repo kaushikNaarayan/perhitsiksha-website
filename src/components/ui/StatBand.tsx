@@ -18,6 +18,10 @@ export interface StatBandItem {
 interface StatBandProps {
   items: StatBandItem[];
   className?: string;
+  /** Override the value/number text color (defaults to text-primary-500). */
+  numberClassName?: string;
+  /** Override the label text color (defaults to text-gray-600). */
+  labelClassName?: string;
 }
 
 /**
@@ -25,7 +29,12 @@ interface StatBandProps {
  * count-ups or static facts), shared so Home/About/Testimonials render the
  * same 2-4up rhythm.
  */
-const StatBand: React.FC<StatBandProps> = ({ items, className = '' }) => {
+const StatBand: React.FC<StatBandProps> = ({
+  items,
+  className = '',
+  numberClassName = 'text-primary-500',
+  labelClassName = 'text-gray-600',
+}) => {
   const cols =
     items.length >= 4
       ? 'sm:grid-cols-4'
@@ -38,10 +47,14 @@ const StatBand: React.FC<StatBandProps> = ({ items, className = '' }) => {
       {items.map((item, i) =>
         item.display !== undefined ? (
           <div key={i} className="text-center">
-            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-500 mb-1">
+            <div
+              className={`text-2xl md:text-3xl lg:text-4xl font-bold ${numberClassName} mb-1`}
+            >
               {item.display}
             </div>
-            <div className="text-sm md:text-base text-gray-600 font-medium">
+            <div
+              className={`text-sm md:text-base ${labelClassName} font-medium`}
+            >
               {item.label}
             </div>
           </div>
@@ -55,6 +68,8 @@ const StatBand: React.FC<StatBandProps> = ({ items, className = '' }) => {
             hoverTip={item.hoverTip}
             infoContent={item.infoContent}
             infoLabel={item.infoLabel}
+            numberClassName={numberClassName}
+            labelClassName={labelClassName}
           />
         )
       )}
