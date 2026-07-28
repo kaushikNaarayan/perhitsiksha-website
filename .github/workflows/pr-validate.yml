@@ -53,14 +53,7 @@ jobs:
         VITE_ENVIRONMENT: staging
         VITE_COUNTER_BASE_COUNT: "100"
       run: npm run build
-      
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-artifacts-pr-${{ github.event.pull_request.number }}
-        path: dist/
-        retention-days: 7
-        
+
   size-check:
     runs-on: [self-hosted, gt2]
     needs: validate
