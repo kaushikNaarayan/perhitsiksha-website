@@ -1,78 +1,126 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Hero from '../components/ui/Hero';
+import HeroEditorial from '../components/ui/HeroEditorial';
 import Card from '../components/ui/Card';
+import StatBand from '../components/ui/StatBand';
 import {
-  FaGraduationCap,
-  FaBullseye,
+  FaCheckCircle,
   FaSeedling,
-  FaGem,
+  FaGlobeAmericas,
+  FaGraduationCap,
+  FaLightbulb,
+  FaPaperPlane,
+  FaHeart,
   FaEnvelope,
   FaPhone,
-  FaEye,
-  FaRocket,
-  FaHeart,
-  FaUsers,
 } from 'react-icons/fa';
 import Button from '../components/ui/Button';
 
-// Import images
-import aboutHeroBg from '../assets/images/about-hero-bg.png';
+// Hero decoration sprites (v3 about-v3.html .sprite/.float — sparkle, star,
+// grad-cap, burst stand in for the mockup's sparkle/star/book/paper-plane set,
+// which aren't in our sprite sheet).
+import spriteSparkle from '../assets/images/sprites/01-sprite-sparkle.png';
+import spriteStar from '../assets/images/sprites/02-sprite-smiling-star.png';
+import spriteGradCap from '../assets/images/sprites/13-sprite-grad-cap.png';
+import spriteBurst from '../assets/images/sprites/03-sprite-burst.png';
+
+// v3 "who we are" pillar / core-value card-chip tints — mirrors Home's
+// `.card-chip` blob treatment (home-v3.html `.card.orange/.blue/.green`).
+const chipTint: Record<string, string> = {
+  blue: 'bg-primary-500/10 text-primary-600',
+  orange: 'bg-[rgba(255,115,0,0.12)] text-[#FF7300]',
+  green: 'bg-[rgba(1,166,82,0.12)] text-[#01A652]',
+  yellow: 'bg-[rgba(255,206,0,0.16)] text-[#B88A00]',
+};
+
+const AboutHeroSprites: React.FC = () => (
+  <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+    <img
+      src={spriteSparkle}
+      alt=""
+      className="sprite-float absolute w-12 sm:w-14 drop-shadow-md"
+      style={{ top: '12%', left: '6%' }}
+    />
+    <img
+      src={spriteStar}
+      alt=""
+      className="sprite-float delay-1 absolute w-11 sm:w-14 drop-shadow-md"
+      style={{ top: '18%', right: '7%' }}
+    />
+    <img
+      src={spriteGradCap}
+      alt=""
+      className="sprite-float delay-2 absolute w-14 sm:w-16 drop-shadow-md"
+      style={{ bottom: '10%', left: '9%' }}
+    />
+    <img
+      src={spriteBurst}
+      alt=""
+      className="sprite-float absolute w-12 sm:w-14 drop-shadow-md"
+      style={{ bottom: '14%', right: '6%' }}
+    />
+  </div>
+);
 
 const About: React.FC = () => {
   const { t } = useTranslation('about');
   return (
     <div>
-      {/* Hero Section */}
-      <Hero
+      {/* Hero — v3 centered warm-ground layout: eyebrow -> h1 (orange word)
+          -> lede, floating sprites, NO photo (replaces the old dark photo
+          hero per the design-fidelity spec). */}
+      <HeroEditorial
+        eyebrow={t('hero.eyebrow')}
         title={t('hero.title')}
-        subtitle={t('hero.subtitle')}
-        backgroundImage={aboutHeroBg}
-        overlay={true}
+        accentWord={t('hero.accentWord')}
+        lede={t('hero.subtitle')}
+        centered
+        decor={<AboutHeroSprites />}
       />
 
-      {/* Founding Story — "the Why" (sourced from WEBSITE_TEXT.md) */}
-      <section className="bg-gray-50 section-padding">
+      {/* Founding Story — "the Why" (existing content, no v3 mockup slot —
+          kept intact per AC #2, re-skinned to the same editorial prose
+          chrome Home uses for "The Problem"). */}
+      <section className="bg-white section-fluid">
         <div className="max-w-3xl mx-auto container-padding text-center">
           <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
             {t('foundingStory.eyebrow')}
           </p>
           <h2 className="heading-2 mb-6">{t('foundingStory.title')}</h2>
-          <p className="body-large text-gray-700 leading-relaxed mb-4">
+          <p className="body-large text-gray-700 leading-relaxed mb-4 prose-measure mx-auto">
             {t('foundingStory.paragraph1')}
           </p>
-          <p className="body-large text-gray-700 leading-relaxed">
+          <p className="body-large text-gray-700 leading-relaxed prose-measure mx-auto">
             {t('foundingStory.paragraph2')}
           </p>
         </div>
       </section>
 
-      {/* Who We Are Section */}
-      <section className="bg-white section-padding">
+      {/* Who We Are — prose+callout | blue impact-numbers card, then a
+          3-pillar card-chip grid. */}
+      <section className="bg-gray-50 section-fluid">
         <div className="max-w-6xl mx-auto container-padding">
           <div className="text-center mb-16">
             <h2 className="heading-2 mb-6">{t('whoWeAre.title')}</h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            <p className="body-large text-gray-600 max-w-4xl mx-auto prose-measure">
               {t('whoWeAre.intro')}
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-3xl font-bold text-gray-900">
-                  {t('whoWeAre.approach.title')}
-                </h3>
-                <p className="body-large text-gray-700 leading-relaxed">
-                  {t('whoWeAre.approach.paragraph1')}
-                </p>
-                <p className="body-large text-gray-700 leading-relaxed">
-                  {t('whoWeAre.approach.paragraph2')}
-                </p>
-              </div>
+          <div className="grid lg:grid-cols-2 gap-16 items-start mb-16">
+            <div>
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                {t('whoWeAre.approach.title')}
+              </h3>
+              <p className="body-large text-gray-700 leading-relaxed mb-4">
+                {t('whoWeAre.approach.paragraph1')}
+              </p>
+              <p className="body-large text-gray-700 leading-relaxed mb-6">
+                {t('whoWeAre.approach.paragraph2')}
+              </p>
 
-              <div className="bg-primary-50 p-6 rounded-2xl border border-primary-100">
-                <h4 className="text-lg font-bold text-primary-900 mb-4 flex items-center">
+              <div className="bg-[rgba(0,97,239,0.06)] border border-[rgba(0,97,239,0.20)] p-8 rounded-2xl">
+                <h4 className="text-lg font-bold text-primary-900 mb-3 flex items-center">
                   <FaHeart className="mr-3 text-primary-600" />
                   {t('whoWeAre.whyItMatters.title')}
                 </h4>
@@ -82,26 +130,24 @@ const About: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-primary-500 p-8 rounded-2xl text-white shadow-sm">
-              <h4 className="text-xl font-bold mb-6 text-center">
+            <div className="bg-primary-500 rounded-2xl text-white shadow-lg p-8 sm:p-10 text-center">
+              <p className="text-xl font-bold mb-8">
                 {t('whoWeAre.impact.title')}
-              </h4>
-              <div className="grid grid-cols-2 gap-8">
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">450+</div>
-                  <div className="text-sm text-primary-100">
-                    {t('whoWeAre.impact.studentsSupported')}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">700+</div>
-                  <div className="text-sm text-primary-100">
-                    {t('whoWeAre.impact.contributors')}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 pt-6 border-t border-primary-400 text-center">
-                <p className="text-sm text-primary-100">
+              </p>
+              <StatBand
+                className="max-w-sm mx-auto"
+                numberClassName="text-white"
+                labelClassName="text-white/85"
+                items={[
+                  {
+                    display: '450+',
+                    label: t('whoWeAre.impact.studentsSupported'),
+                  },
+                  { display: '700+', label: t('whoWeAre.impact.contributors') },
+                ]}
+              />
+              <div className="mt-8 pt-6 border-t border-white/25">
+                <p className="text-sm text-white/90">
                   {t('whoWeAre.impact.note')}
                 </p>
               </div>
@@ -109,10 +155,13 @@ const About: React.FC = () => {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-primary-50">
-              <div className="w-16 h-16 mx-auto mb-4 bg-primary-500 rounded-full flex items-center justify-center">
-                <FaBullseye className="text-2xl text-white" />
-              </div>
+            <Card className="p-10 text-center" hover>
+              <span
+                className={`mx-auto mb-4 flex h-[88px] w-[88px] items-center justify-center rounded-full text-3xl ${chipTint.blue}`}
+                aria-hidden="true"
+              >
+                <FaCheckCircle />
+              </span>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 {t('whoWeAre.pillars.accountability.title')}
               </h4>
@@ -120,10 +169,13 @@ const About: React.FC = () => {
                 {t('whoWeAre.pillars.accountability.body')}
               </p>
             </Card>
-            <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-gray-50">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gray-600 rounded-full flex items-center justify-center">
-                <FaSeedling className="text-2xl text-white" />
-              </div>
+            <Card className="p-10 text-center" hover>
+              <span
+                className={`mx-auto mb-4 flex h-[88px] w-[88px] items-center justify-center rounded-full text-3xl ${chipTint.orange}`}
+                aria-hidden="true"
+              >
+                <FaSeedling />
+              </span>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 {t('whoWeAre.pillars.mentorship.title')}
               </h4>
@@ -131,10 +183,13 @@ const About: React.FC = () => {
                 {t('whoWeAre.pillars.mentorship.body')}
               </p>
             </Card>
-            <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-primary-50">
-              <div className="w-16 h-16 mx-auto mb-4 bg-primary-500 rounded-full flex items-center justify-center">
-                <FaUsers className="text-2xl text-white" />
-              </div>
+            <Card className="p-10 text-center" hover>
+              <span
+                className={`mx-auto mb-4 flex h-[88px] w-[88px] items-center justify-center rounded-full text-3xl ${chipTint.green}`}
+                aria-hidden="true"
+              >
+                <FaGlobeAmericas />
+              </span>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 {t('whoWeAre.pillars.community.title')}
               </h4>
@@ -147,89 +202,78 @@ const About: React.FC = () => {
       </section>
 
       {/* Vision & Mission */}
-      <section className="bg-gray-50 section-padding">
+      <section className="bg-white section-fluid">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-16">
             <h2 className="heading-2 mb-6">{t('visionMission.title')}</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="body-large text-gray-600 max-w-3xl mx-auto">
               {t('visionMission.subtitle')}
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 mb-16">
+          <div className="grid lg:grid-cols-2 gap-8 mb-8">
             {/* Vision Card */}
-            <Card className="hover:shadow-lg transition-all duration-300 border border-primary-200 bg-white">
-              <div className="p-8">
-                <div className="flex items-center mb-6">
-                  <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mr-4">
-                    <FaEye className="text-3xl text-primary-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    {t('visionMission.vision.title')}
-                  </h3>
-                </div>
-                <p className="text-lg leading-relaxed text-gray-700">
-                  {t('visionMission.vision.body')}
-                </p>
-                <div className="mt-6 pt-6 border-t border-primary-200">
-                  <p className="text-sm text-primary-600 italic">
-                    {t('visionMission.vision.quote')}
-                  </p>
-                </div>
+            <Card className="p-8 sm:p-10" hover>
+              <div className="flex items-center gap-4 mb-6">
+                <span
+                  className={`flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-2xl ${chipTint.blue}`}
+                  aria-hidden="true"
+                >
+                  <FaLightbulb />
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {t('visionMission.vision.title')}
+                </h3>
               </div>
+              <p className="body-large leading-relaxed text-gray-700 mb-5">
+                {t('visionMission.vision.body')}
+              </p>
+              <p className="border-t border-gray-200 pt-5 text-sm italic text-primary-600">
+                {t('visionMission.vision.quote')}
+              </p>
             </Card>
 
             {/* Mission Card */}
-            <Card className="hover:shadow-lg transition-all duration-300 border border-primary-200 bg-primary-50">
-              <div className="p-8">
-                <div className="flex items-center mb-6">
-                  <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center mr-4">
-                    <FaRocket className="text-3xl text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    {t('visionMission.mission.title')}
-                  </h3>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {t('visionMission.mission.point1')}
-                    </p>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {t('visionMission.mission.point2')}
-                    </p>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {t('visionMission.mission.point3')}
-                    </p>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {t('visionMission.mission.point4')}
-                    </p>
-                  </div>
-                </div>
+            <Card className="p-8 sm:p-10" hover>
+              <div className="flex items-center gap-4 mb-6">
+                <span
+                  className={`flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-2xl ${chipTint.orange}`}
+                  aria-hidden="true"
+                >
+                  <FaPaperPlane />
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {t('visionMission.mission.title')}
+                </h3>
+              </div>
+              <div className="space-y-4">
+                {(['point1', 'point2', 'point3', 'point4'] as const).map(
+                  point => (
+                    <div key={point} className="flex items-start">
+                      <div className="w-3 h-3 bg-primary-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                      <p className="body-large text-gray-700 leading-relaxed">
+                        {t(`visionMission.mission.${point}`)}
+                      </p>
+                    </div>
+                  )
+                )}
               </div>
             </Card>
           </div>
 
-          {/* Core Principles */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
+          {/* How we make it happen */}
+          <Card className="p-8 sm:p-10" hover={false}>
             <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
               {t('visionMission.howWeMakeItHappen.title')}
             </h3>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-primary-500 rounded-2xl flex items-center justify-center">
-                  <FaHeart className="text-2xl text-white" />
-                </div>
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div>
+                <span
+                  className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl ${chipTint.blue}`}
+                  aria-hidden="true"
+                >
+                  <FaHeart />
+                </span>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
                   {t('visionMission.howWeMakeItHappen.dignity.title')}
                 </h4>
@@ -237,10 +281,13 @@ const About: React.FC = () => {
                   {t('visionMission.howWeMakeItHappen.dignity.body')}
                 </p>
               </div>
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-600 rounded-2xl flex items-center justify-center">
-                  <FaGem className="text-2xl text-white" />
-                </div>
+              <div>
+                <span
+                  className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl ${chipTint.blue}`}
+                  aria-hidden="true"
+                >
+                  <FaCheckCircle />
+                </span>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
                   {t('visionMission.howWeMakeItHappen.transparency.title')}
                 </h4>
@@ -248,10 +295,13 @@ const About: React.FC = () => {
                   {t('visionMission.howWeMakeItHappen.transparency.body')}
                 </p>
               </div>
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-primary-500 rounded-2xl flex items-center justify-center">
-                  <FaUsers className="text-2xl text-white" />
-                </div>
+              <div>
+                <span
+                  className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl ${chipTint.blue}`}
+                  aria-hidden="true"
+                >
+                  <FaGlobeAmericas />
+                </span>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
                   {t('visionMission.howWeMakeItHappen.community.title')}
                 </h4>
@@ -260,25 +310,28 @@ const About: React.FC = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="bg-white section-padding">
+      {/* Our Core Values */}
+      <section className="bg-gray-50 section-fluid">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-16">
             <h2 className="heading-2 mb-6">{t('values.title')}</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="body-large text-gray-600 max-w-3xl mx-auto">
               {t('values.subtitle')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-primary-50">
-              <div className="w-20 h-20 mx-auto mb-6 bg-primary-500 rounded-2xl flex items-center justify-center">
-                <FaGraduationCap className="text-3xl text-white" />
-              </div>
+            <Card className="p-8 text-center" hover>
+              <span
+                className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-3xl ${chipTint.blue}`}
+                aria-hidden="true"
+              >
+                <FaGraduationCap />
+              </span>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {t('values.educationFirst.title')}
               </h3>
@@ -286,10 +339,13 @@ const About: React.FC = () => {
                 {t('values.educationFirst.body')}
               </p>
             </Card>
-            <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-gray-50">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gray-500 rounded-2xl flex items-center justify-center">
-                <FaBullseye className="text-3xl text-white" />
-              </div>
+            <Card className="p-8 text-center" hover>
+              <span
+                className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-3xl ${chipTint.orange}`}
+                aria-hidden="true"
+              >
+                <FaLightbulb />
+              </span>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {t('values.meritNeed.title')}
               </h3>
@@ -297,10 +353,13 @@ const About: React.FC = () => {
                 {t('values.meritNeed.body')}
               </p>
             </Card>
-            <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-primary-50">
-              <div className="w-20 h-20 mx-auto mb-6 bg-primary-500 rounded-2xl flex items-center justify-center">
-                <FaSeedling className="text-3xl text-white" />
-              </div>
+            <Card className="p-8 text-center" hover>
+              <span
+                className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-3xl ${chipTint.green}`}
+                aria-hidden="true"
+              >
+                <FaSeedling />
+              </span>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {t('values.holisticGrowth.title')}
               </h3>
@@ -308,10 +367,13 @@ const About: React.FC = () => {
                 {t('values.holisticGrowth.body')}
               </p>
             </Card>
-            <Card className="p-8 text-center hover:shadow-md transition-all duration-300 border-0 bg-gray-50">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gray-500 rounded-2xl flex items-center justify-center">
-                <FaGem className="text-3xl text-white" />
-              </div>
+            <Card className="p-8 text-center" hover>
+              <span
+                className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-3xl ${chipTint.yellow}`}
+                aria-hidden="true"
+              >
+                <FaCheckCircle />
+              </span>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {t('values.transparency.title')}
               </h3>
@@ -323,8 +385,11 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Our Journey */}
-      <section className="bg-gray-50 section-padding">
+      {/* Our Journey — full-width vertical timeline. v3 pairs this with a
+          static illustration (journey-grid); PM decision (pw-o73) accepts
+          full-width, no-illustration as the shipped shape — an illustration
+          is a later polish item, not a blocker. */}
+      <section className="bg-white section-fluid">
         <div className="max-w-4xl mx-auto container-padding">
           <div className="text-center mb-16">
             <h2 className="heading-2 mb-4">{t('journey.title')}</h2>
@@ -332,112 +397,48 @@ const About: React.FC = () => {
           </div>
 
           <div className="relative">
-            {/* Timeline line - vertical for both mobile and desktop */}
-            <div className="absolute left-8 md:left-12 top-0 bottom-0 w-1 bg-primary-400"></div>
+            <div className="absolute left-8 md:left-9 top-0 bottom-0 w-[3px] bg-primary-500/30"></div>
 
             <div className="space-y-8">
-              {/* 2022 - Foundation */}
-              <div className="relative flex items-start">
-                <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-500 text-white rounded-full shadow-sm flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-sm md:text-base font-bold">2022</div>
+              {(
+                [
+                  { key: 'foundation', year: '2022', tag: false },
+                  { key: 'fiftyStudents', year: '2023', tag: true },
+                  { key: 'hundredStudents', year: '2024', tag: true },
+                  { key: 'twoHundredStudents', year: '2025', tag: true },
+                ] as const
+              ).map(m => (
+                <div key={m.key} className="relative flex items-start">
+                  <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-[72px] md:h-[72px] bg-primary-500 text-white rounded-full shadow-md flex-shrink-0">
+                    <span className="text-sm md:text-base font-bold">
+                      {m.year}
+                    </span>
+                  </div>
+                  <div className="ml-6 md:ml-8 flex-1">
+                    <Card className="p-6" hover>
+                      <div className="flex items-center flex-wrap gap-3 mb-2">
+                        <h3 className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                          <span className="w-[11px] h-[11px] bg-primary-500 rounded-full flex-shrink-0"></span>
+                          {t(`journey.milestones.${m.key}.title`)}
+                        </h3>
+                        {m.tag && (
+                          <span className="text-xs px-2.5 py-1 bg-primary-500/10 text-primary-600 font-semibold rounded-full">
+                            {t(`journey.milestones.${m.key}.tag`)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">
+                        {t(`journey.milestones.${m.key}.body`)}
+                      </p>
+                    </Card>
                   </div>
                 </div>
-                <div className="ml-6 md:ml-8 flex-1">
-                  <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <div className="flex items-center mb-3">
-                      <div className="w-3 h-3 bg-primary-500 rounded-full mr-3"></div>
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {t('journey.milestones.foundation.title')}
-                      </h3>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {t('journey.milestones.foundation.body')}
-                    </p>
-                  </Card>
-                </div>
-              </div>
-
-              {/* 2023 - First Milestone */}
-              <div className="relative flex items-start">
-                <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-500 text-white rounded-full shadow-sm flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-sm md:text-base font-bold">2023</div>
-                  </div>
-                </div>
-                <div className="ml-6 md:ml-8 flex-1">
-                  <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-300 border-l-4 border-primary-300">
-                    <div className="flex items-center mb-3">
-                      <div className="w-3 h-3 bg-primary-500 rounded-full mr-3"></div>
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {t('journey.milestones.fiftyStudents.title')}
-                      </h3>
-                      <span className="ml-2 text-xs px-2 py-1 bg-primary-100 text-primary-600 rounded-full">
-                        {t('journey.milestones.fiftyStudents.tag')}
-                      </span>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {t('journey.milestones.fiftyStudents.body')}
-                    </p>
-                  </Card>
-                </div>
-              </div>
-
-              {/* 2024 - Expansion */}
-              <div className="relative flex items-start">
-                <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-500 text-white rounded-full shadow-sm flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-sm md:text-base font-bold">2024</div>
-                  </div>
-                </div>
-                <div className="ml-6 md:ml-8 flex-1">
-                  <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-300 border-l-4 border-gray-300">
-                    <div className="flex items-center mb-3">
-                      <div className="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {t('journey.milestones.hundredStudents.title')}
-                      </h3>
-                      <span className="ml-2 text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
-                        {t('journey.milestones.hundredStudents.tag')}
-                      </span>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {t('journey.milestones.hundredStudents.body')}
-                    </p>
-                  </Card>
-                </div>
-              </div>
-
-              {/* 2025 - Future Vision */}
-              <div className="relative flex items-start">
-                <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary-600 text-white rounded-full shadow-sm flex-shrink-0 ring-4 ring-primary-100">
-                  <div className="text-center">
-                    <div className="text-sm md:text-base font-bold">2025</div>
-                  </div>
-                </div>
-                <div className="ml-6 md:ml-8 flex-1">
-                  <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-300 border-l-4 border-primary-300 bg-primary-50">
-                    <div className="flex items-center mb-3">
-                      <div className="w-3 h-3 bg-primary-500 rounded-full mr-3"></div>
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {t('journey.milestones.twoHundredStudents.title')}
-                      </h3>
-                      <span className="ml-2 text-xs px-2 py-1 bg-primary-100 text-primary-600 rounded-full">
-                        {t('journey.milestones.twoHundredStudents.tag')}
-                      </span>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {t('journey.milestones.twoHundredStudents.body')}
-                    </p>
-                  </Card>
-                </div>
-              </div>
+              ))}
             </div>
 
-            {/* Timeline end indicator */}
-            <div className="relative flex items-start mt-8">
-              <div className="relative z-10 flex items-center justify-center w-8 h-8 bg-primary-300 rounded-full shadow-sm flex-shrink-0 ml-4 md:ml-6">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
+            <div className="relative flex items-center mt-8">
+              <div className="flex items-center justify-center w-16 md:w-[72px] flex-shrink-0">
+                <span className="w-5 h-5 bg-primary-500 rounded-full shadow-[0_0_0_3px_var(--brand-secondary,#0061EF)]"></span>
               </div>
               <div className="ml-6 md:ml-8 flex-1">
                 <p className="text-sm text-gray-600 italic">
@@ -450,35 +451,35 @@ const About: React.FC = () => {
       </section>
 
       {/* Our Team */}
-      <section className="bg-white section-padding">
+      <section className="bg-gray-50 section-fluid">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-12">
             <h2 className="heading-2 mb-4">{t('team.title')}</h2>
-            <p className="body-large">{t('team.subtitle')}</p>
+            <p className="body-large text-gray-600">{t('team.subtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            <Card className="text-center p-6 hover:shadow-md transition-all duration-300">
-              <div className="w-24 h-24 mx-auto bg-primary-500 rounded-full mb-4 flex items-center justify-center shadow-sm">
+            <Card className="text-center p-8" hover>
+              <div className="w-24 h-24 mx-auto bg-primary-500 rounded-full mb-4 flex items-center justify-center shadow-md">
                 <span className="text-2xl font-bold text-white">SS</span>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-1">
                 {t('team.member1.name')}
               </h3>
-              <p className="text-primary-600 font-medium mb-2">
+              <p className="text-primary-600 font-bold mb-2">
                 {t('team.director')}
               </p>
               <p className="text-sm text-gray-600">{t('team.member1.role')}</p>
             </Card>
 
-            <Card className="text-center p-6 hover:shadow-md transition-all duration-300">
-              <div className="w-24 h-24 mx-auto bg-primary-500 rounded-full mb-4 flex items-center justify-center shadow-sm">
+            <Card className="text-center p-8" hover>
+              <div className="w-24 h-24 mx-auto bg-primary-500 rounded-full mb-4 flex items-center justify-center shadow-md">
                 <span className="text-2xl font-bold text-white">SJ</span>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-1">
                 {t('team.member2.name')}
               </h3>
-              <p className="text-primary-600 font-medium mb-2">
+              <p className="text-primary-600 font-bold mb-2">
                 {t('team.director')}
               </p>
               <p className="text-sm text-gray-600">{t('team.member2.role')}</p>
@@ -487,13 +488,12 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="bg-primary-500 text-white section-padding">
+      {/* Call to Action — full-bleed blue band (not the rounded floating
+          card used on Home/Testimonials — About's v3 CTA is a flat band). */}
+      <section className="bg-primary-500 text-white section-fluid">
         <div className="max-w-4xl mx-auto container-padding text-center">
-          <h2 className="heading-2 mb-4">{t('cta.title')}</h2>
-          <p className="text-xl mb-8 text-primary-100">
-            {t('cta.description')}
-          </p>
+          <h2 className="heading-2 mb-4 text-white">{t('cta.title')}</h2>
+          <p className="text-xl mb-8 text-white/90">{t('cta.description')}</p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -516,35 +516,33 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Contact */}
-      <section className="bg-gray-50 section-padding">
+      {/* Get in Touch */}
+      <section className="bg-gray-50 section-fluid text-center">
         <div className="max-w-4xl mx-auto container-padding">
-          <div className="text-center mb-8">
-            <h2 className="heading-2 mb-4">{t('contact.title')}</h2>
-            <p className="body-large">{t('contact.subtitle')}</p>
-          </div>
+          <h2 className="heading-2 mb-4">{t('contact.title')}</h2>
+          <p className="body-large text-gray-600 mb-8">
+            {t('contact.subtitle')}
+          </p>
 
-          <div className="flex justify-center">
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <FaEnvelope className="w-5 h-5 text-primary-500 mr-3" />
-                <a
-                  href="mailto:clsi.perhitsiksha@gmail.com"
-                  className="text-gray-700 hover:text-primary-500 transition-colors duration-200"
-                >
-                  clsi.perhitsiksha@gmail.com
-                </a>
-              </div>
-              <div className="flex items-center">
-                <FaPhone className="w-5 h-5 text-primary-500 mr-3" />
-                <a
-                  href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
-                  className="text-gray-700 hover:text-primary-500 transition-colors duration-200"
-                >
-                  +91 83175 80423
-                </a>
-              </div>
-            </div>
+          <div className="flex flex-col items-center gap-4">
+            <a
+              href="mailto:clsi.perhitsiksha@gmail.com"
+              className="inline-flex items-center gap-3 text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors duration-200"
+            >
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-primary-500/10 text-primary-600">
+                <FaEnvelope className="w-4 h-4" />
+              </span>
+              clsi.perhitsiksha@gmail.com
+            </a>
+            <a
+              href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
+              className="inline-flex items-center gap-3 text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors duration-200"
+            >
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-primary-500/10 text-primary-600">
+                <FaPhone className="w-4 h-4" />
+              </span>
+              +91 83175 80423
+            </a>
           </div>
         </div>
       </section>

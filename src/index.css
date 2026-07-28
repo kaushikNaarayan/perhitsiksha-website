@@ -295,6 +295,28 @@
     aspect-ratio: 4 / 3;
   }
 
+  /* v3 hero sprite float (about-v3.html .float) — gated by the global
+     prefers-reduced-motion kill-switch above, so no separate media query
+     is needed here. */
+  .sprite-float {
+    animation: sprite-float-y 6s ease-in-out infinite;
+  }
+  .sprite-float.delay-1 {
+    animation-delay: -2s;
+  }
+  .sprite-float.delay-2 {
+    animation-delay: -4s;
+  }
+  @keyframes sprite-float-y {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
   .hero-content-box {
     position: relative;
     background: rgba(31, 41, 55, 0.3);

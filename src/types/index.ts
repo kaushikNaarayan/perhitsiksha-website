@@ -157,6 +157,10 @@ export interface HeroEditorialProps {
   }>;
   /** The hero media — typically a <PhotoFrame><KidStackCarousel .../></PhotoFrame>. */
   media?: React.ReactNode;
+  /** v3 About/Testimonials-style centered layout (no media column) — eyebrow/h1/lede/CTAs all centered in a single column instead of the left-aligned two-column grid. Ignored if `media` is set. */
+  centered?: boolean;
+  /** Purely decorative content (e.g. floating sprites) absolutely positioned within the hero section — rendered behind the copy. */
+  decor?: React.ReactNode;
 }
 
 export interface YouTubeEmbedProps {

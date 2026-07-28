@@ -20,6 +20,8 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
   taxNote,
   stats,
   media,
+  centered = false,
+  decor,
 }) => {
   const rootRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -76,28 +78,100 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
     { scope: rootRef, dependencies: [title, accentWord] }
   );
 
+  const heroTitle = (
+    <h1
+      key={`${title}::${accentWord ?? ''}`}
+      ref={titleRef}
+      className="heading-1 text-gray-900 mb-4"
+    >
+      {titlePrefix}
+      <span style={{ color: 'var(--brand-signature)' }}>{titleAccent}</span>
+      {titleSuffix}
+    </h1>
+  );
+
+  // v3 About/Testimonials-style: centered single column, no media/kid-stack —
+  // eyebrow -> h1 -> lede -> (optional CTAs/stats), all center-aligned.
+  if (centered && !media) {
+    return (
+      <section
+        ref={rootRef}
+        className="relative overflow-hidden py-20 md:py-28 text-center"
+        style={{ background: 'var(--surface-page)' }}
+      >
+        {decor}
+        <div className="relative z-10 max-w-2xl mx-auto container-padding">
+          <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-3">
+            {eyebrow}
+          </p>
+          {heroTitle}
+
+          <div ref={cascadeRef}>
+            <p className="body-large text-gray-600 mb-6 max-w-xl mx-auto">
+              {lede}
+            </p>
+
+            {(primaryCTA || secondaryCTA) && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
+                {primaryCTA && (
+                  <Button
+                    href={primaryCTA.href}
+                    variant="primary"
+                    size="lg"
+                    className="shimmer-btn"
+                    magnetic
+                    attention
+                  >
+                    {primaryCTA.text}
+                  </Button>
+                )}
+                {secondaryCTA && (
+                  <Button href={secondaryCTA.href} variant="outline" size="lg">
+                    {secondaryCTA.text}
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {primaryCTA && taxNote && (
+              <p className="text-xs text-gray-500 mb-6">{taxNote}</p>
+            )}
+
+            {stats && stats.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-8 mt-4 pt-6 border-t border-gray-200">
+                {stats.map((stat, i) => (
+                  <div key={i}>
+                    <div className="text-2xl md:text-3xl font-bold text-primary-500 tabular-nums">
+                      {stat.prefix}
+                      {stat.value.toLocaleString()}
+                      {stat.suffix}
+                    </div>
+                    <div className="text-sm text-gray-600 font-medium">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       ref={rootRef}
       className="relative overflow-hidden pt-24 pb-12 md:pt-32 md:pb-16"
       style={{ background: 'var(--surface-page)' }}
     >
-      <div className="max-w-7xl mx-auto container-padding grid gap-10 lg:grid-cols-2 lg:items-center">
+      {decor}
+      <div className="relative z-10 max-w-7xl mx-auto container-padding grid gap-10 lg:grid-cols-2 lg:items-center">
         <div className="text-left">
           <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-3">
             {eyebrow}
           </p>
-          <h1
-            key={`${title}::${accentWord ?? ''}`}
-            ref={titleRef}
-            className="heading-1 text-gray-900 mb-4"
-          >
-            {titlePrefix}
-            <span style={{ color: 'var(--brand-signature)' }}>
-              {titleAccent}
-            </span>
-            {titleSuffix}
-          </h1>
+          {heroTitle}
 
           <div ref={cascadeRef}>
             <p className="body-large text-gray-600 mb-6 max-w-xl">{lede}</p>
