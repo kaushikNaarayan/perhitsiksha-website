@@ -249,43 +249,26 @@ const Home: React.FC = () => {
           // and opens the drawer (we can't attach an onClick through Hero.tsx).
           href: DONATE_HREF,
         }}
-        secondaryCTA={{
-          text: t('hero.secondaryCta'),
-          href: '#impact',
-        }}
         taxNote={t('common:taxNote')}
         stats={[]}
         backgroundImage={heroBgImage}
         overlay={false}
       />
 
-      {/* Our Impact — full-bleed stats ribbon (directly below the hero) */}
-      <section
-        id="impact"
-        className="w-full bg-primary-50 border-y border-primary-100 py-12 sm:py-16"
-      >
-        <div className="max-w-5xl mx-auto container-padding text-center">
-          <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
-            {t('impact.eyebrow')}
-          </p>
-          <h2 className="heading-2 mb-8">{t('impact.title')}</h2>
-          <div className="grid grid-cols-2 gap-8 max-w-3xl mx-auto">
-            <StatsCounter
-              value={450}
-              suffix="+"
-              label={t('statsBand.successStories')}
-              hoverTip={t('statsBand.successStoriesTip')}
-            />
-            <StatsCounter
-              value={700}
-              suffix="+"
-              label={t('statsBand.globalContributors')}
-              infoContent={t('statsBand.contributorsInfo')}
-              infoLabel={t('statsBand.contributorsInfoLabel')}
-            />
+      {/* Celebrated Voices — public figures who lent their voice (org's own YouTube-channel videos) */}
+      {celebrityEndorsementsData.length > 0 && (
+        <section className="bg-primary-50 border-y border-primary-100 pt-0 pb-16 sm:pb-20 lg:pb-24">
+          <div className="max-w-6xl mx-auto container-padding text-center">
+            <h2 className="heading-2 mb-0.5 sm:mb-1">
+              {t('celebrityEndorsements.title')}
+            </h2>
+            <p className="body-large mb-2 sm:mb-3 prose-measure mx-auto">
+              {t('celebrityEndorsements.subtitle')}
+            </p>
+            <YouTubeShortsCarousel endorsements={celebrityEndorsementsData} />
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* The Problem — why deserving students drop out */}
       <section className="bg-white section-fluid">
@@ -405,20 +388,33 @@ const Home: React.FC = () => {
         </section>
       )}
 
-      {/* Celebrated Voices — public figures who lent their voice (org's own YouTube-channel videos) */}
-      {celebrityEndorsementsData.length > 0 && (
-        <section className="bg-white section-fluid">
-          <div className="max-w-6xl mx-auto container-padding text-center">
-            <h2 className="heading-2 mb-4">
-              {t('celebrityEndorsements.title')}
-            </h2>
-            <p className="body-large mb-8 prose-measure mx-auto">
-              {t('celebrityEndorsements.subtitle')}
-            </p>
-            <YouTubeShortsCarousel endorsements={celebrityEndorsementsData} />
+      {/* Our Impact — full-bleed stats ribbon */}
+      <section
+        id="impact"
+        className="w-full bg-primary-50 border-y border-primary-100 py-12 sm:py-16"
+      >
+        <div className="max-w-5xl mx-auto container-padding text-center">
+          <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-2">
+            {t('impact.eyebrow')}
+          </p>
+          <h2 className="heading-2 mb-8">{t('impact.title')}</h2>
+          <div className="grid grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <StatsCounter
+              value={450}
+              suffix="+"
+              label={t('statsBand.successStories')}
+              hoverTip={t('statsBand.successStoriesTip')}
+            />
+            <StatsCounter
+              value={700}
+              suffix="+"
+              label={t('statsBand.globalContributors')}
+              infoContent={t('statsBand.contributorsInfo')}
+              infoLabel={t('statsBand.contributorsInfoLabel')}
+            />
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Official Registration Announcement */}
       <section className="bg-white section-fluid">
