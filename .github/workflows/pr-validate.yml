@@ -84,13 +84,36 @@ jobs:
         
     - name: Install dependencies
       run: npm ci
-      
+
+    # size-limit-action internally runs `git fetch origin <base>` then
+    # `git checkout -f <base>` (no local branch, no `origin/` prefix) to build
+    # the base-branch bundle for comparison. On this self-hosted runner's
+    # persistent workspace, prior job runs (including checkouts of other repos
+    # that reuse the same path — see pw-kgt) can leave stray remotes that also
+    # carry a `main` ref, so `main` matches more than one remote-tracking
+    # branch and the bare checkout dies with "fatal: 'main' matched multiple
+    # (2) remote tracking branches" before any size comparison runs (pw-9q5).
+    # Fix at the source: strip every remote but `origin`, then pre-create a
+    # local `main` branch tracking `origin/main` so the action's later
+    # `git checkout -f main` resolves the unambiguous local branch instead of
+    # DWIM-matching remote-tracking refs.
+    - name: Disambiguate base branch for size comparison
+      run: |
+        for remote in $(git remote); do
+          if [ "$remote" != "origin" ]; then
+            echo "Removing stray remote: $remote"
+            git remote remove "$remote"
+          fi
+        done
+        git fetch origin main --depth=1
+        git branch -f main origin/main
+
     - name: Build for size check
       env:
         VITE_COUNTER_WORKSPACE: perhitsiksha
         VITE_ENVIRONMENT: production
       run: npm run build
-      
+
     - name: Check bundle size
       uses: andresz1/size-limit-action@v1
       with:
@@ -130,7 +153,34 @@ jobs:
     - name: Run accessibility tests
       run: |
         npm install -g @axe-core/cli
-        # Use the runner's pre-installed ChromeDriver (matches the runner's Chrome).
-        # The bundled chromedriver lags the runner's Chrome and fails with
-        # "session not created: only supports Chrome version N".
-        axe http://localhost:3000 --exit --chromedriver-path "$CHROMEWEBDRIVER/chromedriver"
+
+        # $CHROMEWEBDRIVER only exists on GitHub-hosted runners; it's unset on
+        # this self-hosted gt2 runner, so the old `--chromedriver-path
+        # "$CHROMEWEBDRIVER/chromedriver"` collapsed to the literal, nonexistent
+        # `/chromedriver` and axe never ran a single check (pw-9q5). Omitting
+        # --chromedriver-path entirely isn't a fix either: @axe-core/cli then
+        # falls back to its own bundled `chromedriver` npm package, which lags
+        # the runner's installed Chrome and fails with "session not created:
+        # only supports Chrome version N" (the exact failure the old comment
+        # warned about, still reproduced by the nightly accessibility-audit job).
+        #
+        # Selenium Manager (bundled with @axe-core/cli's selenium-webdriver
+        # dependency) is built for exactly this: it detects the installed
+        # browser and downloads/caches a matching driver, on any runner, hosted
+        # or self-hosted, with no assumption about pre-installed paths.
+        SM_BIN="$(find "$(npm root -g)" -type f -path '*/selenium-webdriver/bin/linux/selenium-manager' -print -quit)"
+        if [ -z "$SM_BIN" ] || [ ! -x "$SM_BIN" ]; then
+          echo "::error::Selenium Manager binary not found under $(npm root -g) — cannot resolve a chromedriver for axe-core." >&2
+          exit 1
+        fi
+
+        SM_OUTPUT="$("$SM_BIN" --browser chrome --output json)"
+        DRIVER_PATH="$(echo "$SM_OUTPUT" | jq -r '.result.driver_path // empty')"
+        if [ -z "$DRIVER_PATH" ] || [ ! -x "$DRIVER_PATH" ]; then
+          echo "::error::Selenium Manager failed to resolve a working chromedriver binary. Output:" >&2
+          echo "$SM_OUTPUT" >&2
+          exit 1
+        fi
+        echo "Resolved chromedriver via Selenium Manager: $DRIVER_PATH"
+
+        axe http://localhost:3000 --exit --chromedriver-path "$DRIVER_PATH"
