@@ -262,6 +262,7 @@ const Hero: React.FC<HeroProps> = ({
           )}
 
           <h1
+            key={title}
             ref={titleRef}
             aria-label={title}
             className={`${showLogo ? 'heading-2' : 'heading-1'} mb-1.5 sm:mb-2 ${backgroundImage ? 'text-white' : 'text-gray-900'}`}
