@@ -44,7 +44,23 @@ jobs:
         if: steps.fetch.outcome == 'success'
         id: validate
         continue-on-error: true
-        run: npm run validate:events
+        run: |
+          set +e
+          npm run validate:events
+          rc=$?
+          set -e
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          exit $rc
+
+      - name: Detect PII denylist trip
+        if: steps.validate.outcome == 'failure'
+        id: pii-check
+        run: |
+          if [ "${{ steps.validate.outputs.exit_code }}" = "2" ]; then
+            echo "is_pii_trip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_pii_trip=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Check for changes
         if: steps.validate.outcome == 'success'
@@ -65,8 +81,64 @@ jobs:
           Auto-synced from Facebook page at $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
           git push
 
+      - name: Alert on PII denylist trip
+        if: steps.pii-check.outputs.is_pii_trip == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '🚨 PII denylist trip — Facebook sync blocked (child identity documents detected)';
+            const body = `## PII Denylist Trip
+
+            The Facebook events sync ran the PII denylist check (scripts/validate-events-data.js)
+            and it FAILED — the source Facebook post currently contains content matching known
+            child identity documents (see bead pw-ky2). The sync was stopped on purpose;
+            nothing was committed.
+
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ### Action required
+            1. Remove the flagged images/post from the Facebook source.
+            2. Once removed, re-run this workflow manually (Actions → Sync Facebook Events → Run workflow).
+            3. Do NOT relax the PII denylist in scripts/validate-events-data.js to work around this — see pw-ky2.
+
+            ---
+            *This issue was automatically created by the sync-facebook-events workflow (PII denylist gate).*`;
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['facebook-sync', 'pii-alert'],
+            });
+
+            if (issues.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['facebook-sync', 'pii-alert', 'bug'],
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: `### Another PII denylist trip occurred
+
+                **Time:** ${new Date().toUTCString()}
+                **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              });
+            }
+
+      - name: Fail job on PII denylist trip
+        if: steps.pii-check.outputs.is_pii_trip == 'true'
+        run: |
+          echo "::error::PII denylist trip on Facebook sync — sync stopped on purpose, see filed issue."
+          exit 1
+
       - name: Create issue on failure
-        if: failure()
+        if: failure() && steps.pii-check.outputs.is_pii_trip != 'true'
         uses: actions/github-script@v7
         with:
           script: |

@@ -328,7 +328,11 @@ async function main() {
     }
 
     console.log('\n❌ Validation failed. Please fix the errors above.');
-    process.exit(1);
+    // Exit code 2 marks a PII denylist trip specifically — the sync workflow
+    // uses this to distinguish "a child's identity documents are back on the
+    // source post" (must alert loudly) from routine validation failures
+    // (structure/consistency/URL errors, exit 1, stays quiet as before).
+    process.exit(piiClean ? 1 : 2);
   } catch (error) {
     console.error('\n❌ Error:', error.message);
     process.exit(1);
