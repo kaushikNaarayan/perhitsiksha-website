@@ -499,7 +499,6 @@ const About: React.FC = () => {
             <Button
               variant="secondary"
               size="lg"
-              href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
               className="text-primary-500 border-white hover:bg-white"
             >
               {t('cta.becomeContributor')}
@@ -534,15 +533,12 @@ const About: React.FC = () => {
               </span>
               clsi.perhitsiksha@gmail.com
             </a>
-            <a
-              href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20contribute."
-              className="inline-flex items-center gap-3 text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors duration-200"
-            >
+            <span className="inline-flex items-center gap-3 text-lg font-semibold text-gray-900">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-primary-500/10 text-primary-600">
                 <FaPhone className="w-4 h-4" />
               </span>
               +91 83175 80423
-            </a>
+            </span>
           </div>
         </div>
       </section>

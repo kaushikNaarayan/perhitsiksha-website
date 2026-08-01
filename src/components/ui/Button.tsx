@@ -155,6 +155,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       ref={setRootRef}
+      type="button"
       onClick={handleClick}
       disabled={disabled}
       className={classes}

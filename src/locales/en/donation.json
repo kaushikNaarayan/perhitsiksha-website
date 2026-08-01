@@ -15,7 +15,7 @@
   "upi": {
     "title": "Pay by UPI",
     "pending": "UPI QR — pending",
-    "note": "Real payment details are coming soon. For now, use WhatsApp below and we'll set up your monthly contribution personally."
+    "note": "Real payment details are coming soon. Our team will reach out to set up your monthly contribution personally."
   },
   "form": {
     "title": "Start your contribution",
@@ -34,13 +34,12 @@
     "errAmount": "Enter an amount of ₹{{min}} or more"
   },
   "whatsapp": {
-    "secondary": "Prefer to talk first? Reach us on WhatsApp",
-    "hint": "WhatsApp works right now — tap to message us."
+    "secondary": "Prefer to talk first? Get in touch with us directly"
   },
   "thanks": {
     "title": "Thank you, {{name}}!",
-    "body": "We've noted your intent to contribute ₹{{amount}}/month. Tap below to confirm on WhatsApp and we'll set up the direct, transparent transfer to a scholar.",
-    "cta": "Confirm on WhatsApp",
+    "body": "We've noted your intent to contribute ₹{{amount}}/month. Our team will reach out shortly to set up the direct, transparent transfer to a scholar.",
+    "cta": "Confirm Contribution",
     "done": "Done"
   }
 }

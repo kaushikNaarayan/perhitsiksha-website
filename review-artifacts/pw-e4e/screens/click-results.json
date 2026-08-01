@@ -1,0 +1,82 @@
+[
+  {
+    "page": "home-en",
+    "urlBefore": "http://localhost:4173/",
+    "urlAfter": "http://localhost:4173/",
+    "navChanged": false,
+    "consoleErrors": [
+      "[VisitorCounter] workspace_missing {message: VITE_COUNTER_WORKSPACE environment variable not configured}"
+    ],
+    "popups": []
+  },
+  {
+    "page": "home-hi",
+    "urlBefore": "http://localhost:4173/",
+    "urlAfter": "http://localhost:4173/",
+    "navChanged": false,
+    "consoleErrors": [
+      "[VisitorCounter] workspace_missing {message: VITE_COUNTER_WORKSPACE environment variable not configured}"
+    ],
+    "popups": []
+  },
+  {
+    "page": "about-en-contributor",
+    "urlBefore": "http://localhost:4173/about",
+    "urlAfter": "http://localhost:4173/about",
+    "navChanged": false,
+    "consoleErrors": [
+      "[VisitorCounter] workspace_missing {message: VITE_COUNTER_WORKSPACE environment variable not configured}"
+    ],
+    "popups": []
+  },
+  {
+    "page": "about-hi-contributor",
+    "urlBefore": "http://localhost:4173/about",
+    "urlAfter": "http://localhost:4173/about",
+    "navChanged": false,
+    "consoleErrors": [
+      "[VisitorCounter] workspace_missing {message: VITE_COUNTER_WORKSPACE environment variable not configured}"
+    ],
+    "popups": []
+  },
+  {
+    "page": "testimonials-en",
+    "urlBefore": "http://localhost:4173/testimonials",
+    "urlAfter": "http://localhost:4173/testimonials",
+    "navChanged": false,
+    "consoleErrors": [
+      "[VisitorCounter] workspace_missing {message: VITE_COUNTER_WORKSPACE environment variable not configured}"
+    ],
+    "popups": []
+  },
+  {
+    "page": "testimonials-hi",
+    "urlBefore": "http://localhost:4173/testimonials",
+    "urlAfter": "http://localhost:4173/testimonials",
+    "navChanged": false,
+    "consoleErrors": [
+      "[VisitorCounter] workspace_missing {message: VITE_COUNTER_WORKSPACE environment variable not configured}"
+    ],
+    "popups": []
+  },
+  {
+    "page": "drawer-en-confirm-cta",
+    "urlBefore": "http://localhost:4173/",
+    "urlAfter": "http://localhost:4173/",
+    "navChanged": false,
+    "consoleErrors": [
+      "[VisitorCounter] workspace_missing {message: VITE_COUNTER_WORKSPACE environment variable not configured}"
+    ],
+    "popups": []
+  },
+  {
+    "page": "drawer-hi-confirm-cta",
+    "urlBefore": "http://localhost:4173/",
+    "urlAfter": "http://localhost:4173/",
+    "navChanged": false,
+    "consoleErrors": [
+      "[VisitorCounter] workspace_missing {message: VITE_COUNTER_WORKSPACE environment variable not configured}"
+    ],
+    "popups": []
+  }
+]

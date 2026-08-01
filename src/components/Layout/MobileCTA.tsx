@@ -7,7 +7,7 @@ export interface MobileCTAProps {
 
 /**
  * Sticky bottom "Contribute now" bar for small screens only (`lg:hidden`).
- * Opens the donation drawer (WhatsApp remains available inside it). Pass
+ * Opens the donation drawer. Pass
  * `hidden` to suppress it (e.g. while the mobile menu is open). Respects the
  * iOS home-indicator safe area.
  */

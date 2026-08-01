@@ -577,7 +577,6 @@ const Home: React.FC = () => {
                 variant="outline"
                 size="lg"
                 className="text-white border-white hover:bg-white hover:text-primary-500"
-                href="https://wa.me/918317580423?text=Hi,%20I%20would%20like%20to%20request%20support%20for%20my%20child%27s%20education."
               >
                 {t('joinMission.family.cta')}
               </Button>
@@ -588,7 +587,7 @@ const Home: React.FC = () => {
 
       {/* Closing strip — v3's simpler generic "Join our mission" band,
           reserved for the very final CTA (the donor/family two-pathway
-          block above stays as its own, richer, WhatsApp-linked feature). */}
+          block above stays as its own, richer feature). */}
       <section className="bg-gray-50 py-16 sm:py-20">
         <div className="max-w-5xl mx-auto container-padding">
           <div className="rounded-2xl bg-primary-500 text-white shadow-xl overflow-hidden grid md:grid-cols-2 items-center">
