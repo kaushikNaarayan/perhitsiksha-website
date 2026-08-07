@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { MediaItem } from '../../types';
 import { MediaViewer } from './MediaViewer';
 
@@ -130,7 +130,7 @@ export function GalleryModal({
         className="absolute top-4 right-4 z-[60] text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black bg-opacity-70 hover:bg-opacity-90 shadow-lg"
         aria-label={t('gallery.closeAria')}
       >
-        <FaTimes className="text-3xl" />
+        <X className="text-3xl" size="1em" />
       </button>
 
       {/* Media counter and title */}
@@ -155,7 +155,7 @@ export function GalleryModal({
           className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-gray-300 transition-colors p-2 sm:p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70"
           aria-label={t('gallery.previousImageAria')}
         >
-          <FaChevronLeft className="text-xl sm:text-2xl" />
+          <ChevronLeft className="text-xl sm:text-2xl" size="1em" />
         </button>
       )}
 
@@ -178,7 +178,7 @@ export function GalleryModal({
           className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-gray-300 transition-colors p-2 sm:p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70"
           aria-label={t('gallery.nextImageAria')}
         >
-          <FaChevronRight className="text-xl sm:text-2xl" />
+          <ChevronRight className="text-xl sm:text-2xl" size="1em" />
         </button>
       )}
 

@@ -4,16 +4,16 @@ import HeroEditorial from '../components/ui/HeroEditorial';
 import Card from '../components/ui/Card';
 import StatBand from '../components/ui/StatBand';
 import {
-  FaCheckCircle,
-  FaSeedling,
-  FaGlobeAmericas,
-  FaGraduationCap,
-  FaLightbulb,
-  FaPaperPlane,
-  FaHeart,
-  FaEnvelope,
-  FaPhone,
-} from 'react-icons/fa';
+  CheckCircle2,
+  Sprout,
+  Globe,
+  GraduationCap,
+  Lightbulb,
+  Send,
+  Heart,
+  Mail,
+  Phone,
+} from 'lucide-react';
 import Button from '../components/ui/Button';
 
 // Hero decoration sprites (v3 about-v3.html .sprite/.float — sparkle, star,
@@ -121,7 +121,11 @@ const About: React.FC = () => {
 
               <div className="bg-[rgba(0,97,239,0.06)] border border-[rgba(0,97,239,0.20)] p-8 rounded-2xl">
                 <h4 className="text-lg font-bold text-primary-900 mb-3 flex items-center">
-                  <FaHeart className="mr-3 text-primary-600" />
+                  <Heart
+                    className="mr-3 text-primary-600"
+                    size="1em"
+                    fill="currentColor"
+                  />
                   {t('whoWeAre.whyItMatters.title')}
                 </h4>
                 <p className="text-primary-800 leading-relaxed">
@@ -160,7 +164,7 @@ const About: React.FC = () => {
                 className={`mx-auto mb-4 flex h-[88px] w-[88px] items-center justify-center rounded-full text-3xl ${chipTint.blue}`}
                 aria-hidden="true"
               >
-                <FaCheckCircle />
+                <CheckCircle2 size="1em" />
               </span>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 {t('whoWeAre.pillars.accountability.title')}
@@ -174,7 +178,7 @@ const About: React.FC = () => {
                 className={`mx-auto mb-4 flex h-[88px] w-[88px] items-center justify-center rounded-full text-3xl ${chipTint.orange}`}
                 aria-hidden="true"
               >
-                <FaSeedling />
+                <Sprout size="1em" fill="currentColor" />
               </span>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 {t('whoWeAre.pillars.mentorship.title')}
@@ -188,7 +192,7 @@ const About: React.FC = () => {
                 className={`mx-auto mb-4 flex h-[88px] w-[88px] items-center justify-center rounded-full text-3xl ${chipTint.green}`}
                 aria-hidden="true"
               >
-                <FaGlobeAmericas />
+                <Globe size="1em" />
               </span>
               <h4 className="text-xl font-bold text-gray-900 mb-3">
                 {t('whoWeAre.pillars.community.title')}
@@ -219,7 +223,7 @@ const About: React.FC = () => {
                   className={`flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-2xl ${chipTint.blue}`}
                   aria-hidden="true"
                 >
-                  <FaLightbulb />
+                  <Lightbulb size="1em" fill="currentColor" />
                 </span>
                 <h3 className="text-2xl font-bold text-gray-900">
                   {t('visionMission.vision.title')}
@@ -240,7 +244,7 @@ const About: React.FC = () => {
                   className={`flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-2xl ${chipTint.orange}`}
                   aria-hidden="true"
                 >
-                  <FaPaperPlane />
+                  <Send size="1em" fill="currentColor" />
                 </span>
                 <h3 className="text-2xl font-bold text-gray-900">
                   {t('visionMission.mission.title')}
@@ -272,7 +276,7 @@ const About: React.FC = () => {
                   className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl ${chipTint.blue}`}
                   aria-hidden="true"
                 >
-                  <FaHeart />
+                  <Heart size="1em" fill="currentColor" />
                 </span>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
                   {t('visionMission.howWeMakeItHappen.dignity.title')}
@@ -286,7 +290,7 @@ const About: React.FC = () => {
                   className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl ${chipTint.blue}`}
                   aria-hidden="true"
                 >
-                  <FaCheckCircle />
+                  <CheckCircle2 size="1em" />
                 </span>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
                   {t('visionMission.howWeMakeItHappen.transparency.title')}
@@ -300,7 +304,7 @@ const About: React.FC = () => {
                   className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl ${chipTint.blue}`}
                   aria-hidden="true"
                 >
-                  <FaGlobeAmericas />
+                  <Globe size="1em" />
                 </span>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">
                   {t('visionMission.howWeMakeItHappen.community.title')}
@@ -330,7 +334,7 @@ const About: React.FC = () => {
                 className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-3xl ${chipTint.blue}`}
                 aria-hidden="true"
               >
-                <FaGraduationCap />
+                <GraduationCap size="1em" fill="currentColor" />
               </span>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {t('values.educationFirst.title')}
@@ -344,7 +348,7 @@ const About: React.FC = () => {
                 className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-3xl ${chipTint.orange}`}
                 aria-hidden="true"
               >
-                <FaLightbulb />
+                <Lightbulb size="1em" fill="currentColor" />
               </span>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {t('values.meritNeed.title')}
@@ -358,7 +362,7 @@ const About: React.FC = () => {
                 className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-3xl ${chipTint.green}`}
                 aria-hidden="true"
               >
-                <FaSeedling />
+                <Sprout size="1em" fill="currentColor" />
               </span>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {t('values.holisticGrowth.title')}
@@ -372,7 +376,7 @@ const About: React.FC = () => {
                 className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-3xl ${chipTint.yellow}`}
                 aria-hidden="true"
               >
-                <FaCheckCircle />
+                <CheckCircle2 size="1em" />
               </span>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {t('values.transparency.title')}
@@ -529,13 +533,13 @@ const About: React.FC = () => {
               className="inline-flex items-center gap-3 text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors duration-200"
             >
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-primary-500/10 text-primary-600">
-                <FaEnvelope className="w-4 h-4" />
+                <Mail className="w-4 h-4" />
               </span>
               clsi.perhitsiksha@gmail.com
             </a>
             <span className="inline-flex items-center gap-3 text-lg font-semibold text-gray-900">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-primary-500/10 text-primary-600">
-                <FaPhone className="w-4 h-4" />
+                <Phone className="w-4 h-4" fill="currentColor" />
               </span>
               +91 83175 80423
             </span>

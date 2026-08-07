@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaHandHoldingHeart, FaUserFriends, FaBriefcase } from 'react-icons/fa';
+import { HeartHandshake, Users, Briefcase } from 'lucide-react';
 import joinMissionIllustration from '../assets/images/illustrations/join-mission.png';
 import HeroEditorial from '../components/ui/HeroEditorial';
 import PhotoFrame from '../components/ui/PhotoFrame';
@@ -93,10 +93,10 @@ const Home: React.FC = () => {
     {
       id: 'financialAid',
       tint: 'orange' as const,
-      icon: FaHandHoldingHeart,
+      icon: HeartHandshake,
     },
-    { id: 'mentorship', tint: 'blue' as const, icon: FaUserFriends },
-    { id: 'careerGuidance', tint: 'green' as const, icon: FaBriefcase },
+    { id: 'mentorship', tint: 'blue' as const, icon: Users },
+    { id: 'careerGuidance', tint: 'green' as const, icon: Briefcase },
   ];
 
   const programChipTint: Record<string, string> = {
@@ -299,7 +299,7 @@ const Home: React.FC = () => {
                         className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl ${programChipTint[program.tint]}`}
                         aria-hidden="true"
                       >
-                        <Icon />
+                        <Icon size="1em" fill="currentColor" />
                       </span>
                       <h3 className="text-lg font-bold text-gray-900 mb-2">
                         {t(`programs.${program.id}.title`)}
