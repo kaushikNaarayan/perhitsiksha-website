@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaImages,
-  FaPlay,
-} from 'react-icons/fa';
+import { ChevronLeft, ChevronRight, Images, Play } from 'lucide-react';
 import type { Event } from '../../types';
 import { GalleryModal } from './GalleryModal';
 import VideoModal from './VideoModal';
@@ -104,8 +99,8 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
               {currentEvent.mediaType === 'album' &&
                 currentEvent.mediaCount && (
                   <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg text-sm font-semibold shadow-lg flex items-center gap-2 group-hover:bg-black/80 transition-colors">
-                    <FaImages className="w-4 h-4" />+{currentEvent.mediaCount}{' '}
-                    more
+                    <Images className="w-4 h-4" fill="currentColor" />+
+                    {currentEvent.mediaCount} more
                   </div>
                 )}
 
@@ -113,7 +108,10 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
               {currentEvent.mediaType === 'video' && currentEvent.videoUrl && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
                   <div className="bg-white/90 group-hover:bg-white rounded-full p-6 shadow-2xl transform group-hover:scale-110 transition-all duration-200">
-                    <FaPlay className="w-8 h-8 text-primary-600 ml-1" />
+                    <Play
+                      className="w-8 h-8 text-primary-600 ml-1"
+                      fill="currentColor"
+                    />
                   </div>
                 </div>
               )}
@@ -137,7 +135,7 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
                     className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 z-10"
                     aria-label={t('events.previousEventAria')}
                   >
-                    <FaChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <button
                     onClick={e => {
@@ -147,7 +145,7 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
                     className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 z-10"
                     aria-label={t('events.nextEventAria')}
                   >
-                    <FaChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </>
               )}

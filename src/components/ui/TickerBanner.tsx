@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { FaExternalLinkAlt } from 'react-icons/fa';
+import { ExternalLink } from 'lucide-react';
 
 const TickerBanner: React.FC = () => {
   const { t } = useTranslation('ticker');
@@ -20,7 +20,7 @@ const TickerBanner: React.FC = () => {
         ),
         icon: (
           <span className="inline-flex items-center justify-center border border-white rounded w-4 h-4">
-            <FaExternalLinkAlt className="w-2.5 h-2.5" />
+            <ExternalLink className="w-2.5 h-2.5" />
           </span>
         ),
       }}

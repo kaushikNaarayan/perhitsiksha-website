@@ -7,7 +7,7 @@ import VideoModal from '../components/ui/VideoModal';
 import PlayButton from '../components/ui/PlayButton';
 import { useLanguage } from '../i18n/useLanguage';
 import type { Testimonial } from '../types';
-import { FaStar } from 'react-icons/fa';
+import { Star } from 'lucide-react';
 import { gsap, useGSAP, ScrollTrigger } from '../lib/gsap';
 
 // Import data
@@ -228,7 +228,7 @@ const Testimonials: React.FC = () => {
                           since this is a status tag, not a CTA. */}
                       <div className="absolute top-4 left-4">
                         <div className="flex items-center gap-1 bg-[#FF7300] text-[#141313] px-3 py-1 rounded-full text-sm font-bold">
-                          <FaStar className="w-3 h-3" />
+                          <Star className="w-3 h-3" fill="currentColor" />
                           {t('featured.badge')}
                         </div>
                       </div>
