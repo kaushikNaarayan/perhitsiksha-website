@@ -75,12 +75,20 @@ jobs:
         VITE_ENVIRONMENT: production
       run: npm run build
       
+    - name: Reap orphan preview servers on port 3000
+      run: |
+        PIDS="$(lsof -ti tcp:3000 2>/dev/null || true)"
+        if [ -n "$PIDS" ]; then
+          echo "Killing orphan process(es) on port 3000: $PIDS"
+          kill -9 $PIDS || true
+        fi
+
     - name: Serve built files
-      run: npx vite preview --port 3000 &
-      
+      run: npx vite preview --port 3000 --strictPort &
+
     - name: Wait for server
       run: npx wait-on http://localhost:3000
-      
+
     - name: Install Lighthouse
       run: npm install -g @lhci/cli
       
@@ -121,12 +129,20 @@ jobs:
         VITE_ENVIRONMENT: production
       run: npm run build
       
+    - name: Reap orphan preview servers on port 3000
+      run: |
+        PIDS="$(lsof -ti tcp:3000 2>/dev/null || true)"
+        if [ -n "$PIDS" ]; then
+          echo "Killing orphan process(es) on port 3000: $PIDS"
+          kill -9 $PIDS || true
+        fi
+
     - name: Serve built files
-      run: npx vite preview --port 3000 &
-      
+      run: npx vite preview --port 3000 --strictPort &
+
     - name: Wait for server
       run: npx wait-on http://localhost:3000
-      
+
     - name: Install axe-core CLI
       run: npm install -g @axe-core/cli
       
