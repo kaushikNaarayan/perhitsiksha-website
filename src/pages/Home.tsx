@@ -362,14 +362,14 @@ const Home: React.FC = () => {
       {/* Our Impact — full-bleed stats ribbon */}
       <section id="impact" className="w-full bg-primary-500 py-12 sm:py-16">
         <div className="max-w-5xl mx-auto container-padding text-center">
-          <p className="text-sm font-semibold text-white/80 uppercase tracking-wide mb-2">
+          <p className="text-sm font-semibold text-white/90 uppercase tracking-wide mb-2">
             {t('impact.eyebrow')}
           </p>
           <h2 className="heading-2 mb-8 text-white">{t('impact.title')}</h2>
           <StatBand
             className="max-w-3xl mx-auto"
             numberClassName="text-white"
-            labelClassName="text-white/80"
+            labelClassName="text-white/90"
             items={[
               {
                 value: 450,
@@ -434,7 +434,7 @@ const Home: React.FC = () => {
             <Card className="p-6 sm:p-8 bg-gray-50" hover={false}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
                     {t('registration.cinNumber')}
                   </p>
                   <p className="font-bold text-gray-900 font-mono break-words">
@@ -442,7 +442,7 @@ const Home: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
                     {t('registration.panNumber')}
                   </p>
                   <p className="font-bold text-gray-900 font-mono">
@@ -450,7 +450,7 @@ const Home: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
                     {t('registration.tanNumber')}
                   </p>
                   <p className="font-bold text-gray-900 font-mono">
@@ -458,7 +458,7 @@ const Home: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
                     {t('registration.csrRegistrationNumber')}
                   </p>
                   <p className="font-bold text-gray-900 font-mono">
@@ -466,13 +466,13 @@ const Home: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
                     {t('registration.dateOfIncorporation')}
                   </p>
                   <p className="font-bold text-gray-900">December 6, 2025</p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-1">
                     {t('registration.csrCertifiedOn')}
                   </p>
                   <p className="font-bold text-gray-900">April 1, 2026</p>
@@ -514,31 +514,31 @@ const Home: React.FC = () => {
           </p>
 
           {/* How the contribution model works */}
-          <p className="text-sm font-semibold text-white/80 uppercase tracking-wide mb-4">
+          <p className="text-sm font-semibold text-white/90 uppercase tracking-wide mb-4">
             {t('joinMission.model.title')}
           </p>
           <div className="grid gap-4 sm:grid-cols-3 text-left mb-12">
-            <div className="rounded-2xl bg-white/10 backdrop-blur ring-1 ring-white/20 p-6">
+            <div className="rounded-2xl bg-white/5 backdrop-blur ring-1 ring-white/20 p-6">
               <p className="text-2xl font-bold mb-1">
                 {t('joinMission.model.amount')}
               </p>
-              <p className="text-sm text-white/90">
+              <p className="text-sm text-white">
                 {t('joinMission.model.amountLabel')}
               </p>
             </div>
-            <div className="rounded-2xl bg-white/10 backdrop-blur ring-1 ring-white/20 p-6">
+            <div className="rounded-2xl bg-white/5 backdrop-blur ring-1 ring-white/20 p-6">
               <p className="text-lg font-bold mb-1">
                 {t('joinMission.model.direct')}
               </p>
-              <p className="text-sm text-white/90">
+              <p className="text-sm text-white">
                 {t('joinMission.model.directLabel')}
               </p>
             </div>
-            <div className="rounded-2xl bg-white/10 backdrop-blur ring-1 ring-white/20 p-6">
+            <div className="rounded-2xl bg-white/5 backdrop-blur ring-1 ring-white/20 p-6">
               <p className="text-lg font-bold mb-1">
                 {t('joinMission.model.transparent')}
               </p>
-              <p className="text-sm text-white/90">
+              <p className="text-sm text-white">
                 {t('joinMission.model.transparentLabel')}
               </p>
             </div>
@@ -562,7 +562,7 @@ const Home: React.FC = () => {
               >
                 {t('joinMission.donor.cta')}
               </Button>
-              <p className="mt-3 text-xs text-gray-500">
+              <p className="mt-3 text-xs text-gray-600">
                 {t('common:taxNote')}
               </p>
             </div>
