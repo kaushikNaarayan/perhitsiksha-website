@@ -55,6 +55,7 @@ const KidStackCarousel: React.FC<KidStackCarouselProps> = ({
   return (
     <div className={className}>
       <div
+        id="kid-stack"
         role="region"
         aria-roledescription="carousel"
         aria-label={ariaLabel}
@@ -71,10 +72,7 @@ const KidStackCarousel: React.FC<KidStackCarouselProps> = ({
             <img
               key={src}
               src={src}
-              alt="A student Perhitsiksha supports"
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`Student ${i + 1} of ${count}`}
+              alt={`Student ${i + 1} of ${count}`}
               aria-hidden={!isActive}
               className="absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out"
               style={{
