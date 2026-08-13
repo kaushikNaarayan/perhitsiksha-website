@@ -15,31 +15,20 @@
   "upi": {
     "title": "Pay by UPI",
     "pending": "UPI QR — pending",
-    "note": "Real payment details are coming soon. Our team will reach out to set up your monthly contribution personally."
+    "note": "Real payment details are coming soon. Email us below to get started."
   },
-  "form": {
-    "title": "Start your contribution",
-    "nameLabel": "Your name",
+  "contact": {
+    "title": "Contribute by email",
+    "nameLabel": "Your name (optional — included in the email)",
     "namePlaceholder": "Full name",
-    "emailLabel": "Email",
-    "emailPlaceholder": "you@example.com",
-    "phoneLabel": "Phone",
-    "phonePlaceholder": "10-digit mobile number",
-    "amountLabel": "Monthly amount (₹)",
-    "submit": "Continue",
-    "valid": "Looks good",
-    "errName": "Please enter your name",
-    "errEmail": "Enter a valid email address",
-    "errPhone": "Enter a valid 10-digit mobile number",
-    "errAmount": "Enter an amount of ₹{{min}} or more"
-  },
-  "whatsapp": {
-    "secondary": "Prefer to talk first? Get in touch with us directly"
-  },
-  "thanks": {
-    "title": "Thank you, {{name}}!",
-    "body": "We've noted your intent to contribute ₹{{amount}}/month. Our team will reach out shortly to set up the direct, transparent transfer to a scholar.",
-    "cta": "Confirm Contribution",
-    "done": "Done"
+    "amountLabel": "Monthly amount (₹) — optional, included in the email",
+    "cta": "Email us to contribute",
+    "caption": "Opens your email app. Nothing is sent automatically.",
+    "addressFallback": "Or email us directly at clsi.perhitsiksha@gmail.com",
+    "mailSubject": "Contribution enquiry",
+    "mailBodyBoth": "Hi, I'm {{name}} and I'd like to contribute ₹{{amount}}/month to Perhitsiksha.",
+    "mailBodyName": "Hi, I'm {{name}} and I'd like to contribute to Perhitsiksha.",
+    "mailBodyAmount": "Hi, I'd like to contribute ₹{{amount}}/month to Perhitsiksha.",
+    "mailBodyNone": "Hi, I'd like to contribute to Perhitsiksha."
   }
 }
