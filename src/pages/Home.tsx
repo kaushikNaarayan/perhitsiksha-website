@@ -32,6 +32,13 @@ import portraitStudy from '../assets/images/portraits/portrait-study.jpg';
 import portraitSchoolgirl from '../assets/images/portraits/portrait-schoolgirl.jpg';
 import portraitCollegegirl from '../assets/images/portraits/portrait-collegegirl.jpg';
 
+// Hero decoration sprites (same DS-canon sprite set as About's hero — see
+// about-v3.html .sprite/.float; sparkle/star/burst stand in for the mockup's
+// hover-reactive sprite set, positioned clear of the kid-stack media column).
+import spriteSparkle from '../assets/images/sprites/01-sprite-sparkle.png';
+import spriteStar from '../assets/images/sprites/02-sprite-smiling-star.png';
+import spriteBurst from '../assets/images/sprites/03-sprite-burst.png';
+
 const heroKidStackImages = [
   portraitFlower,
   portraitBook,
@@ -39,6 +46,29 @@ const heroKidStackImages = [
   portraitSchoolgirl,
   portraitCollegegirl,
 ];
+
+const HomeHeroSprites: React.FC = () => (
+  <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+    <img
+      src={spriteSparkle}
+      alt=""
+      className="sprite-float absolute w-11 sm:w-14 drop-shadow-md"
+      style={{ top: '10%', left: '4%' }}
+    />
+    <img
+      src={spriteStar}
+      alt=""
+      className="sprite-float delay-1 absolute w-10 sm:w-12 drop-shadow-md"
+      style={{ top: '58%', left: '2%' }}
+    />
+    <img
+      src={spriteBurst}
+      alt=""
+      className="sprite-float delay-2 absolute w-11 sm:w-14 drop-shadow-md"
+      style={{ bottom: '8%', left: '10%' }}
+    />
+  </div>
+);
 
 const certificates = [
   {
@@ -196,15 +226,11 @@ const Home: React.FC = () => {
           // and opens the drawer (we can't attach an onClick through Hero.tsx).
           href: DONATE_HREF,
         }}
+        secondaryCTA={{
+          text: t('hero.secondaryCta'),
+          href: '#what-we-do',
+        }}
         taxNote={t('common:taxNote')}
-        stats={[
-          { value: 450, suffix: '+', label: t('statsBand.successStories') },
-          {
-            value: 700,
-            suffix: '+',
-            label: t('statsBand.globalContributors'),
-          },
-        ]}
         media={
           <PhotoFrame>
             <KidStackCarousel
@@ -213,24 +239,8 @@ const Home: React.FC = () => {
             />
           </PhotoFrame>
         }
+        decor={<HomeHeroSprites />}
       />
-
-      {/* Celebrated Voices — public figures who lent their voice (org's own YouTube-channel videos) */}
-      {celebrityEndorsementsData.length > 0 && (
-        <section className="bg-primary-50 border-y border-primary-100 pt-0 pb-16 sm:pb-20 lg:pb-24">
-          <div className="max-w-6xl mx-auto container-padding text-center">
-            <h2 className="heading-2 mb-0">
-              {t('celebrityEndorsements.title')}
-            </h2>
-            <p className="body-large mb-6 sm:mb-8 prose-measure mx-auto">
-              {t('celebrityEndorsements.subtitle')}
-            </p>
-            <Card className="p-4 sm:p-6" hover={false}>
-              <YouTubeShortsCarousel endorsements={celebrityEndorsementsData} />
-            </Card>
-          </div>
-        </section>
-      )}
 
       {/* The Problem — why deserving students drop out */}
       <section className="bg-white section-fluid">
@@ -249,7 +259,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Solution — How we bridge the gap */}
-      <section className="bg-gray-50 py-8 sm:py-12">
+      <section id="what-we-do" className="bg-gray-50 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="text-center mb-8">
             <h2 className="heading-2 mb-2">{t('whatWeDo.title')}</h2>
@@ -355,6 +365,24 @@ const Home: React.FC = () => {
             </p>
 
             <PeekCarousel testimonials={supporterTestimonials} />
+          </div>
+        </section>
+      )}
+
+      {/* Celebrated Voices — public figures who lent their voice (org's own
+          YouTube-channel videos). Moved to LAST in the proof flow (after
+          Problem/Solution/Proof/Supporters, right before the Impact Ribbon)
+          so social proof from real testimonials leads, not celebrities.
+          Header now renders the real "icons stand with our scholars" copy
+          (home.json supporters.label) instead of the generic endorsements
+          title/subtitle. */}
+      {celebrityEndorsementsData.length > 0 && (
+        <section className="bg-primary-50 border-y border-primary-100 py-16 sm:py-20 lg:py-24">
+          <div className="max-w-6xl mx-auto container-padding text-center">
+            <h2 className="heading-2 mb-6 sm:mb-8">{t('supporters.label')}</h2>
+            <Card className="p-4 sm:p-6" hover={false}>
+              <YouTubeShortsCarousel endorsements={celebrityEndorsementsData} />
+            </Card>
           </div>
         </section>
       )}
