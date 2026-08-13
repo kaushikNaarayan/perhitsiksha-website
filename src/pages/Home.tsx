@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HeartHandshake, Users, Briefcase } from 'lucide-react';
 import joinMissionIllustration from '../assets/images/illustrations/join-mission.png';
 import HeroEditorial from '../components/ui/HeroEditorial';
 import PhotoFrame from '../components/ui/PhotoFrame';
@@ -35,9 +34,12 @@ import portraitCollegegirl from '../assets/images/portraits/portrait-collegegirl
 // Hero decoration sprites (same DS-canon sprite set as About's hero — see
 // about-v3.html .sprite/.float; sparkle/star/burst stand in for the mockup's
 // hover-reactive sprite set, positioned clear of the kid-stack media column).
-import spriteSparkle from '../assets/images/sprites/01-sprite-sparkle.png';
-import spriteStar from '../assets/images/sprites/02-sprite-smiling-star.png';
+import spriteSparkle from '../assets/images/sprites/brand/sprite-sparkle-brand.svg';
+import spriteStar from '../assets/images/sprites/brand/sprite-star-brand.svg';
 import spriteBurst from '../assets/images/sprites/03-sprite-burst.png';
+import financialAidIcon from '../assets/images/icons/duotone/financial-aid.svg';
+import mentorshipIcon from '../assets/images/icons/duotone/mentorship.svg';
+import careerGuidanceIcon from '../assets/images/icons/duotone/career-guidance.svg';
 
 const heroKidStackImages = [
   portraitFlower,
@@ -117,23 +119,13 @@ const Home: React.FC = () => {
     );
   }, []);
 
-  // v3 assigns each program card its own tint (orange/blue/green) via a
-  // `.card-chip` blob icon — see home-v3.html's `.card.orange/.blue/.green`.
+  // B7 duotone icons carry their own DS-canon colors (orange linework, blue
+  // fill) — no per-card tint pass-through needed anymore (see MANIFEST.md).
   const programs = [
-    {
-      id: 'financialAid',
-      tint: 'orange' as const,
-      icon: HeartHandshake,
-    },
-    { id: 'mentorship', tint: 'blue' as const, icon: Users },
-    { id: 'careerGuidance', tint: 'green' as const, icon: Briefcase },
+    { id: 'financialAid', icon: financialAidIcon },
+    { id: 'mentorship', icon: mentorshipIcon },
+    { id: 'careerGuidance', icon: careerGuidanceIcon },
   ];
-
-  const programChipTint: Record<string, string> = {
-    orange: 'bg-[rgba(255,115,0,0.12)] text-[#FF7300]',
-    blue: 'bg-primary-500/10 text-primary-600',
-    green: 'bg-[rgba(1,166,82,0.12)] text-[#01A652]',
-  };
 
   // Page-level GSAP scope. Because it's scoped to rootRef, every ScrollTrigger
   // created here auto-reverts on unmount/route-change (SPA leak fix).
@@ -299,17 +291,16 @@ const Home: React.FC = () => {
 
               <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {programs.map(program => {
-                  const Icon = program.icon;
                   return (
                     <Card
                       key={program.id}
                       className="reveal-card p-6 text-center"
                     >
                       <span
-                        className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl ${programChipTint[program.tint]}`}
+                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center"
                         aria-hidden="true"
                       >
-                        <Icon size="1em" fill="currentColor" />
+                        <img src={program.icon} alt="" className="h-10 w-10" />
                       </span>
                       <h3 className="text-lg font-bold text-gray-900 mb-2">
                         {t(`programs.${program.id}.title`)}
