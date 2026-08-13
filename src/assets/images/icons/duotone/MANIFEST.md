@@ -8,11 +8,11 @@ downloaded and recolored to brand tokens rather than hand-drawn.
 
 ## Icons — `src/assets/images/icons/duotone/` (replaces lucide-react on Home.tsx)
 
-| File | Replaces (lucide-react) | Used for | Call site |
-|---|---|---|---|
-| `financial-aid.svg` | `HeartHandshake` | `financialAid` pillar | `Home.tsx` solution pillars, `id: 'financialAid'` |
-| `mentorship.svg` | `Users` | `mentorship` pillar | `Home.tsx`, `id: 'mentorship'`, was `tint: 'blue'` |
-| `career-guidance.svg` | `Briefcase` | `careerGuidance` pillar | `Home.tsx`, `id: 'careerGuidance'`, was `tint: 'green'` |
+| File                  | Replaces (lucide-react) | Used for                | Call site                                               |
+| --------------------- | ----------------------- | ----------------------- | ------------------------------------------------------- |
+| `financial-aid.svg`   | `HeartHandshake`        | `financialAid` pillar   | `Home.tsx` solution pillars, `id: 'financialAid'`       |
+| `mentorship.svg`      | `Users`                 | `mentorship` pillar     | `Home.tsx`, `id: 'mentorship'`, was `tint: 'blue'`      |
+| `career-guidance.svg` | `Briefcase`             | `careerGuidance` pillar | `Home.tsx`, `id: 'careerGuidance'`, was `tint: 'green'` |
 
 Note: the current lucide call site tints these icons via a `tint` prop
 (`orange`/`blue`/`green` — see `Home.tsx` line ~96-99). These new SVGs are
@@ -29,10 +29,10 @@ separate follow-up — not scoped here.
 
 ## Sprites — `src/assets/images/sprites/brand/` (resolves pw-3zy)
 
-| File | Replaces | Palette |
-|---|---|---|
-| `sprite-sparkle-brand.svg` | `01-sprite-sparkle.png` (yellow) | orange `#FF7300` linework / blue `#0061EF` 35% fill |
-| `sprite-star-brand.svg` | `02-sprite-smiling-star.png` (yellow) | orange `#FF7300` linework / blue `#0061EF` 35% fill |
+| File                       | Replaces                              | Palette                                             |
+| -------------------------- | ------------------------------------- | --------------------------------------------------- |
+| `sprite-sparkle-brand.svg` | `01-sprite-sparkle.png` (yellow)      | orange `#FF7300` linework / blue `#0061EF` 35% fill |
+| `sprite-star-brand.svg`    | `02-sprite-smiling-star.png` (yellow) | orange `#FF7300` linework / blue `#0061EF` 35% fill |
 
 `03-sprite-burst.png` is already on-palette (orange) — keep as-is, no
 replacement needed. `13-sprite-grad-cap.png` (blue-dominant, yellow tassel) is

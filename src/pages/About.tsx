@@ -19,8 +19,8 @@ import Button from '../components/ui/Button';
 // Hero decoration sprites (v3 about-v3.html .sprite/.float — sparkle, star,
 // grad-cap, burst stand in for the mockup's sparkle/star/book/paper-plane set,
 // which aren't in our sprite sheet).
-import spriteSparkle from '../assets/images/sprites/01-sprite-sparkle.png';
-import spriteStar from '../assets/images/sprites/02-sprite-smiling-star.png';
+import spriteSparkle from '../assets/images/sprites/brand/sprite-sparkle-brand.svg';
+import spriteStar from '../assets/images/sprites/brand/sprite-star-brand.svg';
 import spriteGradCap from '../assets/images/sprites/13-sprite-grad-cap.png';
 import spriteBurst from '../assets/images/sprites/03-sprite-burst.png';
 
