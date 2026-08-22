@@ -77,7 +77,7 @@ const Footer: React.FC = () => {
                 </svg>
               </a>
               <a
-                href="https://www.instagram.com/perhit.siksha/"
+                href="https://www.instagram.com/perhit-siksha-DELIBERATE-BREAKAGE-pw-goht-AC2/"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
                 aria-label={t('social.instagram')}
                 target="_blank"
