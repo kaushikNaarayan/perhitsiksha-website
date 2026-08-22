@@ -25,9 +25,26 @@ concurrency:
 jobs:
   pre-deploy-checks:
     runs-on: [self-hosted, gt2]
+    # pw-5v3d: the workflow_run trigger above fires on ANY conclusion of the
+    # daily Sync Facebook Events cron — success, failure, or cancelled —
+    # because `types: [completed]` means "the run finished", not "the run
+    # succeeded". Without this guard, a FAILED sync deploys production on
+    # whatever is currently on main, unattended, once a day, with no
+    # relationship to anyone's intent to release (proven on the org repo:
+    # run 32562597778 concluded failure and still queued a deploy on
+    # 2026-08-22; this repo's own sync/deploy pair self-triggered
+    # independently the same day — run 32562779354). Kept as a job-level
+    # `if:` (not removed) rather than decoupling entirely: the sync's
+    # commit-and-push step uses the default GITHUB_TOKEN, and GitHub
+    # deliberately does not let a GITHUB_TOKEN-authored push trigger other
+    # workflows (loop prevention) — so `push: branches: [main]` alone would
+    # never fire after a genuinely successful sync. workflow_run is the only
+    # way a sync-committed change reaches this workflow at all; the fix is
+    # to require it actually succeeded, not to remove the wiring.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     outputs:
       should-deploy: ${{ steps.checks.outputs.should-deploy }}
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
