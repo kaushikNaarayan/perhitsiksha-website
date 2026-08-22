@@ -31,6 +31,10 @@ import portraitStudy from '../assets/images/portraits/portrait-study.jpg';
 import portraitSchoolgirl from '../assets/images/portraits/portrait-schoolgirl.jpg';
 import portraitCollegegirl from '../assets/images/portraits/portrait-collegegirl.jpg';
 
+// Founder-mandated prominent emblem in the Hero (pw-2lo) — same source file
+// as the header logo, reused at hero scale, not the 32px header icon.
+import logoEmblem from '../assets/images/logo.jpg';
+
 // Hero decoration sprites (same DS-canon sprite set as About's hero — see
 // about-v3.html .sprite/.float; sparkle/star/burst stand in for the mockup's
 // hover-reactive sprite set, positioned clear of the kid-stack media column).
@@ -223,6 +227,8 @@ const Home: React.FC = () => {
           href: '#what-we-do',
         }}
         taxNote={t('common:taxNote')}
+        emblem={logoEmblem}
+        emblemAlt={t('header:logoAlt')}
         media={
           <PhotoFrame>
             <KidStackCarousel

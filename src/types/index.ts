@@ -157,6 +157,10 @@ export interface HeroEditorialProps {
   }>;
   /** The hero media — typically a <PhotoFrame><KidStackCarousel .../></PhotoFrame>. */
   media?: React.ReactNode;
+  /** Prominent brand emblem (e.g. the coat-of-arms style logo) shown above the eyebrow in the copy column — distinct from, and much larger than, the header's 32px logo icon. Omit to render no emblem. */
+  emblem?: string;
+  /** Alt text for `emblem`. Required whenever `emblem` is set. */
+  emblemAlt?: string;
   /** v3 About/Testimonials-style centered layout (no media column) — eyebrow/h1/lede/CTAs all centered in a single column instead of the left-aligned two-column grid. Ignored if `media` is set. */
   centered?: boolean;
   /** Purely decorative content (e.g. floating sprites) absolutely positioned within the hero section — rendered behind the copy. */

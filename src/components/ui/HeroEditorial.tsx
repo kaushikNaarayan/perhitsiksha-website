@@ -22,6 +22,8 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
   media,
   centered = false,
   decor,
+  emblem,
+  emblemAlt,
 }) => {
   const rootRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -78,6 +80,23 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
     { scope: rootRef, dependencies: [title, accentWord] }
   );
 
+  // Prominent brand emblem (coat-of-arms style logo) — a deliberate, static
+  // element that renders immediately with the rest of the hero chrome rather
+  // than joining the GSAP cascade; it's the visual anchor the founder asked
+  // for, not something that should be mid-air while the title is still
+  // animating in. The white padded "badge" card frames the source JPEG's
+  // hard rectangular edges instead of dropping a bare square onto the warm
+  // page ground.
+  const emblemBadge = emblem && (
+    <div className="inline-flex rounded-2xl bg-white p-2 shadow-lg ring-1 ring-black/5 mb-5">
+      <img
+        src={emblem}
+        alt={emblemAlt ?? ''}
+        className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-xl object-contain"
+      />
+    </div>
+  );
+
   const heroTitle = (
     <h1
       key={`${title}::${accentWord ?? ''}`}
@@ -101,6 +120,7 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
       >
         {decor}
         <div className="relative z-10 max-w-2xl mx-auto container-padding">
+          {emblem && <div className="flex justify-center">{emblemBadge}</div>}
           <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-3">
             {eyebrow}
           </p>
@@ -168,6 +188,7 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
       {decor}
       <div className="relative z-10 max-w-7xl mx-auto container-padding grid gap-10 lg:grid-cols-2 lg:items-center">
         <div className="text-left">
+          {emblemBadge}
           <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide mb-3">
             {eyebrow}
           </p>
