@@ -115,6 +115,7 @@ export function GalleryModal({
 
   return (
     <div
+      data-testid="gallery-modal"
       className="fixed inset-0 z-modal bg-black bg-opacity-95 flex items-center justify-center"
       onClick={handleBackdropClick}
       onTouchStart={handleTouchStart}

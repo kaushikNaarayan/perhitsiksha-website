@@ -99,7 +99,10 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
               {/* Media Count Badge (for albums) */}
               {currentEvent.mediaType === 'album' &&
                 currentEvent.mediaCount && (
-                  <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg text-sm font-semibold shadow-lg flex items-center gap-2 group-hover:bg-black/80 transition-colors">
+                  <div
+                    data-testid="album-badge"
+                    className="absolute top-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg text-sm font-semibold shadow-lg flex items-center gap-2 group-hover:bg-black/80 transition-colors"
+                  >
                     <Images className="w-4 h-4" fill="currentColor" />+
                     {currentEvent.mediaCount} more
                   </div>
@@ -108,7 +111,10 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
               {/* Play Button Overlay (for videos) */}
               {currentEvent.mediaType === 'video' && currentEvent.videoUrl && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
-                  <div className="bg-white/90 group-hover:bg-white rounded-full p-6 shadow-2xl transform group-hover:scale-110 transition-all duration-200">
+                  <div
+                    data-testid="video-play-button"
+                    className="bg-white/90 group-hover:bg-white rounded-full p-6 shadow-2xl transform group-hover:scale-110 transition-all duration-200"
+                  >
                     <Play
                       className="w-8 h-8 text-primary-600 ml-1"
                       fill="currentColor"
