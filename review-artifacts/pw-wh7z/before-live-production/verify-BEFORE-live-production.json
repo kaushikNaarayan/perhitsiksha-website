@@ -1,0 +1,122 @@
+[
+  {
+    "w": 390,
+    "lang": "en",
+    "overlap": false,
+    "burst": {
+      "x": 39,
+      "y": 1218,
+      "w": 44,
+      "h": 44
+    },
+    "taxInk": {
+      "x": 24,
+      "y": 747.8,
+      "w": 172,
+      "h": 13
+    },
+    "ariaHidden": true,
+    "pointerNone": true,
+    "taxText": "All donations are 80G tax-exempt"
+  },
+  {
+    "w": 390,
+    "lang": "hi",
+    "overlap": false,
+    "burst": {
+      "x": 39,
+      "y": 1239.7,
+      "w": 44,
+      "h": 44
+    },
+    "taxInk": {
+      "x": 24,
+      "y": 768.8,
+      "w": 112,
+      "h": 13
+    },
+    "ariaHidden": true,
+    "pointerNone": true,
+    "taxText": "सभी दान 80G कर-मुक्त हैं"
+  },
+  {
+    "w": 768,
+    "lang": "en",
+    "overlap": false,
+    "burst": {
+      "x": 76.8,
+      "y": 1221,
+      "w": 56,
+      "h": 56
+    },
+    "taxInk": {
+      "x": 46.1,
+      "y": 695.7,
+      "w": 172,
+      "h": 13
+    },
+    "ariaHidden": true,
+    "pointerNone": true,
+    "taxText": "All donations are 80G tax-exempt"
+  },
+  {
+    "w": 768,
+    "lang": "hi",
+    "overlap": false,
+    "burst": {
+      "x": 76.8,
+      "y": 1279.4,
+      "w": 56,
+      "h": 56
+    },
+    "taxInk": {
+      "x": 46.1,
+      "y": 758.1,
+      "w": 112,
+      "h": 13
+    },
+    "ariaHidden": true,
+    "pointerNone": true,
+    "taxText": "सभी दान 80G कर-मुक्त हैं"
+  },
+  {
+    "w": 1280,
+    "lang": "en",
+    "overlap": true,
+    "burst": {
+      "x": 128,
+      "y": 767,
+      "w": 56,
+      "h": 56
+    },
+    "taxInk": {
+      "x": 76.8,
+      "y": 781.6,
+      "w": 172,
+      "h": 13
+    },
+    "ariaHidden": true,
+    "pointerNone": true,
+    "taxText": "All donations are 80G tax-exempt"
+  },
+  {
+    "w": 1280,
+    "lang": "hi",
+    "overlap": true,
+    "burst": {
+      "x": 128,
+      "y": 779.4,
+      "w": 56,
+      "h": 56
+    },
+    "taxInk": {
+      "x": 76.8,
+      "y": 793.2,
+      "w": 112,
+      "h": 13
+    },
+    "ariaHidden": true,
+    "pointerNone": true,
+    "taxText": "सभी दान 80G कर-मुक्त हैं"
+  }
+]
