@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 /**
  * E2E Tests for Facebook Events Integration
@@ -102,127 +103,122 @@ test.describe('Facebook Events - Album Gallery Modal', () => {
     await page.waitForLoadState('networkidle');
   });
 
-  test('opens gallery modal when clicking album event', async ({ page }) => {
-    // Look for album badge (indicating album event)
-    const albumBadge = page.locator('text=/\\d+ photos?/i').first();
-
-    if (await albumBadge.isVisible()) {
-      // Click the image to open gallery
-      const eventImage = page.locator('img[src*="fb-events"]').first();
-      await eventImage.click();
-
-      // Verify gallery modal opened
-      const galleryModal = page.locator('[class*="GalleryModal"]').first();
-      await expect(galleryModal).toBeVisible();
-
-      // Verify media counter is visible
-      const mediaCounter = page.locator('text=/\\d+ \\/ \\d+/');
-      await expect(mediaCounter).toBeVisible();
-
-      // Close modal
-      const closeButton = page.locator('button[aria-label="Close gallery"]');
-      await closeButton.click();
-      await expect(galleryModal).not.toBeVisible();
-    } else {
-      test.skip('No album events found in current data');
+  // pw-tqfz: these tests used to silently skip on "no album/video events
+  // found in current data" — but the data always had both (checked directly:
+  // facebook-events.json currently has 4 album + 3 video events). The skips
+  // fired because the DETECTION locators were stale (icon-library migration,
+  // a badge copy change, class-substring locators that never matched any
+  // component's actual className — see pw-goht for the same drift class).
+  // Fixed those locators with data-testid hooks. The carousel shows one
+  // event at a time and auto-rotates, so these helpers actively navigate to
+  // an event of the required type with the Next button rather than hoping
+  // the current index happens to be one — and THROW (fail the job loudly)
+  // if no such event turns up within a full rotation, instead of skipping.
+  // "we could not test this" and "this works" must not look identical.
+  async function navigateToEventType(page: Page, testId: string, maxClicks = 9) {
+    const target = page.locator(`[data-testid="${testId}"]`).first();
+    for (let i = 0; i < maxClicks; i++) {
+      if (await target.isVisible({ timeout: 1000 }).catch(() => false)) return target;
+      await page
+        .locator('button[aria-label="Next event"]')
+        .click({ timeout: 2000 })
+        .catch(() => {
+          // Single-event data has no Next button at all — that's still "not
+          // found", not a hang; fall through to the loud error below.
+        });
+      await page.waitForTimeout(150);
     }
+    throw new Error(
+      `No event with [data-testid="${testId}"] found after a full carousel rotation. ` +
+        `facebook-events.json may have lost its album/video events — check the ` +
+        `"Sync Facebook Events" workflow (pw-tqfz).`
+    );
+  }
+
+  test('opens gallery modal when clicking album event', async ({ page }) => {
+    await navigateToEventType(page, 'album-badge');
+
+    const eventImage = page.locator('img[src*="fb-events"]').first();
+    await eventImage.click();
+
+    const galleryModal = page.locator('[data-testid="gallery-modal"]');
+    await expect(galleryModal).toBeVisible();
+
+    const mediaCounter = page.locator('text=/\\d+ \\/ \\d+/');
+    await expect(mediaCounter).toBeVisible();
+
+    const closeButton = page.locator('button[aria-label="Close gallery"]');
+    await closeButton.click();
+    await expect(galleryModal).not.toBeVisible();
   });
 
   test('gallery navigation works correctly', async ({ page }) => {
-    const albumBadge = page.locator('text=/\\d+ photos?/i').first();
+    await navigateToEventType(page, 'album-badge');
 
-    if (await albumBadge.isVisible()) {
-      // Open gallery
-      const eventImage = page.locator('img[src*="fb-events"]').first();
-      await eventImage.click();
+    const eventImage = page.locator('img[src*="fb-events"]').first();
+    await eventImage.click();
 
-      // Wait for gallery to open
-      const galleryModal = page.locator('[class*="GalleryModal"]').first();
-      await expect(galleryModal).toBeVisible();
+    const galleryModal = page.locator('[data-testid="gallery-modal"]');
+    await expect(galleryModal).toBeVisible();
 
-      // Get initial counter
-      const initialCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
+    const initialCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
 
-      // Click next button
-      const nextButton = page.locator('button[aria-label="Next image"]');
-      if (await nextButton.isVisible()) {
-        await nextButton.click();
-        await page.waitForTimeout(300);
+    const nextButton = page.locator('button[aria-label="Next image"]');
+    if (await nextButton.isVisible()) {
+      await nextButton.click();
+      await page.waitForTimeout(300);
 
-        // Verify counter changed
-        const newCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
-        expect(newCounter).not.toBe(initialCounter);
+      const newCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
+      expect(newCounter).not.toBe(initialCounter);
 
-        // Click previous button
-        const prevButton = page.locator('button[aria-label="Previous image"]');
-        await prevButton.click();
-        await page.waitForTimeout(300);
+      const prevButton = page.locator('button[aria-label="Previous image"]');
+      await prevButton.click();
+      await page.waitForTimeout(300);
 
-        // Should be back to initial
-        const backCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
-        expect(backCounter).toBe(initialCounter);
-      }
-
-      // Close modal
-      const closeButton = page.locator('button[aria-label="Close gallery"]');
-      await closeButton.click();
-    } else {
-      test.skip('No album events found in current data');
+      const backCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
+      expect(backCounter).toBe(initialCounter);
     }
+
+    const closeButton = page.locator('button[aria-label="Close gallery"]');
+    await closeButton.click();
   });
 
   test('gallery closes on ESC key', async ({ page }) => {
-    const albumBadge = page.locator('text=/\\d+ photos?/i').first();
+    await navigateToEventType(page, 'album-badge');
 
-    if (await albumBadge.isVisible()) {
-      // Open gallery
-      const eventImage = page.locator('img[src*="fb-events"]').first();
-      await eventImage.click();
+    const eventImage = page.locator('img[src*="fb-events"]').first();
+    await eventImage.click();
 
-      const galleryModal = page.locator('[class*="GalleryModal"]').first();
-      await expect(galleryModal).toBeVisible();
+    const galleryModal = page.locator('[data-testid="gallery-modal"]');
+    await expect(galleryModal).toBeVisible();
 
-      // Press ESC
-      await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
 
-      // Verify modal closed
-      await expect(galleryModal).not.toBeVisible();
-    } else {
-      test.skip('No album events found in current data');
-    }
+    await expect(galleryModal).not.toBeVisible();
   });
 
   test('pagination dots work in gallery', async ({ page }) => {
-    const albumBadge = page.locator('text=/\\d+ photos?/i').first();
+    await navigateToEventType(page, 'album-badge');
 
-    if (await albumBadge.isVisible()) {
-      // Open gallery
-      const eventImage = page.locator('img[src*="fb-events"]').first();
-      await eventImage.click();
+    const eventImage = page.locator('img[src*="fb-events"]').first();
+    await eventImage.click();
 
-      const galleryModal = page.locator('[class*="GalleryModal"]').first();
-      await expect(galleryModal).toBeVisible();
+    const galleryModal = page.locator('[data-testid="gallery-modal"]');
+    await expect(galleryModal).toBeVisible();
 
-      // Find pagination dots
-      const paginationDots = galleryModal.locator('button[aria-label*="Go to image"]');
-      const dotCount = await paginationDots.count();
+    const paginationDots = galleryModal.locator('button[aria-label*="Go to image"]');
+    const dotCount = await paginationDots.count();
 
-      if (dotCount > 1) {
-        // Click second dot
-        await paginationDots.nth(1).click();
-        await page.waitForTimeout(300);
+    if (dotCount > 1) {
+      await paginationDots.nth(1).click();
+      await page.waitForTimeout(300);
 
-        // Verify counter shows "2 / X"
-        const counter = await page.locator('text=/2 \\/ \\d+/').textContent();
-        expect(counter).toContain('2 /');
-      }
-
-      // Close modal
-      const closeButton = page.locator('button[aria-label="Close gallery"]');
-      await closeButton.click();
-    } else {
-      test.skip('No album events found in current data');
+      const counter = await page.locator('text=/2 \\/ \\d+/').textContent();
+      expect(counter).toContain('2 /');
     }
+
+    const closeButton = page.locator('button[aria-label="Close gallery"]');
+    await closeButton.click();
   });
 });
 
@@ -232,70 +228,69 @@ test.describe('Facebook Events - Video Modal', () => {
     await page.waitForLoadState('networkidle');
   });
 
-  test('opens video modal when clicking video event', async ({ page }) => {
-    // Look for play button overlay (indicating video event)
-    const playButton = page.locator('[class*="FaPlay"]').first();
-
-    if (await playButton.isVisible()) {
-      // Click the play button or image
-      await playButton.click();
-
-      // Verify video modal opened
-      const videoModal = page.locator('[class*="VideoModal"]').first();
-      await expect(videoModal).toBeVisible();
-
-      // Verify Facebook video iframe is present
-      const videoIframe = page.locator('iframe[src*="facebook.com"]');
-      await expect(videoIframe).toBeVisible();
-
-      // Close modal
-      const closeButton = page.locator('button[aria-label="Close video"]');
-      await closeButton.click();
-      await expect(videoModal).not.toBeVisible();
-    } else {
-      test.skip('No video events found in current data');
+  // See the comment above the identical helper in the Album Gallery Modal
+  // describe block above — same rationale, kept local to each block since
+  // Playwright specs don't share module state across describe blocks by
+  // default.
+  async function navigateToEventType(page: Page, testId: string, maxClicks = 9) {
+    const target = page.locator(`[data-testid="${testId}"]`).first();
+    for (let i = 0; i < maxClicks; i++) {
+      if (await target.isVisible({ timeout: 1000 }).catch(() => false)) return target;
+      await page
+        .locator('button[aria-label="Next event"]')
+        .click({ timeout: 2000 })
+        .catch(() => {
+          // Single-event data has no Next button at all — that's still "not
+          // found", not a hang; fall through to the loud error below.
+        });
+      await page.waitForTimeout(150);
     }
+    throw new Error(
+      `No event with [data-testid="${testId}"] found after a full carousel rotation. ` +
+        `facebook-events.json may have lost its album/video events — check the ` +
+        `"Sync Facebook Events" workflow (pw-tqfz).`
+    );
+  }
+
+  test('opens video modal when clicking video event', async ({ page }) => {
+    const playButton = await navigateToEventType(page, 'video-play-button');
+    await playButton.click();
+
+    const videoModal = page.locator('[data-testid="video-modal"]');
+    await expect(videoModal).toBeVisible();
+
+    const videoIframe = page.locator('iframe[src*="facebook.com"]');
+    await expect(videoIframe).toBeVisible();
+
+    const closeButton = page.locator('button[aria-label="Close video"]');
+    await closeButton.click();
+    await expect(videoModal).not.toBeVisible();
   });
 
   test('video modal closes on ESC key', async ({ page }) => {
-    const playButton = page.locator('[class*="FaPlay"]').first();
+    const playButton = await navigateToEventType(page, 'video-play-button');
+    await playButton.click();
 
-    if (await playButton.isVisible()) {
-      // Open video modal
-      await playButton.click();
+    const videoModal = page.locator('[data-testid="video-modal"]');
+    await expect(videoModal).toBeVisible();
 
-      const videoModal = page.locator('[class*="VideoModal"]').first();
-      await expect(videoModal).toBeVisible();
+    await page.keyboard.press('Escape');
 
-      // Press ESC
-      await page.keyboard.press('Escape');
-
-      // Verify modal closed
-      await expect(videoModal).not.toBeVisible();
-    } else {
-      test.skip('No video events found in current data');
-    }
+    await expect(videoModal).not.toBeVisible();
   });
 
   test('video modal closes when clicking backdrop', async ({ page }) => {
-    const playButton = page.locator('[class*="FaPlay"]').first();
+    const playButton = await navigateToEventType(page, 'video-play-button');
+    await playButton.click();
 
-    if (await playButton.isVisible()) {
-      // Open video modal
-      await playButton.click();
+    const videoModal = page.locator('[data-testid="video-modal"]');
+    await expect(videoModal).toBeVisible();
 
-      const videoModal = page.locator('[class*="VideoModal"]').first();
-      await expect(videoModal).toBeVisible();
+    // Click backdrop (area outside the video)
+    await page.mouse.click(10, 10); // Top-left corner
 
-      // Click backdrop (area outside the video)
-      await page.mouse.click(10, 10); // Top-left corner
-
-      // Verify modal closed (may take a moment)
-      await page.waitForTimeout(500);
-      // Modal might not close on backdrop click, check implementation
-    } else {
-      test.skip('No video events found in current data');
-    }
+    await page.waitForTimeout(500);
+    // Modal might not close on backdrop click, check implementation
   });
 });
 

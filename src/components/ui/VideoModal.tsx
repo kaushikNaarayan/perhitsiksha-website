@@ -140,6 +140,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
   return (
     <div
       ref={rootRef}
+      data-testid="video-modal"
       className="fixed inset-0 z-modal flex items-center justify-center"
     >
       {/* Backdrop */}
