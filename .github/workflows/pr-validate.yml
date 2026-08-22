@@ -223,14 +223,21 @@ jobs:
     - name: Install Playwright browsers
       run: npx playwright install --with-deps chromium
 
-    # Same shared-runner hazard as accessibility-check just above: Playwright's
-    # own webServer (see playwright.config.ts) launches `npm run dev` on
-    # :3000, and a prior job's server can still be squatting on it.
-    - name: Reap orphan dev servers on port 3000
+    # Playwright's own webServer (see playwright.config.ts) launches
+    # `npm run dev` on a DEDICATED port (3100 under CI) precisely so this
+    # job can never collide with accessibility-check's :3000 preview server
+    # when both land on the same shared gt2 runner and run concurrently —
+    # that happened for real on this job's first CI run (32559739222):
+    # accessibility-check's reap step killed this suite's dev server
+    # mid-test, well after the two jobs had started in parallel, so a step
+    # ordering fix alone (running earlier) would not have been safe against
+    # it. Different port means the two reap steps can never target each
+    # other's process, no matter the timing.
+    - name: Reap orphan dev servers on port 3100
       run: |
-        PIDS="$(lsof -ti tcp:3000 2>/dev/null || true)"
+        PIDS="$(lsof -ti tcp:3100 2>/dev/null || true)"
         if [ -n "$PIDS" ]; then
-          echo "Killing orphan process(es) on port 3000: $PIDS"
+          echo "Killing orphan process(es) on port 3100: $PIDS"
           kill -9 $PIDS || true
         fi
 
