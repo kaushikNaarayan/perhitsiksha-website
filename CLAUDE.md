@@ -30,11 +30,6 @@ npm run format:check        # Check formatting without changes
 npx tsc --noEmit            # Type checking without build
 npm run size                # Analyze bundle size
 
-# Supabase (Local Development)
-npx supabase start          # Start local Supabase stack (Studio at http://127.0.0.1:54323)
-npx supabase stop           # Stop local Supabase
-npx supabase db reset       # Reset database to migrations
-
 # Facebook Events (Automation)
 npm run fetch:facebook      # Fetch events from Facebook Graph API
 npm run validate:events     # Validate facebook-events.json schema
@@ -46,7 +41,7 @@ npm run validate:events     # Validate facebook-events.json schema
 - **React 19** + **TypeScript** + **Vite 7** (requires Node.js v20+)
 - **Tailwind CSS** for styling
 - **React Router** for client-side routing with GitHub Pages SPA support
-- **Supabase** for backend (visitor counter, page views)
+- **Counter API** (counterapi.dev) for the visitor counter — no backend of our own
 - **Vitest** for unit tests, **Playwright** for E2E tests
 
 ### Application Structure
@@ -60,9 +55,11 @@ npm run validate:events     # Validate facebook-events.json schema
 - `ScrollToTop` component ensures page scrolls to top on route changes
 
 **Backend Integration:**
-- `src/services/supabase.ts` provides `PageViewService` singleton for visitor tracking
-- Uses RPC function `increment_page_views` for atomic increments
-- Falls back gracefully when Supabase is not configured
+- No backend of our own — the visitor counter calls the external Counter API
+  (counterapi.dev) directly from the client (`VisitorCounter.tsx`); no credential
+  is shipped in the bundle. (Prior to pw-ob7e this called a shared Supabase project
+  that also backed the perhit ERP — that shipped the ERP's anon key to every
+  visitor. Removed; see pw-ob7e for the incident writeup.)
 - `src/config/environment.ts` validates env vars with Zod and exports feature flags
 
 **Component Categories:**
@@ -99,7 +96,7 @@ npm run validate:events     # Validate facebook-events.json schema
   - YouTube: existing implementation with youtube-nocookie.com
   - Facebook: iframe embed with mobile fallback
 - **YouTubeEmbed** - Reusable YouTube iframe wrapper with 16:9 aspect ratio and privacy-enhanced nocookie domain
-- **VisitorCounter** - Displays page views from Supabase with caching
+- **VisitorCounter** - Displays page views from the Counter API with caching
 - **GoogleAnalytics** - GA4 integration (only enabled in production)
 - **TypewriterText**, **StatsCounter** - Animated text effects
 - **Hero** - Hero section with conditional logo, subheadline, and subtitle support
@@ -119,16 +116,15 @@ npm run validate:events     # Validate facebook-events.json schema
 
 **Environment Variables** (`src/config/environment.ts`):
 - Validates all env vars with Zod schema at startup
-- Exports `config` object with typed settings for Supabase, analytics, features
+- Exports `config` object with typed settings for the counter, analytics, features
 - Exports `isDevelopment`, `isStaging`, `isProduction` helpers
 - Feature flags in `config.features` control behavior per environment
 
 **Required Environment Variables:**
 ```bash
 # Application
-VITE_SUPABASE_URL           # Supabase project URL
-VITE_SUPABASE_ANON_KEY      # Supabase anon key
 VITE_ENVIRONMENT            # development | staging | production
+VITE_COUNTER_WORKSPACE      # counterapi.dev workspace slug (visitor counter, optional)
 VITE_GA_MEASUREMENT_ID      # Google Analytics (optional)
 
 # Facebook API (for local fetch script testing only)
@@ -166,7 +162,7 @@ FACEBOOK_ACCESS_TOKEN       # Long-lived Page Access Token (stored in GitHub Sec
 - Deployed via `.github/workflows/deploy.yml` on push to `main`
 - Builds with production env vars from GitHub secrets
 - URL: www.perhitsiksha.org
-- Post-deployment: health checks + Supabase connectivity verification
+- Post-deployment: health checks + Counter API connectivity verification
 
 **Staging (Cloudflare Tunnel):**
 - Deployed via `.github/workflows/deploy-staging.yml`
@@ -319,7 +315,6 @@ Max body line length: 100 chars
 - No global state library (Redux/Zustand)
 - Component state via `useState`, `useReducer`
 - Shared state lifted to nearest common ancestor or Context
-- API state managed in service layer (`src/services/supabase.ts`)
 
 ### Performance Considerations
 - Lazy loading not currently implemented (small app)
@@ -360,13 +355,6 @@ Max body line length: 100 chars
 2. Add route in `src/App.tsx` `<Routes>` block
 3. Update navigation in `src/components/Layout/Header.tsx`
 4. Add URL to `public/sitemap.xml` with appropriate priority and change frequency
-
-### Working with Supabase
-- Always check `config.supabase.enabled` before using client
-- Use `pageViewService` singleton for visitor tracking
-- Handle errors gracefully - log and return fallback values
-- Local development: `npx supabase start` for full local stack
-- Database schema changes require migrations via Supabase CLI
 
 ### Content Management
 

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Define the environment schema
 const environmentSchema = z.object({
-  // Legacy Counter API (will be deprecated)
+  // Counter API (page-view counter)
   VITE_COUNTER_WORKSPACE: z.string().optional(),
   VITE_API_BASE_URL: z.string().url().default('https://api.counterapi.dev/v2'),
   VITE_COUNTER_CACHE_TTL: z
@@ -12,10 +12,6 @@ const environmentSchema = z.object({
     .refine(val => val === undefined || (!isNaN(val) && val > 0), {
       message: 'Cache TTL must be a positive number (milliseconds)',
     }),
-
-  // Supabase Configuration
-  VITE_SUPABASE_URL: z.string().url().optional(),
-  VITE_SUPABASE_ANON_KEY: z.string().optional(),
 
   // General Configuration
   VITE_GA_MEASUREMENT_ID: z.string().optional(),
@@ -51,9 +47,6 @@ export const isDevelopment = env.VITE_ENVIRONMENT === 'development';
 export const isStaging = env.VITE_ENVIRONMENT === 'staging';
 export const isProduction = env.VITE_ENVIRONMENT === 'production';
 
-// Base count is now managed in the backend (Supabase)
-// No frontend base count needed
-
 // Environment-specific cache TTL
 const getCacheTTL = (): number => {
   if (env.VITE_COUNTER_CACHE_TTL !== undefined) {
@@ -75,17 +68,11 @@ const getCacheTTL = (): number => {
 
 // Environment-specific configurations
 export const config = {
-  // Legacy Counter API (for fallback)
+  // Counter API (page-view counter)
   counter: {
     workspace: env.VITE_COUNTER_WORKSPACE,
     baseUrl: env.VITE_API_BASE_URL,
     cacheTTL: getCacheTTL(),
-  },
-  // Supabase Configuration
-  supabase: {
-    url: env.VITE_SUPABASE_URL,
-    anonKey: env.VITE_SUPABASE_ANON_KEY,
-    enabled: !!(env.VITE_SUPABASE_URL && env.VITE_SUPABASE_ANON_KEY),
   },
   analytics: {
     measurementId: env.VITE_GA_MEASUREMENT_ID,
@@ -101,8 +88,6 @@ export const config = {
     enableTestMode: isDevelopment || isStaging,
     enableDebugLogs: isDevelopment || isStaging,
     enablePerformanceMonitoring: isProduction,
-    // New feature: Use Supabase if available, fallback to Counter API
-    useSupabase: !!(env.VITE_SUPABASE_URL && env.VITE_SUPABASE_ANON_KEY),
   },
   performance: {
     // Performance monitoring configuration
