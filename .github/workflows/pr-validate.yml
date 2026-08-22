@@ -196,3 +196,84 @@ jobs:
         echo "Resolved chromedriver via Selenium Manager: $DRIVER_PATH"
 
         axe http://localhost:3000 --exit --chromedriver-path "$DRIVER_PATH"
+
+  e2e-tests:
+    runs-on: [self-hosted, gt2]
+    needs: validate
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    # Self-hosted gt2 runners are bare Node images, not the Playwright
+    # GitHub-hosted image — they do NOT ship Playwright's browsers. A run
+    # that skips this step doesn't fail loudly; every test times out waiting
+    # for a browser launch that never completes (pw-goht). --with-deps also
+    # installs the OS-level shared libraries Chromium needs, which a bare
+    # runner won't have either.
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps chromium
+
+    # Same shared-runner hazard as accessibility-check just above: Playwright's
+    # own webServer (see playwright.config.ts) launches `npm run dev` on
+    # :3000, and a prior job's server can still be squatting on it.
+    - name: Reap orphan dev servers on port 3000
+      run: |
+        PIDS="$(lsof -ti tcp:3000 2>/dev/null || true)"
+        if [ -n "$PIDS" ]; then
+          echo "Killing orphan process(es) on port 3000: $PIDS"
+          kill -9 $PIDS || true
+        fi
+
+    # PR-validate, not deploy.yml: on this repo push-to-main IS the deploy
+    # (deploy.yml triggers on push to main), so a check that only runs there
+    # fires after shipping has already started — not a gate. This is the
+    # pre-merge check.
+    #
+    # `--reporter=list,json` + PLAYWRIGHT_JSON_OUTPUT_NAME: the list reporter
+    # is for the human-readable log; the JSON file feeds the next step, which
+    # explicitly fails the job if zero specs were matched. A job that
+    # silently no-ops on zero matched specs also exits 0 — that is the exact
+    # failure mode pw-goht exists to close, so "green" alone is not proof;
+    # the log must show a nonzero test count.
+    - name: Run Playwright E2E suite
+      env:
+        VITE_COUNTER_WORKSPACE: ${{ secrets.DEV_COUNTER_WORKSPACE || 'perhitsiksha' }}
+        VITE_ENVIRONMENT: development
+        VITE_COUNTER_BASE_COUNT: "10"
+        PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-results.json
+      run: npx playwright test --reporter=list,json
+
+    - name: Verify the suite actually ran specs
+      if: always()
+      run: |
+        if [ ! -f playwright-results.json ]; then
+          echo "::error::playwright-results.json missing — the suite did not run at all."
+          exit 1
+        fi
+        node -e '
+          const r = require("./playwright-results.json");
+          const total = (r.stats?.expected ?? 0) + (r.stats?.unexpected ?? 0) + (r.stats?.flaky ?? 0);
+          console.log("Playwright ran " + total + " test(s): " + JSON.stringify(r.stats));
+          if (total === 0) {
+            console.error("::error::0 tests matched — this job would silently pass on an empty suite. Failing explicitly.");
+            process.exit(1);
+          }
+        '
+
+    - name: Upload Playwright report on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 7

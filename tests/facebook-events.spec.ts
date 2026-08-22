@@ -16,11 +16,11 @@ test.describe('Facebook Events - EventsCarousel', () => {
 
   test('displays events from facebook-events.json', async ({ page }) => {
     // Check if Recent Events section exists
-    const eventsSection = page.locator('text=Recent Events').first();
+    const eventsSection = page.locator('text=From Our Community').first();
     await expect(eventsSection).toBeVisible();
 
     // Check if carousel is present
-    const carousel = page.locator('[class*="EventsCarousel"]').first();
+    const carousel = page.locator('[data-testid="events-carousel"]').first();
     await expect(carousel).toBeVisible();
 
     // Verify event content is displayed
@@ -29,7 +29,7 @@ test.describe('Facebook Events - EventsCarousel', () => {
   });
 
   test('carousel auto-rotates through events', async ({ page }) => {
-    const carousel = page.locator('[class*="EventsCarousel"]').first();
+    const carousel = page.locator('[data-testid="events-carousel"]').first();
 
     // Get initial event title
     const initialTitle = await carousel.locator('h3').first().textContent();
@@ -48,7 +48,7 @@ test.describe('Facebook Events - EventsCarousel', () => {
   });
 
   test('pagination dots allow manual navigation', async ({ page }) => {
-    const carousel = page.locator('[class*="EventsCarousel"]').first();
+    const carousel = page.locator('[data-testid="events-carousel"]').first();
 
     // Find pagination dots
     const paginationDots = carousel.locator('button[aria-label*="Go to event"]');
@@ -65,7 +65,7 @@ test.describe('Facebook Events - EventsCarousel', () => {
   });
 
   test('navigation arrows work correctly', async ({ page }) => {
-    const carousel = page.locator('[class*="EventsCarousel"]').first();
+    const carousel = page.locator('[data-testid="events-carousel"]').first();
 
     // Find navigation arrows
     const prevButton = carousel.locator('button[aria-label="Previous event"]');
@@ -307,7 +307,7 @@ test.describe('Facebook Events - Responsive Design', () => {
     await page.waitForLoadState('networkidle');
 
     // Check if carousel is visible
-    const carousel = page.locator('[class*="EventsCarousel"]').first();
+    const carousel = page.locator('[data-testid="events-carousel"]').first();
     await expect(carousel).toBeVisible();
 
     // Verify single column layout
@@ -321,7 +321,7 @@ test.describe('Facebook Events - Responsive Design', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    const carousel = page.locator('[class*="EventsCarousel"]').first();
+    const carousel = page.locator('[data-testid="events-carousel"]').first();
     await expect(carousel).toBeVisible();
   });
 
@@ -331,7 +331,7 @@ test.describe('Facebook Events - Responsive Design', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    const carousel = page.locator('[class*="EventsCarousel"]').first();
+    const carousel = page.locator('[data-testid="events-carousel"]').first();
     await expect(carousel).toBeVisible();
 
     // On large screens (≥1280px), should have side-by-side layout

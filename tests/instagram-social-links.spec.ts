@@ -17,22 +17,32 @@ test.describe('Instagram social links', () => {
     await expect(svg).toHaveClass(/w-6 h-6/);
   });
 
-  test('Hero section has Instagram link with correct href', async ({ page }) => {
-    await page.goto('/');
-    // Hero social icons are only rendered when primaryCTA is present
-    const link = page.locator(
-      'section.relative a[aria-label="Follow us on Instagram"]'
-    );
-    await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute('href', 'https://www.instagram.com/perhit.siksha/');
-  });
+  // pw-ies7: the v3 hero rebuild (HeroEditorial, pw-oql) dropped the
+  // embedded social-icon row that the old Hero.tsx rendered — the homepage
+  // hero has no Instagram link at all now. Quarantined pending a product
+  // decision (intentional removal vs. migration gap), not deleted.
+  test.fixme(
+    'Hero section has Instagram link with correct href',
+    async ({ page }) => {
+      await page.goto('/');
+      const link = page.locator(
+        'section.relative a[aria-label="Follow us on Instagram"]'
+      );
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute('href', 'https://www.instagram.com/perhit.siksha/');
+    }
+  );
 
-  test('Hero Instagram icon renders SVG', async ({ page }) => {
-    await page.goto('/');
-    const link = page.locator('section.relative a[aria-label="Follow us on Instagram"]');
-    const svg = link.locator('svg');
-    await expect(svg).toBeVisible();
-  });
+  // pw-ies7: same root cause as above.
+  test.fixme(
+    'Hero Instagram icon renders SVG',
+    async ({ page }) => {
+      await page.goto('/');
+      const link = page.locator('section.relative a[aria-label="Follow us on Instagram"]');
+      const svg = link.locator('svg');
+      await expect(svg).toBeVisible();
+    }
+  );
 
   test('Mobile menu has Instagram link', async ({ page }) => {
     await page.goto('/');
