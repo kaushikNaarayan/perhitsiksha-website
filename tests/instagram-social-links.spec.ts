@@ -17,32 +17,15 @@ test.describe('Instagram social links', () => {
     await expect(svg).toHaveClass(/w-6 h-6/);
   });
 
-  // pw-ies7: the v3 hero rebuild (HeroEditorial, pw-oql) dropped the
-  // embedded social-icon row that the old Hero.tsx rendered — the homepage
-  // hero has no Instagram link at all now. Quarantined pending a product
-  // decision (intentional removal vs. migration gap), not deleted.
-  test.fixme(
-    'Hero section has Instagram link with correct href',
-    async ({ page }) => {
-      await page.goto('/');
-      const link = page.locator(
-        'section.relative a[aria-label="Follow us on Instagram"]'
-      );
-      await expect(link).toBeVisible();
-      await expect(link).toHaveAttribute('href', 'https://www.instagram.com/perhit.siksha/');
-    }
-  );
-
-  // pw-ies7: same root cause as above.
-  test.fixme(
-    'Hero Instagram icon renders SVG',
-    async ({ page }) => {
-      await page.goto('/');
-      const link = page.locator('section.relative a[aria-label="Follow us on Instagram"]');
-      const svg = link.locator('svg');
-      await expect(svg).toBeVisible();
-    }
-  );
+  // pw-ies7: the v3 hero (HeroEditorial, pw-oql) never had an embedded
+  // social-icon row — checked the canonical spec (home-v3.html, and
+  // about-v3.html / testimonials-v3.html for consistency): `.socials`
+  // appears exactly once per page, in the footer, never in any hero.
+  // Dropping the hero-embedded Instagram link was correct per design, not a
+  // migration gap, so the two tests that used to assert it are removed
+  // rather than left fixme forever — a permanently-quarantined test for
+  // behavior the product will never have again is the same "we could not
+  // test this" vs "this works" confusion pw-tqfz fixed one level up.
 
   test('Mobile menu has Instagram link', async ({ page }) => {
     await page.goto('/');
