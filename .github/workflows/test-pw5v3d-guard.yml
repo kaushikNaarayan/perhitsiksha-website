@@ -1,0 +1,21 @@
+name: Test pw-5v3d Guard
+
+# TEMPORARY — mirrors the EXACT guard condition being added to deploy.yml's
+# pre-deploy-checks job (see pw-5v3d), triggered by the upstream test
+# workflow above instead of the real Sync Facebook Events, so this can be
+# proven true without touching the real, currently-disabled Deploy to
+# Production workflow. Removed once pw-5v3d's fix is verified.
+on:
+  workflow_run:
+    workflows: ["Test pw-5v3d Upstream"]
+    types: [completed]
+
+jobs:
+  guarded-job:
+    runs-on: [self-hosted, gt2]
+    # This is the exact condition being added to deploy.yml's
+    # pre-deploy-checks job.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: This should only run when the upstream run succeeded
+        run: echo "GUARD PASSED — upstream conclusion was success"

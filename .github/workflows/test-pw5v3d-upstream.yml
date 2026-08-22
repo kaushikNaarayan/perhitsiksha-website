@@ -1,0 +1,24 @@
+name: Test pw-5v3d Upstream
+
+# TEMPORARY — proves the conclusion-guard fix on deploy.yml empirically,
+# without ever touching the real (currently disabled) Deploy to Production
+# workflow. Two runs of this feed the downstream guard test with a real
+# 'success' and a real 'failure' completed event. Removed once pw-5v3d's
+# fix is verified and applied to deploy.yml.
+on:
+  workflow_dispatch:
+    inputs:
+      outcome:
+        description: 'success or failure'
+        required: true
+        default: 'success'
+
+jobs:
+  upstream:
+    runs-on: [self-hosted, gt2]
+    steps:
+      - name: Report chosen outcome
+        run: echo "Requested outcome: ${{ inputs.outcome }}"
+      - name: Fail on request
+        if: inputs.outcome == 'failure'
+        run: exit 1
