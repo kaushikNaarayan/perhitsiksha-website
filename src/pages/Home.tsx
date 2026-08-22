@@ -67,11 +67,16 @@ const HomeHeroSprites: React.FC = () => (
       className="sprite-float delay-1 absolute w-10 sm:w-12 drop-shadow-md"
       style={{ top: '58%', left: '2%' }}
     />
+    {/* pw-wh7z: at lg this burst sat on top of the "All donations are 80G
+        tax-exempt" line — the donor tax-deduction trust signal, directly under
+        the Contribute CTA. Repositioned into the gutter, NOT deleted: the burst
+        sprites are pe-3j4 B8 "texture + organic decor". Below lg the original
+        placement already measures clear of the taxNote, so it is unchanged
+        there and only the lg case is overridden. */}
     <img
       src={spriteBurst}
       alt=""
-      className="sprite-float delay-2 absolute w-11 sm:w-14 drop-shadow-md"
-      style={{ bottom: '8%', left: '10%' }}
+      className="sprite-float delay-2 absolute w-11 sm:w-14 drop-shadow-md bottom-[8%] left-[10%] lg:bottom-[4%] lg:left-[46%]"
     />
   </div>
 );
