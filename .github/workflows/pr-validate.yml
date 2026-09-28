@@ -18,6 +18,19 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       
+    - name: Configure per-job npm cache dir
+      # pw-on6.8: every gt2 runner runs as user kanaba and shares ONE
+      # ~/.npm cache by default. When this job's npm ci races another gt2
+      # job's npm ci (this workflow's own concurrent jobs, or another rig's),
+      # cacache's tmp->content rename collides and npm ci exits 254 with a
+      # spurious EEXIST/ENOENT. runner.temp is wiped at the start/end of each
+      # job and is exclusive to it. `runner` isn't available in job-level
+      # `env:` (only inside steps), so write it to $GITHUB_ENV here, before
+      # Setup Node.js resolves npm's cache dir, so every later step
+      # (including npm ci) installs against an isolated dir instead of
+      # racing the shared one.
+      run: echo "NPM_CONFIG_CACHE=${{ runner.temp }}/npm-cache" >> "$GITHUB_ENV"
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -76,6 +89,19 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       
+    - name: Configure per-job npm cache dir
+      # pw-on6.8: every gt2 runner runs as user kanaba and shares ONE
+      # ~/.npm cache by default. When this job's npm ci races another gt2
+      # job's npm ci (this workflow's own concurrent jobs, or another rig's),
+      # cacache's tmp->content rename collides and npm ci exits 254 with a
+      # spurious EEXIST/ENOENT. runner.temp is wiped at the start/end of each
+      # job and is exclusive to it. `runner` isn't available in job-level
+      # `env:` (only inside steps), so write it to $GITHUB_ENV here, before
+      # Setup Node.js resolves npm's cache dir, so every later step
+      # (including npm ci) installs against an isolated dir instead of
+      # racing the shared one.
+      run: echo "NPM_CONFIG_CACHE=${{ runner.temp }}/npm-cache" >> "$GITHUB_ENV"
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -128,6 +154,19 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       
+    - name: Configure per-job npm cache dir
+      # pw-on6.8: every gt2 runner runs as user kanaba and shares ONE
+      # ~/.npm cache by default. When this job's npm ci races another gt2
+      # job's npm ci (this workflow's own concurrent jobs, or another rig's),
+      # cacache's tmp->content rename collides and npm ci exits 254 with a
+      # spurious EEXIST/ENOENT. runner.temp is wiped at the start/end of each
+      # job and is exclusive to it. `runner` isn't available in job-level
+      # `env:` (only inside steps), so write it to $GITHUB_ENV here, before
+      # Setup Node.js resolves npm's cache dir, so every later step
+      # (including npm ci) installs against an isolated dir instead of
+      # racing the shared one.
+      run: echo "NPM_CONFIG_CACHE=${{ runner.temp }}/npm-cache" >> "$GITHUB_ENV"
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -204,6 +243,19 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+
+    - name: Configure per-job npm cache dir
+      # pw-on6.8: every gt2 runner runs as user kanaba and shares ONE
+      # ~/.npm cache by default. When this job's npm ci races another gt2
+      # job's npm ci (this workflow's own concurrent jobs, or another rig's),
+      # cacache's tmp->content rename collides and npm ci exits 254 with a
+      # spurious EEXIST/ENOENT. runner.temp is wiped at the start/end of each
+      # job and is exclusive to it. `runner` isn't available in job-level
+      # `env:` (only inside steps), so write it to $GITHUB_ENV here, before
+      # Setup Node.js resolves npm's cache dir, so every later step
+      # (including npm ci) installs against an isolated dir instead of
+      # racing the shared one.
+      run: echo "NPM_CONFIG_CACHE=${{ runner.temp }}/npm-cache" >> "$GITHUB_ENV"
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
