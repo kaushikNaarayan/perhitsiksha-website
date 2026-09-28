@@ -1,0 +1,30 @@
+clip fallback #18@1280: bb={"x":503.8125,"y":1041.078125,"width":272.359375,"height":40}
+clip fallback #18@390: bb={"x":58.8125,"y":1057.109375,"width":272.359375,"height":40}
+main-9709c78 1280 #4 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 1280 #5 orange icon #FF7300 on #FFEEE0 (ground #FFFFFF) = 2.41 | white 2.41 warm 2.24 FAIL stroke=currentColor
+main-9709c78 1280 #6 green  icon #01A652 on #E1F4EA (ground #FFFFFF) = 2.79 | white 2.79 warm 2.58 FAIL stroke=currentColor
+main-9709c78 1280 #7 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 1280 #8 orange icon #FF7300 on #FFEEE0 (ground #FFFFFF) = 2.41 | white 2.41 warm 2.24 FAIL stroke=currentColor
+main-9709c78 1280 #9 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 1280 #10 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 1280 #11 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 1280 #12 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 1280 #13 orange icon #FF7300 on #FFEEE0 (ground #FFFFFF) = 2.41 | white 2.41 warm 2.24 FAIL stroke=currentColor
+main-9709c78 1280 #14 green  icon #01A652 on #E1F4EA (ground #FFFFFF) = 2.79 | white 2.79 warm 2.58 FAIL stroke=currentColor
+main-9709c78 1280 #15 yellow icon #B88A00 on #FFF7D6 (ground #FFFFFF) = 2.93 | white 2.93 warm 2.72 FAIL stroke=currentColor
+main-9709c78 1280 #18 blue   icon #0040EA on #E0E5F2 (ground #F9F4F2) = 5.7 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 1280 #19 blue   icon #0040EA on #E0E5F2 (ground #F9F4F2) = 5.7 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 390 #4 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 390 #5 orange icon #FF7300 on #FFEEE0 (ground #FFFFFF) = 2.41 | white 2.41 warm 2.24 FAIL stroke=currentColor
+main-9709c78 390 #6 green  icon #01A652 on #E1F4EA (ground #FFFFFF) = 2.79 | white 2.79 warm 2.58 FAIL stroke=currentColor
+main-9709c78 390 #7 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 390 #8 orange icon #FF7300 on #FFEEE0 (ground #FFFFFF) = 2.41 | white 2.41 warm 2.24 FAIL stroke=currentColor
+main-9709c78 390 #9 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 390 #10 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 390 #11 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 390 #12 blue   icon #0040EA on #E6EFFD (ground #FFFFFF) = 6.21 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 390 #13 orange icon #FF7300 on #FFEEE0 (ground #FFFFFF) = 2.41 | white 2.41 warm 2.24 FAIL stroke=currentColor
+main-9709c78 390 #14 green  icon #01A652 on #E1F4EA (ground #FFFFFF) = 2.79 | white 2.79 warm 2.58 FAIL stroke=currentColor
+main-9709c78 390 #15 yellow icon #B88A00 on #FFF7D6 (ground #FFFFFF) = 2.93 | white 2.93 warm 2.72 FAIL stroke=currentColor
+main-9709c78 390 #18 blue   icon #0040EA on #E0E5F2 (ground #F9F4F2) = 5.7 | white 6.21 warm 5.7 PASS stroke=currentColor
+main-9709c78 390 #19 blue   icon #0040EA on #E0E5F2 (ground #F9F4F2) = 5.7 | white 6.21 warm 5.7 PASS stroke=currentColor
