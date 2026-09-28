@@ -2,13 +2,14 @@ name: Nightly Tests
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+    - cron: '37 2 * * *'  # Daily at 2:37 AM UTC (off the top of the hour to avoid schedule collisions)
   workflow_dispatch:
 
 jobs:
   comprehensive-testing:
     runs-on: [self-hosted, gt2]
-    
+    if: github.repository == 'material-lab-io/Perhitsiksha-Website'
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -51,11 +52,16 @@ jobs:
 
   performance-testing:
     runs-on: [self-hosted, gt2]
+    needs: [comprehensive-testing]
+    # Serialized after comprehensive-testing so cache-heavy setup-node jobs
+    # never extract npm caches concurrently on the shared gt2 host (pw-ouer).
+    # always() so this still runs even if comprehensive-testing failed.
+    if: always() && github.repository == 'material-lab-io/Perhitsiksha-Website'
     # Harness job, not a product test: it has never passed and mailed a red
     # nightly every morning while the real test jobs were green. Still runs and
     # still reports its own status; just no longer fails the whole nightly run.
     continue-on-error: true
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -105,11 +111,16 @@ jobs:
 
   accessibility-audit:
     runs-on: [self-hosted, gt2]
+    needs: [performance-testing]
+    # Serialized after performance-testing so cache-heavy setup-node jobs
+    # never extract npm caches concurrently on the shared gt2 host (pw-ouer).
+    # always() so this still runs even if an earlier job failed.
+    if: always() && github.repository == 'material-lab-io/Perhitsiksha-Website'
     # Harness job, not a product test: it has never passed and mailed a red
     # nightly every morning while the real test jobs were green. Still runs and
     # still reports its own status; just no longer fails the whole nightly run.
     continue-on-error: true
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -156,11 +167,16 @@ jobs:
 
   dependency-audit:
     runs-on: [self-hosted, gt2]
+    needs: [accessibility-audit]
+    # Serialized after accessibility-audit so cache-heavy setup-node jobs
+    # never extract npm caches concurrently on the shared gt2 host (pw-ouer).
+    # always() so this still runs even if an earlier job failed.
+    if: always() && github.repository == 'material-lab-io/Perhitsiksha-Website'
     # Harness job, not a product test: it has never passed and mailed a red
     # nightly every morning while the real test jobs were green. Still runs and
     # still reports its own status; just no longer fails the whole nightly run.
     continue-on-error: true
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -179,7 +195,8 @@ jobs:
 
   api-integration-tests:
     runs-on: [self-hosted, gt2]
-    
+    if: github.repository == 'material-lab-io/Perhitsiksha-Website'
+
     steps:
     - name: Test Counter API availability
       run: |
@@ -195,6 +212,7 @@ jobs:
 
   facebook-token-check:
     runs-on: [self-hosted, gt2]
+    if: github.repository == 'material-lab-io/Perhitsiksha-Website'
     permissions:
       issues: write
 
@@ -332,7 +350,7 @@ jobs:
   notification:
     runs-on: [self-hosted, gt2]
     needs: [comprehensive-testing, performance-testing, accessibility-audit, dependency-audit, api-integration-tests, facebook-token-check]
-    if: failure()
+    if: github.repository == 'material-lab-io/Perhitsiksha-Website' && failure()
 
     steps:
     - name: Notify on failure
