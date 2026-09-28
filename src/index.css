@@ -17,10 +17,16 @@
   --surface-page: #f9f4f2;
   --white: #ffffff;
   --grey-700: #2d2c2b;
+  --grey-800: #141313; /* deepest ink — illustration faces, on-orange/on-yellow/on-green text (pw-x74x) */
+  /* Card-chip tint foregrounds (pw-x74x — WCAG 1.4.11 3:1 fix; ds/tokens/colors.css --green-300) */
+  --green-300: #02873e;
   /* Semantic aliases (mirror ds/tokens/colors.css) */
   --brand-primary: var(--blue-200);
   --brand-signature: #ff7300; /* orange — logo/pop/illustration ONLY, never a button */
   --brand-ink: var(--grey-700);
+  --on-orange: var(
+    --grey-800
+  ); /* dark ink on a solid orange ground, ~6.8:1 (pw-x74x) */
   --focus-ring: var(--blue-200);
   /* Surfaces that flip in dark (light defaults). */
   --surface-card: #ffffff; /* solid card ground */

@@ -26,11 +26,21 @@ import spriteBurst from '../assets/images/sprites/03-sprite-burst.png';
 
 // v3 "who we are" pillar / core-value card-chip tints — mirrors Home's
 // `.card-chip` blob treatment (home-v3.html `.card.orange/.blue/.green`).
+//
+// pw-x74x: a low-alpha tint under the BASE hue fails WCAG 1.4.11 (3:1 for
+// non-text graphics) on orange/green/yellow — only blue passed, because it
+// alone used a darker ramp step as the foreground. Fix per canon
+// (rigs/perhitsocial/design_system/ds/tokens/colors.css):
+//   - green/yellow: keep the tint ground, darken the foreground to a ramp
+//     step that clears 3:1 (--green-300, DS --grey-700).
+//   - orange: no tint-ground ramp step clears 3:1 at any alpha, so orange
+//     switches to a SOLID --brand-signature ground with dark --on-orange
+//     ink (~6.8:1) instead of colored text on a tint.
 const chipTint: Record<string, string> = {
   blue: 'bg-primary-500/10 text-primary-600',
-  orange: 'bg-[rgba(255,115,0,0.12)] text-[#FF7300]',
-  green: 'bg-[rgba(1,166,82,0.12)] text-[#01A652]',
-  yellow: 'bg-[rgba(255,206,0,0.16)] text-[#B88A00]',
+  orange: 'bg-[var(--brand-signature)] text-[var(--on-orange)]',
+  green: 'bg-[rgba(1,166,82,0.12)] text-[var(--green-300)]',
+  yellow: 'bg-[rgba(255,206,0,0.16)] text-gray-800',
 };
 
 const AboutHeroSprites: React.FC = () => (
