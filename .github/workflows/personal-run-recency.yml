@@ -1,0 +1,21 @@
+name: Personal Repository Run Recency
+
+on:
+  schedule:
+    - cron: '13 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  detect-stale-success:
+    runs-on: [self-hosted, gt2]
+    if: github.repository == 'material-lab-io/Perhitsiksha-Website'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Fail if the personal repository has no success within 48 hours
+        run: node scripts/check-personal-run-recency.mjs
