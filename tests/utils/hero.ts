@@ -9,17 +9,28 @@ import type { Page } from '@playwright/test';
  * the revert, not a fixed sleep, since the animation duration isn't a
  * contract.
  *
+ * HeroEditorial exposes `data-hero-settled="true"` only after its timeline
+ * completes and SplitText is reverted. Waiting for that explicit lifecycle
+ * signal prevents an early poll from incorrectly treating the pre-effect DOM
+ * as settled. We retain the markup check as a second, independent invariant.
+ *
  * Under `prefers-reduced-motion: reduce` the split branch never runs at all
  * (see HeroEditorial's `gsap.matchMedia` guard), so this resolves
  * immediately for a reduced-motion context — prefer that context for visual
  * QA when animation itself isn't what's under test.
  */
-export async function waitForHeroSettle(page: Page, timeout = 3000): Promise<void> {
+export async function waitForHeroSettle(
+  page: Page,
+  timeout = 3000
+): Promise<void> {
   await page.waitForFunction(
     () => {
       const h1 = document.querySelector('h1.heading-1');
       if (!h1) return true;
-      return h1.querySelector('[aria-hidden="true"]') === null;
+      return (
+        h1.getAttribute('data-hero-settled') === 'true' &&
+        h1.querySelector('[aria-hidden="true"]') === null
+      );
     },
     undefined,
     { timeout }
@@ -40,10 +51,16 @@ export async function waitForHeroSettle(page: Page, timeout = 3000): Promise<voi
 export async function findMidWordBreaks(
   page: Page,
   selector = 'h1.heading-1'
-): Promise<{ ok: boolean; renderedLines: string[]; rejoined: string; expected: string }> {
-  return page.evaluate((sel) => {
+): Promise<{
+  ok: boolean;
+  renderedLines: string[];
+  rejoined: string;
+  expected: string;
+}> {
+  return page.evaluate(sel => {
     const el = document.querySelector(sel);
-    if (!el) return { ok: false, renderedLines: [], rejoined: '', expected: '' };
+    if (!el)
+      return { ok: false, renderedLines: [], rejoined: '', expected: '' };
 
     const expected = (el.textContent || '').replace(/\s+/g, ' ').trim();
 
@@ -77,6 +94,11 @@ export async function findMidWordBreaks(
     if (curText.trim()) lines.push(curText.trim());
 
     const rejoined = lines.join(' ').replace(/\s+/g, ' ').trim();
-    return { ok: rejoined === expected, renderedLines: lines, rejoined, expected };
+    return {
+      ok: rejoined === expected,
+      renderedLines: lines,
+      rejoined,
+      expected,
+    };
   }, selector);
 }

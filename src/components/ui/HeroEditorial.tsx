@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import type { HeroEditorialProps } from '../../types';
 import Button from './Button';
 import { gsap, useGSAP, SplitText } from '../../lib/gsap';
@@ -28,6 +28,7 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
   const rootRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const cascadeRef = useRef<HTMLDivElement>(null);
+  const [isTitleSettled, setIsTitleSettled] = useState(false);
 
   const accentIndex = accentWord ? title.indexOf(accentWord) : -1;
   const titlePrefix = accentIndex >= 0 ? title.slice(0, accentIndex) : title;
@@ -38,6 +39,13 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
+
+      // Visual assertions need a lifecycle signal, not an elapsed-time guess.
+      // The SplitText DOM is only temporary, but it can briefly change word
+      // wrapping; keep this false until that temporary markup has been
+      // reverted. Reduced-motion has no SplitText cascade and is settled
+      // immediately.
+      setIsTitleSettled(false);
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         const tl = gsap.timeline();
@@ -72,10 +80,19 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
         // left in place after the entrance plays, it can reflow a headline
         // with a break mid-word. Revert once the cascade finishes so the
         // heading returns to plain text for the rest of its life.
-        tl.eventCallback('onComplete', () => split?.revert());
+        tl.eventCallback('onComplete', () => {
+          split?.revert();
+          setIsTitleSettled(true);
+        });
 
         return () => split?.revert();
       });
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setIsTitleSettled(true);
+      }
+
+      return () => mm.revert();
     },
     { scope: rootRef, dependencies: [title, accentWord] }
   );
@@ -102,6 +119,7 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
       key={`${title}::${accentWord ?? ''}`}
       ref={titleRef}
       className="heading-1 text-gray-900 mb-4"
+      data-hero-settled={isTitleSettled ? 'true' : 'false'}
     >
       {titlePrefix}
       <span style={{ color: 'var(--brand-signature)' }}>{titleAccent}</span>
