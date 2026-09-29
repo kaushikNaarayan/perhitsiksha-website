@@ -551,7 +551,7 @@ const About: React.FC = () => {
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-primary-500/10 text-primary-600">
                 <Phone className="w-4 h-4" fill="currentColor" />
               </span>
-              +91 83175 80423
+              +91 95596 50934
             </span>
           </div>
         </div>

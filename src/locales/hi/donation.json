@@ -15,20 +15,19 @@
   "upi": {
     "title": "UPI से भुगतान करें",
     "pending": "UPI QR — प्रतीक्षित",
-    "note": "वास्तविक भुगतान विवरण जल्द आ रहे हैं। शुरू करने के लिए नीचे दिए गए बटन से हमें ईमेल करें।"
+    "note": "वास्तविक भुगतान विवरण जल्द आ रहे हैं। शुरू करने के लिए नीचे दिए गए बटन से हमें WhatsApp पर संदेश भेजें।"
   },
   "contact": {
-    "title": "ईमेल द्वारा योगदान करें",
-    "nameLabel": "आपका नाम (वैकल्पिक — ईमेल में शामिल होगा)",
+    "title": "WhatsApp से योगदान करें",
+    "nameLabel": "आपका नाम (वैकल्पिक — WhatsApp संदेश में शामिल होगा)",
     "namePlaceholder": "पूरा नाम",
-    "amountLabel": "मासिक राशि (₹) — वैकल्पिक, ईमेल में शामिल होगी",
-    "cta": "योगदान के लिए हमें ईमेल करें",
-    "caption": "यह आपका ईमेल ऐप खोलता है। कुछ भी अपने आप नहीं भेजा जाता।",
-    "addressFallback": "या सीधे हमें ईमेल करें: clsi.perhitsiksha@gmail.com",
-    "mailSubject": "योगदान संबंधी पूछताछ",
-    "mailBodyBoth": "नमस्ते, मैं {{name}} हूँ और मुझे Perhitsiksha में ₹{{amount}}/माह योगदान करना है।",
-    "mailBodyName": "नमस्ते, मैं {{name}} हूँ और मुझे Perhitsiksha में योगदान करना है।",
-    "mailBodyAmount": "नमस्ते, मुझे Perhitsiksha में ₹{{amount}}/माह योगदान करना है।",
-    "mailBodyNone": "नमस्ते, मुझे Perhitsiksha में योगदान करना है।"
+    "amountLabel": "मासिक राशि (₹) — वैकल्पिक, WhatsApp संदेश में शामिल होगी",
+    "cta": "WhatsApp पर संदेश भेजें",
+    "caption": "यह पहले से भरे संदेश के साथ WhatsApp खोलता है। संदेश आपको स्वयं भेजना होगा।",
+    "addressFallback": "या सीधे WhatsApp पर संदेश भेजें: +91 95596 50934",
+    "messageBodyBoth": "नमस्ते, मैं {{name}} हूँ और मुझे Perhitsiksha में ₹{{amount}}/माह योगदान करना है।",
+    "messageBodyName": "नमस्ते, मैं {{name}} हूँ और मुझे Perhitsiksha में योगदान करना है।",
+    "messageBodyAmount": "नमस्ते, मुझे Perhitsiksha में ₹{{amount}}/माह योगदान करना है।",
+    "messageBodyNone": "नमस्ते, मुझे Perhitsiksha में योगदान करना है।"
   }
 }

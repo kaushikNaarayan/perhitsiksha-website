@@ -15,20 +15,19 @@
   "upi": {
     "title": "Pay by UPI",
     "pending": "UPI QR — pending",
-    "note": "Real payment details are coming soon. Email us below to get started."
+    "note": "Real payment details are coming soon. Message us on WhatsApp below to get started."
   },
   "contact": {
-    "title": "Contribute by email",
-    "nameLabel": "Your name (optional — included in the email)",
+    "title": "Contribute on WhatsApp",
+    "nameLabel": "Your name (optional — included in the WhatsApp message)",
     "namePlaceholder": "Full name",
-    "amountLabel": "Monthly amount (₹) — optional, included in the email",
-    "cta": "Email us to contribute",
-    "caption": "Opens your email app. Nothing is sent automatically.",
-    "addressFallback": "Or email us directly at clsi.perhitsiksha@gmail.com",
-    "mailSubject": "Contribution enquiry",
-    "mailBodyBoth": "Hi, I'm {{name}} and I'd like to contribute ₹{{amount}}/month to Perhitsiksha.",
-    "mailBodyName": "Hi, I'm {{name}} and I'd like to contribute to Perhitsiksha.",
-    "mailBodyAmount": "Hi, I'd like to contribute ₹{{amount}}/month to Perhitsiksha.",
-    "mailBodyNone": "Hi, I'd like to contribute to Perhitsiksha."
+    "amountLabel": "Monthly amount (₹) — optional, included in the WhatsApp message",
+    "cta": "Message us on WhatsApp",
+    "caption": "Opens WhatsApp with a prefilled message. You need to send it yourself.",
+    "addressFallback": "Or message us directly on WhatsApp: +91 95596 50934",
+    "messageBodyBoth": "Hi, I'm {{name}} and I'd like to contribute ₹{{amount}}/month to Perhitsiksha.",
+    "messageBodyName": "Hi, I'm {{name}} and I'd like to contribute to Perhitsiksha.",
+    "messageBodyAmount": "Hi, I'd like to contribute ₹{{amount}}/month to Perhitsiksha.",
+    "messageBodyNone": "Hi, I'd like to contribute to Perhitsiksha."
   }
 }

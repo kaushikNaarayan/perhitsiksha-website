@@ -7,9 +7,10 @@ import {
   openDonationDrawer,
   DONATE_HREF,
 } from '../../context/DonationContext';
+import { trackWhatsAppClick } from '../../utils/analytics';
 
 const MIN_AMOUNT = 100;
-const DONATION_EMAIL = 'clsi.perhitsiksha@gmail.com';
+const WHATSAPP_NUMBER = '919559650934';
 
 interface DonationDrawerProps {
   /**
@@ -31,10 +32,10 @@ const DonationDrawer: React.FC<DonationDrawerProps> = ({ upiVpa }) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useFocusTrap<HTMLDivElement>(isOpen, close);
 
-  // Form state — both fields are optional, unvalidated mailto prefill.
+  // Form state — both fields are optional, unvalidated WhatsApp prefill.
   const [values, setValues] = useState({ name: '', amount: '' });
 
-  const mailtoHref = useMemo(() => {
+  const whatsappHref = useMemo(() => {
     const name = values.name.trim();
     const amountNum = Number(values.amount);
     const amount =
@@ -46,19 +47,16 @@ const DonationDrawer: React.FC<DonationDrawerProps> = ({ upiVpa }) => {
 
     const bodyKey =
       name && amount
-        ? 'contact.mailBodyBoth'
+        ? 'contact.messageBodyBoth'
         : name
-          ? 'contact.mailBodyName'
+          ? 'contact.messageBodyName'
           : amount
-            ? 'contact.mailBodyAmount'
-            : 'contact.mailBodyNone';
+            ? 'contact.messageBodyAmount'
+            : 'contact.messageBodyNone';
 
-    const subject = t('contact.mailSubject');
     const body = t(bodyKey, { name, amount });
 
-    return `mailto:${DONATION_EMAIL}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(body)}`;
   }, [values, t]);
 
   // ------------------------------------------------------------------
@@ -272,7 +270,7 @@ const DonationDrawer: React.FC<DonationDrawerProps> = ({ upiVpa }) => {
             </div>
           </div>
 
-          {/* ---------- Contact card — mailto composer ---------- */}
+          {/* ---------- Contact card — WhatsApp composer ---------- */}
           <div className="mt-5 space-y-4">
             <p className="text-sm font-semibold text-gray-900 dark:text-[#f2eeec]">
               {t('contact.title')}
@@ -316,7 +314,8 @@ const DonationDrawer: React.FC<DonationDrawerProps> = ({ upiVpa }) => {
             </div>
 
             <a
-              href={mailtoHref}
+              href={whatsappHref}
+              onClick={() => trackWhatsAppClick('donation_drawer')}
               className="shimmer-btn block w-full rounded-full bg-primary-500 px-6 py-3 text-center font-semibold text-white transition-colors hover:bg-primary-600"
             >
               {t('contact.cta')}

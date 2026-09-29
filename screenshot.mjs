@@ -70,7 +70,7 @@ for (const lang of ['en', 'hi']) {
     const urlAfter = page.url();
     results.push({ page: `about-${lang}-contributor`, urlBefore, urlAfter, navChanged: urlBefore !== urlAfter, consoleErrors: errs, popups: navs });
 
-    const phoneEl = page.getByText(/\+91 83175 80423/);
+    const phoneEl = page.getByText(/\+91 95596 50934/);
     await phoneEl.scrollIntoViewIfNeeded();
     await shot(page, `about-${lang}-get-in-touch`);
   });
