@@ -19,7 +19,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const DATA_FILE = path.join(__dirname, '..', 'src', 'data', 'facebook-events.json');
+// Tests may supply an isolated fixture. Production and the scheduled workflow
+// never set this, so they continue to validate the generated events file.
+const DATA_FILE =
+  process.env.EVENTS_DATA_FILE ||
+  path.join(__dirname, '..', 'src', 'data', 'facebook-events.json');
 const IMAGE_DIR = path.join(__dirname, '..', 'public', 'fb-events');
 
 // Accepts both full https:// URLs (video permalinks) and local /fb-events/ paths (downloaded images)
@@ -71,7 +75,9 @@ async function readEventsData() {
     return JSON.parse(content);
   } catch (error) {
     if (error.code === 'ENOENT') {
-      throw new Error(`Events data file not found: ${DATA_FILE}\nRun: npm run fetch:facebook`);
+      throw new Error(
+        `Events data file not found: ${DATA_FILE}\nRun: npm run fetch:facebook`
+      );
     }
     throw new Error(`Failed to read events data: ${error.message}`);
   }
@@ -90,7 +96,8 @@ function validateEventsStructure(events) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error('❌ Structure validation failed:\n');
-      error.errors.forEach((err) => {
+      const issues = error.issues || error.errors || [];
+      issues.forEach(err => {
         console.error(`  - ${err.path.join('.')}: ${err.message}`);
       });
     } else {
@@ -119,7 +126,9 @@ async function validateDataConsistency(events) {
         errors.push('Album event must have thumbnailImage');
       }
       if (event.mediaCount !== event.media?.length) {
-        errors.push(`mediaCount (${event.mediaCount}) doesn't match media array length (${event.media?.length})`);
+        errors.push(
+          `mediaCount (${event.mediaCount}) doesn't match media array length (${event.media?.length})`
+        );
       }
     } else if (event.mediaType === 'image') {
       if (!event.image) {
@@ -138,8 +147,12 @@ async function validateDataConsistency(events) {
     const localPaths = [
       event.image,
       event.thumbnailImage,
-      ...(event.media?.map(m => m.url).filter(u => u?.startsWith('/fb-events/')) ?? []),
-      ...(event.media?.map(m => m.thumbnail).filter(t => t?.startsWith('/fb-events/')) ?? []),
+      ...(event.media
+        ?.map(m => m.url)
+        .filter(u => u?.startsWith('/fb-events/')) ?? []),
+      ...(event.media
+        ?.map(m => m.thumbnail)
+        .filter(t => t?.startsWith('/fb-events/')) ?? []),
     ].filter(Boolean);
 
     for (const imgPath of localPaths) {
@@ -155,7 +168,7 @@ async function validateDataConsistency(events) {
     if (errors.length > 0) {
       hasErrors = true;
       console.error(`\n❌ Event "${event.title}" (${event.id}):`);
-      errors.forEach((err) => console.error(`  - ${err}`));
+      errors.forEach(err => console.error(`  - ${err}`));
     }
   }
 
@@ -200,7 +213,7 @@ function validateUrls(events) {
     if (errors.length > 0) {
       hasErrors = true;
       console.error(`\n❌ Event "${event.title}" (${event.id}):`);
-      errors.forEach((err) => console.error(`  - ${err}`));
+      errors.forEach(err => console.error(`  - ${err}`));
     }
   }
 
@@ -245,31 +258,48 @@ function validatePiiDenylist(events) {
   const violations = [];
 
   for (const event of events) {
-    if (BLOCKED_EVENT_IDS.has(event.id)) {
-      violations.push(`Event "${event.id}" is on the PII denylist and must not be published.`);
+    // This check deliberately accepts partially malformed source objects. The
+    // denylist must still win over a later schema or consistency failure.
+    const eventId = typeof event?.id === 'string' ? event.id : '<unknown>';
+
+    if (BLOCKED_EVENT_IDS.has(eventId)) {
+      violations.push(
+        `Event "${eventId}" is on the PII denylist and must not be published.`
+      );
     }
 
     const paths = [
-      event.image,
-      event.thumbnailImage,
-      ...(event.media?.map((m) => m.url) ?? []),
-      ...(event.media?.map((m) => m.thumbnail) ?? []),
+      event?.image,
+      event?.thumbnailImage,
+      ...(Array.isArray(event?.media)
+        ? event.media.flatMap(media => [media?.url, media?.thumbnail])
+        : []),
     ].filter(Boolean);
 
     for (const p of paths) {
       const filename = String(p).split('/').pop();
       if (BLOCKED_IMAGE_FILES.has(filename)) {
-        violations.push(`Event "${event.id}" references denylisted image ${filename}.`);
+        violations.push(
+          `Event "${eventId}" references denylisted image ${filename}.`
+        );
       }
     }
   }
 
   if (violations.length > 0) {
-    console.error('\n\u274c PII DENYLIST VIOLATION \u2014 refusing to publish.');
-    violations.forEach((v) => console.error(`  - ${v}`));
-    console.error('\nThese items contain a minor\'s identity documents. The sync has been');
-    console.error('stopped on purpose. Remove them at the Facebook source, then update the');
-    console.error('denylist in this file. See bead pw-ky2 before changing anything here.');
+    console.error(
+      '\n\u274c PII DENYLIST VIOLATION \u2014 refusing to publish.'
+    );
+    violations.forEach(v => console.error(`  - ${v}`));
+    console.error(
+      "\nThese items contain a minor's identity documents. The sync has been"
+    );
+    console.error(
+      'stopped on purpose. Remove them at the Facebook source, then update the'
+    );
+    console.error(
+      'denylist in this file. See bead pw-ky2 before changing anything here.'
+    );
     return false;
   }
 
@@ -287,10 +317,10 @@ function printSummary(events) {
 
   const stats = {
     total: events.length,
-    albums: events.filter((e) => e.mediaType === 'album').length,
-    images: events.filter((e) => e.mediaType === 'image').length,
-    videos: events.filter((e) => e.mediaType === 'video').length,
-    text: events.filter((e) => e.mediaType === 'text').length,
+    albums: events.filter(e => e.mediaType === 'album').length,
+    images: events.filter(e => e.mediaType === 'image').length,
+    videos: events.filter(e => e.mediaType === 'video').length,
+    text: events.filter(e => e.mediaType === 'text').length,
   };
 
   console.log(`Total events: ${stats.total}`);
@@ -306,6 +336,9 @@ function printSummary(events) {
  */
 async function main() {
   console.log('🔍 Facebook Events Data Validation\n');
+  // If a later validator cannot inspect malformed input, retain a denylist
+  // trip already found above. Exit 2 is a workflow safety contract.
+  let piiClean = true;
 
   try {
     const events = await readEventsData();
@@ -314,10 +347,13 @@ async function main() {
       throw new Error('Events data is empty or not an array');
     }
 
+    // The denylist is a safety boundary, not a presentation/schema check. Run
+    // it first so malformed source data containing blocked material still
+    // receives exit code 2 and the workflow's PII route.
+    piiClean = validatePiiDenylist(events);
     const structureValid = validateEventsStructure(events);
     const consistencyValid = await validateDataConsistency(events);
     const urlsValid = validateUrls(events);
-    const piiClean = validatePiiDenylist(events);
 
     printSummary(events);
 
@@ -335,7 +371,7 @@ async function main() {
     process.exit(piiClean ? 1 : 2);
   } catch (error) {
     console.error('\n❌ Error:', error.message);
-    process.exit(1);
+    process.exit(piiClean ? 1 : 2);
   }
 }
 
