@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import VideoModal from './VideoModal';
-import { prefersReducedMotion } from '../../lib/gsap';
+import BlurImage from './BlurImage';
+import { gsap, prefersReducedMotion, useGSAP } from '../../lib/gsap';
 
 interface CelebrityEndorsement {
   id: string;
@@ -20,6 +21,186 @@ const GHOST_CLICK_THRESHOLD = 5; // Minimum drag distance (px) to prevent click
 const MOMENTUM_DECAY_RATE = 0.95; // Decay factor for smooth deceleration
 const AUTO_SCROLL_VELOCITY = -1; // Default auto-scroll speed
 const VELOCITY_THRESHOLD = 0.5; // Minimum velocity to apply momentum
+
+const getYouTubeShortThumbnail = (
+  videoId: string,
+  quality: 'sddefault' | 'hqdefault' | 'default' = 'sddefault'
+) => `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
+
+interface CelebrityVideoCardProps {
+  celebrity: CelebrityEndorsement;
+  isClone: boolean;
+  isDragging: boolean;
+  modalIsOpen: boolean;
+  onPlay: (celebrity: CelebrityEndorsement) => void;
+}
+
+const CelebrityVideoCard: React.FC<CelebrityVideoCardProps> = ({
+  celebrity,
+  isClone,
+  isDragging,
+  modalIsOpen,
+  onPlay,
+}) => {
+  const { t: tCelebrity } = useTranslation('celebrity');
+  const { t: tCommon } = useTranslation('common');
+  const mediaButtonRef = useRef<HTMLButtonElement>(null);
+  const cursorRef = useRef<HTMLSpanElement>(null);
+  const [thumbnailQuality, setThumbnailQuality] = useState<
+    'sddefault' | 'hqdefault' | 'default' | 'unavailable'
+  >('sddefault');
+  const endorsementAlt = tCelebrity('endorsementAlt', { name: celebrity.name });
+
+  useGSAP(
+    () => {
+      const mediaButton = mediaButtonRef.current;
+      const cursor = cursorRef.current;
+      if (!mediaButton || !cursor) return;
+
+      const media = gsap.matchMedia();
+      media.add(
+        '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+        () => {
+          const xTo = gsap.quickTo(cursor, 'x', {
+            duration: 0.18,
+            ease: 'power3.out',
+          });
+          const yTo = gsap.quickTo(cursor, 'y', {
+            duration: 0.18,
+            ease: 'power3.out',
+          });
+          const hide = () => {
+            gsap.to(cursor, {
+              autoAlpha: 0,
+              scale: 0.86,
+              duration: 0.16,
+              ease: 'power3.out',
+              overwrite: true,
+            });
+          };
+          const show = () => {
+            if (isDragging || modalIsOpen) return;
+            gsap.to(cursor, {
+              autoAlpha: 1,
+              scale: 1,
+              duration: 0.16,
+              ease: 'power3.out',
+              overwrite: true,
+            });
+          };
+          const move = (event: PointerEvent) => {
+            const bounds = mediaButton.getBoundingClientRect();
+            xTo(event.clientX - bounds.left - 38);
+            yTo(event.clientY - bounds.top - 38);
+          };
+
+          gsap.set(cursor, { autoAlpha: 0, scale: 0.86 });
+          mediaButton.addEventListener('pointerenter', show);
+          mediaButton.addEventListener('pointermove', move);
+          mediaButton.addEventListener('pointerleave', hide);
+          mediaButton.addEventListener('pointerdown', hide);
+          mediaButton.addEventListener('pointercancel', hide);
+          mediaButton.addEventListener('focus', hide);
+
+          return () => {
+            mediaButton.removeEventListener('pointerenter', show);
+            mediaButton.removeEventListener('pointermove', move);
+            mediaButton.removeEventListener('pointerleave', hide);
+            mediaButton.removeEventListener('pointerdown', hide);
+            mediaButton.removeEventListener('pointercancel', hide);
+            mediaButton.removeEventListener('focus', hide);
+          };
+        }
+      );
+
+      return () => media.revert();
+    },
+    { dependencies: [isDragging, modalIsOpen], scope: mediaButtonRef }
+  );
+
+  const handleImageError = () => {
+    setThumbnailQuality(current => {
+      if (current === 'sddefault') return 'hqdefault';
+      if (current === 'hqdefault') return 'default';
+      return 'unavailable';
+    });
+  };
+
+  return (
+    <div className="flex-none w-64" aria-hidden={isClone || undefined}>
+      <div className="pb-1.5 text-center">
+        <h3 className="mb-0.5 text-base font-semibold text-[color:var(--ink-strong)] sm:text-lg">
+          {celebrity.name}
+        </h3>
+        <p className="text-xs text-[color:var(--ink-body)] sm:text-sm">
+          {celebrity.profession}
+        </p>
+      </div>
+
+      <div
+        className="relative w-full overflow-hidden rounded-xl bg-[color:var(--surface-muted)] shadow-lg"
+        style={{ aspectRatio: '9 / 16' }}
+      >
+        <button
+          ref={mediaButtonRef}
+          type="button"
+          tabIndex={isClone ? -1 : 0}
+          aria-label={`${tCommon('carousel.playVideo')} — ${celebrity.name}`}
+          className="play-cursor-target group relative h-full w-full cursor-pointer touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--surface-page)]"
+          onClick={() => onPlay(celebrity)}
+        >
+          {thumbnailQuality === 'unavailable' ? (
+            <span
+              role="img"
+              aria-label={endorsementAlt}
+              className="absolute inset-0 bg-[color:var(--surface-muted)]"
+            />
+          ) : (
+            <BlurImage
+              src={getYouTubeShortThumbnail(
+                celebrity.videoId,
+                thumbnailQuality
+              )}
+              alt={endorsementAlt}
+              width={256}
+              height={455}
+              className="h-full w-full object-cover"
+              onError={handleImageError}
+            />
+          )}
+
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 transition-all duration-200 group-hover:bg-black/40"
+          >
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--surface-page)]/90 transition-transform duration-200 group-hover:scale-110">
+              <svg
+                className="ml-1 h-8 w-8 text-[color:var(--brand-ink)]"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+          </span>
+
+          <span className="absolute right-3 top-3 z-20 rounded bg-black/70 px-2 py-1 text-xs text-white">
+            {tCelebrity('shortsLabel')}
+          </span>
+
+          <span
+            ref={cursorRef}
+            aria-hidden="true"
+            role="presentation"
+            className="pointer-events-none invisible absolute left-0 top-0 z-30 flex h-[76px] w-[76px] scale-[0.86] items-center justify-center rounded-[var(--radius-pill)] border-2 border-[color:var(--surface-page-light)] bg-[color:var(--brand-signature)] text-base font-bold leading-none text-[color:var(--on-orange)] opacity-0 shadow-lg"
+          >
+            {tCommon('carousel.play')}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   endorsements,
@@ -291,11 +472,6 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
     targetVelocityRef.current = restVelocity;
   };
 
-  const getYouTubeShortThumbnail = (videoId: string) => {
-    // YouTube Shorts thumbnails - use sddefault for better Shorts compatibility
-    return `https://img.youtube.com/vi/${videoId}/sddefault.jpg`;
-  };
-
   return (
     <div className="relative overflow-hidden select-none">
       {/* Carousel Container */}
@@ -325,68 +501,14 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
           }}
         >
           {duplicatedEndorsements.map((celebrity, index) => (
-            <div key={`${celebrity.id}-${index}`} className="flex-none w-64">
-              {/* Celebrity Info */}
-              <div className="pb-1.5 text-center">
-                <h3 className="font-semibold text-gray-900 text-base sm:text-lg mb-0.5">
-                  {celebrity.name}
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  {celebrity.profession}
-                </p>
-              </div>
-
-              {/* Video Container - Portrait aspect ratio */}
-              <div
-                className="relative w-full bg-gray-900 rounded-xl overflow-hidden shadow-lg"
-                style={{ aspectRatio: '9/16' }}
-              >
-                {/* Video thumbnail with play button */}
-                <div
-                  className="relative w-full h-full cursor-pointer group"
-                  onClick={() => handleVideoPlay(celebrity)}
-                >
-                  {/* Thumbnail */}
-                  <img
-                    src={getYouTubeShortThumbnail(celebrity.videoId)}
-                    alt={t('endorsementAlt', { name: celebrity.name })}
-                    className="w-full h-full object-cover"
-                    onError={e => {
-                      // Fallback chain: sddefault → hqdefault → default → prevent further errors
-                      const target = e.target as HTMLImageElement;
-                      if (target.src.includes('sddefault')) {
-                        target.src = `https://img.youtube.com/vi/${celebrity.videoId}/hqdefault.jpg`;
-                      } else if (target.src.includes('hqdefault')) {
-                        target.src = `https://img.youtube.com/vi/${celebrity.videoId}/default.jpg`;
-                      } else {
-                        // Prevent infinite error loop
-                        target.onerror = null;
-                      }
-                    }}
-                  />
-
-                  {/* Overlay with play button */}
-                  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all duration-200">
-                    <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                      <svg
-                        className="w-8 h-8 text-gray-800 ml-1"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* YouTube Shorts indicator */}
-                  <div className="absolute top-3 right-3">
-                    <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-                      {t('shortsLabel')}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <CelebrityVideoCard
+              key={`${celebrity.id}-${index}`}
+              celebrity={celebrity}
+              isClone={index >= endorsements.length}
+              isDragging={cursorState === 'grabbing'}
+              modalIsOpen={modalVideo.isOpen}
+              onPlay={handleVideoPlay}
+            />
           ))}
         </div>
       </div>

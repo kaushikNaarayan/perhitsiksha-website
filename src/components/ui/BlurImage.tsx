@@ -26,10 +26,11 @@ const BlurImage: React.FC<BlurImageProps> = ({
   // Cached images may have already fired `load` before React attached the
   // handler — reconcile from `complete` on mount so they don't stay hidden.
   useEffect(() => {
+    setLoaded(false);
     if (ref.current?.complete && ref.current.naturalWidth > 0) {
       setLoaded(true);
     }
-  }, []);
+  }, [rest.src]);
 
   return (
     <img

@@ -15,6 +15,7 @@
   --blue-400: #0000db; /* shadow only */
   /* Warm ground + ink */
   --surface-page: #f9f4f2;
+  --surface-page-light: #f9f4f2; /* fixed warm-white edge for brand objects */
   --white: #ffffff;
   --grey-700: #2d2c2b;
   --grey-800: #141313; /* deepest ink — illustration faces, on-orange/on-yellow/on-green text (pw-x74x) */
@@ -121,6 +122,19 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* The decorative media cursor is strictly a fine-pointer enhancement. The
+   button remains the only hit target; keyboard, touch, and reduced-motion
+   users retain their native cursor and the visible focus ring. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .play-cursor-target {
+    cursor: none;
+  }
+
+  .play-cursor-target:focus-visible {
+    cursor: auto;
   }
 }
 
