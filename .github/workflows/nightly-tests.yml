@@ -8,6 +8,8 @@ on:
 jobs:
   comprehensive-testing:
     runs-on: [self-hosted, gt2]
+    # Bound a wedged self-hosted job while leaving normal nightly headroom.
+    timeout-minutes: 20
     if: github.repository == 'material-lab-io/Perhitsiksha-Website'
 
     steps:
@@ -65,6 +67,7 @@ jobs:
 
   performance-testing:
     runs-on: [self-hosted, gt2]
+    timeout-minutes: 20
     needs: [comprehensive-testing]
     # Serialized after comprehensive-testing so cache-heavy setup-node jobs
     # never extract npm caches concurrently on the shared gt2 host (pw-ouer).
@@ -137,6 +140,7 @@ jobs:
 
   accessibility-audit:
     runs-on: [self-hosted, gt2]
+    timeout-minutes: 20
     needs: [performance-testing]
     # Serialized after performance-testing so cache-heavy setup-node jobs
     # never extract npm caches concurrently on the shared gt2 host (pw-ouer).
@@ -206,6 +210,7 @@ jobs:
 
   dependency-audit:
     runs-on: [self-hosted, gt2]
+    timeout-minutes: 20
     needs: [accessibility-audit]
     # Serialized after accessibility-audit so cache-heavy setup-node jobs
     # never extract npm caches concurrently on the shared gt2 host (pw-ouer).
@@ -247,6 +252,7 @@ jobs:
 
   api-integration-tests:
     runs-on: [self-hosted, gt2]
+    timeout-minutes: 20
     if: github.repository == 'material-lab-io/Perhitsiksha-Website'
 
     steps:
@@ -264,6 +270,7 @@ jobs:
 
   facebook-token-check:
     runs-on: [self-hosted, gt2]
+    timeout-minutes: 20
     if: github.repository == 'material-lab-io/Perhitsiksha-Website'
     permissions:
       issues: write
@@ -401,6 +408,7 @@ jobs:
 
   notification:
     runs-on: [self-hosted, gt2]
+    timeout-minutes: 20
     needs: [comprehensive-testing, performance-testing, accessibility-audit, dependency-audit, api-integration-tests, facebook-token-check]
     if: github.repository == 'material-lab-io/Perhitsiksha-Website' && failure()
 
