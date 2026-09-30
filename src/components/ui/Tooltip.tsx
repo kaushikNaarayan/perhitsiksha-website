@@ -1,35 +1,33 @@
-import React, { useId, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { gsap, useGSAP, prefersReducedMotion } from '../../lib/gsap';
+import { gsap, prefersReducedMotion } from '../../lib/gsap';
 
 interface TooltipProps {
-  /** Bubble content. */
   content: React.ReactNode;
-  /**
-   * Trigger element. When omitted, a small circular info-icon button is
-   * rendered as the trigger.
-   */
   children?: React.ReactNode;
-  /** Accessible label for the default icon trigger. */
   label?: string;
-  /**
-   * When true (and on a hover-capable, non-reduced-motion device) the bubble
-   * follows the pointer via GSAP. Otherwise it is statically positioned above
-   * the trigger.
-   */
   followCursor?: boolean;
-  /** Extra classes on the inline-flex wrapper. */
   className?: string;
 }
 
-/**
- * Lightweight, accessible tooltip.
- *
- * - Trigger is keyboard-focusable; the bubble is linked via aria-describedby.
- * - Shows on hover + focus, hides on leave / blur / Escape.
- * - Bubble animates in/out with GSAP (scale/opacity); reduced-motion => instant.
- * - `followCursor` tracks the pointer with gsap.quickTo, gated to hover devices.
- */
+const VIEWPORT_GUTTER = 16;
+const TRIGGER_GAP = 8;
+const MAX_WIDTH = 224;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), Math.max(min, max));
+
+type Position = { left: number; top: number; width: number };
+
+/** Viewport-clamped tooltip that never contributes to document width. */
 const Tooltip: React.FC<TooltipProps> = ({
   content,
   children,
@@ -39,132 +37,180 @@ const Tooltip: React.FC<TooltipProps> = ({
 }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState<Position | null>(null);
   const wrapperRef = useRef<HTMLSpanElement>(null);
   const bubbleRef = useRef<HTMLSpanElement>(null);
   const rawId = useId().replace(/:/g, '');
   const bubbleId = `tt-${rawId}`;
-
-  // GSAP quickTo setters for the follow-cursor variant (created once).
-  const posRef = useRef<{
-    x?: (v: number) => void;
-    y?: (v: number) => void;
-  }>({});
-
   const canFollow =
     followCursor &&
     typeof window !== 'undefined' &&
     window.matchMedia('(hover: hover)').matches &&
     !prefersReducedMotion();
+  const canHover =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(hover: hover)').matches;
 
-  useGSAP(
-    () => {
+  const place = useCallback(
+    (pointer?: { clientX: number; clientY: number }) => {
       const bubble = bubbleRef.current;
-      if (!bubble) return;
+      const trigger = wrapperRef.current;
+      if (!bubble || !trigger) return;
 
-      if (canFollow) {
-        posRef.current.x = gsap.quickTo(bubble, 'x', {
-          duration: 0.2,
-          ease: 'power2.out',
-        });
-        posRef.current.y = gsap.quickTo(bubble, 'y', {
-          duration: 0.2,
-          ease: 'power2.out',
-        });
-      }
+      const width = Math.min(
+        MAX_WIDTH,
+        window.innerWidth - VIEWPORT_GUTTER * 2
+      );
+      // offsetHeight deliberately ignores GSAP's entrance scale, so the final
+      // 1x bubble remains inside the same gutter used for placement.
+      const height = bubble.offsetHeight;
+      const maxLeft = window.innerWidth - VIEWPORT_GUTTER - width;
+      const maxTop = window.innerHeight - VIEWPORT_GUTTER - height;
+      let preferredLeft: number;
+      let preferredTop: number;
 
-      const reduce = prefersReducedMotion();
-      if (open) {
-        if (reduce) {
-          gsap.set(bubble, { autoAlpha: 1, scale: 1 });
-        } else {
-          gsap.fromTo(
-            bubble,
-            { autoAlpha: 0, scale: 0.9 },
-            { autoAlpha: 1, scale: 1, duration: 0.2, ease: 'spring' }
-          );
-        }
+      if (pointer && canFollow) {
+        preferredLeft = pointer.clientX + TRIGGER_GAP;
+        preferredTop = pointer.clientY - TRIGGER_GAP - height;
+        if (preferredTop < VIEWPORT_GUTTER)
+          preferredTop = pointer.clientY + TRIGGER_GAP;
       } else {
-        if (reduce) {
-          gsap.set(bubble, { autoAlpha: 0 });
-        } else {
-          gsap.to(bubble, {
-            autoAlpha: 0,
-            scale: 0.9,
-            duration: 0.15,
-            ease: 'power2.in',
-          });
-        }
+        const triggerRect = trigger.getBoundingClientRect();
+        preferredLeft = triggerRect.left + triggerRect.width / 2 - width / 2;
+        preferredTop = triggerRect.top - TRIGGER_GAP - height;
+        if (preferredTop < VIEWPORT_GUTTER)
+          preferredTop = triggerRect.bottom + TRIGGER_GAP;
       }
+
+      setPosition({
+        left: clamp(preferredLeft, VIEWPORT_GUTTER, maxLeft),
+        top: clamp(preferredTop, VIEWPORT_GUTTER, maxTop),
+        width,
+      });
     },
-    { scope: wrapperRef, dependencies: [open, canFollow] }
+    [canFollow]
   );
 
-  const handleMove = (e: React.MouseEvent) => {
-    if (!canFollow) return;
-    const wrap = wrapperRef.current;
-    if (!wrap) return;
-    const r = wrap.getBoundingClientRect();
-    // Position relative to the wrapper; offset up-and-right of the pointer.
-    posRef.current.x?.(e.clientX - r.left + 14);
-    posRef.current.y?.(e.clientY - r.top - 14);
+  useLayoutEffect(() => {
+    if (!open) {
+      setPosition(null);
+      return;
+    }
+    place();
+  }, [open, place]);
+
+  useEffect(() => {
+    if (!open) return;
+    const reposition = () => place();
+    const observer = new ResizeObserver(reposition);
+    if (bubbleRef.current) observer.observe(bubbleRef.current);
+    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, true);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition, true);
+    };
+  }, [open, place]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (
+        !wrapperRef.current?.contains(target) &&
+        !bubbleRef.current?.contains(target)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [open]);
+
+  useEffect(() => {
+    const bubble = bubbleRef.current;
+    if (!open || !bubble || !position) return;
+    if (prefersReducedMotion()) {
+      gsap.set(bubble, { autoAlpha: 1, scale: 1 });
+      return;
+    }
+    gsap.fromTo(
+      bubble,
+      { autoAlpha: 0, scale: 0.9 },
+      {
+        autoAlpha: 1,
+        scale: 1,
+        duration: 0.2,
+        ease: 'spring',
+      }
+    );
+  }, [open, position]);
+
+  const handleMove = (event: React.MouseEvent) => {
+    if (canFollow) place(event);
+  };
+  const onTouchTrigger = (event: React.PointerEvent) => {
+    if (event.pointerType !== 'mouse') setOpen(current => !current);
   };
 
-  const show = () => setOpen(true);
-  const hide = () => setOpen(false);
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') setOpen(false);
-  };
-
-  // Static positioning (default / non-follow): centered above the trigger.
-  const staticPos = canFollow
-    ? { left: 0, top: 0 }
-    : {
-        left: '50%',
-        bottom: 'calc(100% + 8px)',
-        transform: 'translateX(-50%)',
-      };
+  const trigger = children ? (
+    <span
+      tabIndex={0}
+      aria-describedby={open ? bubbleId : undefined}
+      onPointerDown={onTouchTrigger}
+      className="inline-flex cursor-help outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 rounded"
+    >
+      {children}
+    </span>
+  ) : (
+    <button
+      type="button"
+      aria-label={label || t('tooltip.moreInfo')}
+      aria-describedby={open ? bubbleId : undefined}
+      onPointerDown={onTouchTrigger}
+      className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-primary-300 text-primary-600 text-xs font-bold leading-none hover:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1"
+    >
+      i
+    </button>
+  );
 
   return (
     <span
       ref={wrapperRef}
       className={`relative inline-flex items-center ${className}`}
-      onMouseEnter={show}
-      onMouseLeave={hide}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => {
+        if (canHover) setOpen(false);
+      }}
       onMouseMove={handleMove}
-      onFocus={show}
-      onBlur={hide}
-      onKeyDown={onKeyDown}
+      onFocus={() => setOpen(true)}
+      onBlur={() => setOpen(false)}
+      onKeyDown={event => {
+        if (event.key === 'Escape') setOpen(false);
+      }}
     >
-      {children ? (
-        <span
-          tabIndex={0}
-          aria-describedby={open ? bubbleId : undefined}
-          className="inline-flex cursor-help outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 rounded"
-        >
-          {children}
-        </span>
-      ) : (
-        <button
-          type="button"
-          aria-label={label || t('tooltip.moreInfo')}
-          aria-describedby={open ? bubbleId : undefined}
-          className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-primary-300 text-primary-600 text-xs font-bold leading-none hover:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1"
-        >
-          i
-        </button>
-      )}
-
-      <span
-        ref={bubbleRef}
-        id={bubbleId}
-        role="tooltip"
-        className={`pointer-events-none absolute z-modal w-56 rounded-lg bg-gray-900 px-3 py-2 text-xs font-normal leading-snug text-white shadow-xl ${
-          canFollow ? '' : 'text-center'
-        }`}
-        style={{ ...staticPos, opacity: 0, visibility: 'hidden' }}
-      >
-        {content}
-      </span>
+      {trigger}
+      {open &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <span
+            ref={bubbleRef}
+            id={bubbleId}
+            role="tooltip"
+            className={`pointer-events-none fixed z-modal rounded-lg bg-gray-900 px-3 py-2 text-xs font-normal leading-snug text-white shadow-xl ${canFollow ? '' : 'text-center'}`}
+            style={{
+              left: position?.left ?? VIEWPORT_GUTTER,
+              top: position?.top ?? VIEWPORT_GUTTER,
+              width: position?.width ?? MAX_WIDTH,
+              opacity: position ? undefined : 0,
+              visibility: position ? 'visible' : 'hidden',
+            }}
+          >
+            {content}
+          </span>,
+          document.body
+        )}
     </span>
   );
 };
