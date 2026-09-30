@@ -122,7 +122,7 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
       data-hero-settled={isTitleSettled ? 'true' : 'false'}
     >
       {titlePrefix}
-      <span style={{ color: 'var(--brand-signature)' }}>{titleAccent}</span>
+      <span className="hero-signature-mark">{titleAccent}</span>
       {titleSuffix}
     </h1>
   );
@@ -172,7 +172,7 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
             )}
 
             {primaryCTA && taxNote && (
-              <p className="text-xs text-gray-500 mb-6">{taxNote}</p>
+              <p className="hero-tax-note text-xs mb-6">{taxNote}</p>
             )}
 
             {stats && stats.length > 0 && (
@@ -238,7 +238,7 @@ const HeroEditorial: React.FC<HeroEditorialProps> = ({
             )}
 
             {primaryCTA && taxNote && (
-              <p className="text-xs text-gray-500 mb-6">{taxNote}</p>
+              <p className="hero-tax-note text-xs mb-6">{taxNote}</p>
             )}
 
             {stats && stats.length > 0 && (

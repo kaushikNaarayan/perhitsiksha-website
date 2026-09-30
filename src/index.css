@@ -125,6 +125,23 @@
   }
 }
 
+/* HeroEditorial's orange remains a signature decoration, never foreground
+   text. The component class intentionally scopes this treatment so the
+   canonical token is not redefined for any other component. */
+.hero-signature-mark {
+  color: var(--ink-strong);
+  text-decoration-line: underline;
+  text-decoration-color: var(--brand-signature);
+  text-decoration-thickness: max(3px, 0.08em);
+  text-underline-offset: 0.12em;
+  text-decoration-skip-ink: auto;
+}
+
+/* The 80G trust note is normal-sized text, so it needs semantic body ink. */
+.hero-tax-note {
+  color: var(--ink-body);
+}
+
 /* The decorative media cursor is strictly a fine-pointer enhancement. The
    button remains the only hit target; keyboard, touch, and reduced-motion
    users retain their native cursor and the visible focus ring. */
