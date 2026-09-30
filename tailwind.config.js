@@ -105,11 +105,11 @@ export default {
         media: 'var(--radius-media)', // 16px — images / inputs / chips
         overlay: 'var(--radius-2xl)', // 24px — modals / drawers / popovers ONLY
       },
-      // Hard-block shadow bridge (pe-bta round 1, audit pe-702 gap #1) — the
-      // plain `shadow-sm/md/lg/xl` utilities now resolve to the canonical DS
-      // effects.css tokens (flat 0-blur underline at rest, soft lift on
-      // elevation/hover) instead of Tailwind's default blurred shadows, so
-      // every existing shadow-* usage across the app inherits conformance.
+      // Canonical shadow bridge (pe-bta round 1, audit pe-702 gap #1) — the
+      // plain `shadow-sm/md/lg/xl` utilities resolve to the canonical DS
+      // effects.css roles: crisp underlines at rest; intentionally blurred lift
+      // tokens for elevation/hover. Existing shadow-* utilities therefore
+      // inherit conformance without replacing the DS blur.
       boxShadow: {
         sm: 'var(--shadow-sm)',
         DEFAULT: 'var(--shadow-md)',
