@@ -151,7 +151,7 @@ const About: React.FC = () => {
               <StatBand
                 className="max-w-sm mx-auto"
                 numberClassName="text-white"
-                labelClassName="text-white/85"
+                labelClassName="text-white"
                 items={[
                   {
                     display: '450+',
