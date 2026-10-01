@@ -54,18 +54,36 @@ function contrastRatio(foreground: string, background: string) {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
-async function openAbout(page: Page, locale: Locale, theme: Theme) {
-  await page.goto('/about');
-  await page.evaluate(
+async function seedAboutBeforeBoot(page: Page, locale: Locale, theme: Theme) {
+  await page.addInitScript(
     ({ nextLocale, nextTheme }) => {
-      window.localStorage.setItem('perhit-lang', nextLocale);
-      window.localStorage.setItem('perhit-theme', nextTheme);
+      localStorage.setItem('perhit-lang', nextLocale);
+      localStorage.setItem('perhit-theme', nextTheme);
     },
     { nextLocale: locale, nextTheme: theme }
   );
-  await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('lang', locale);
-  await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+  await page.goto('/about');
+}
+
+async function expectAboutBootState(
+  page: Page,
+  locale: Locale,
+  theme: Theme
+) {
+  const html = page.locator('html');
+  await expect(html, `About boot locale mismatch: expected ${locale}`).toHaveAttribute(
+    'lang',
+    locale
+  );
+  await expect(html, `About boot theme mismatch: expected ${theme}`).toHaveAttribute(
+    'data-theme',
+    theme
+  );
+}
+
+async function openAbout(page: Page, locale: Locale, theme: Theme) {
+  await seedAboutBeforeBoot(page, locale, theme);
+  await expectAboutBootState(page, locale, theme);
   await waitForHeroSettle(page);
 }
 
@@ -97,6 +115,16 @@ async function colorsFor(page: Page, theme: Theme) {
 }
 
 test.describe('About callout contrast contract', () => {
+  test('negative control: a wrong pre-boot theme is rejected by the boot contract', async ({
+    page,
+  }) => {
+    await seedAboutBeforeBoot(page, 'en', 'light');
+    await expectAboutBootState(page, 'en', 'light');
+    await expect(expectAboutBootState(page, 'en', 'dark')).rejects.toThrow(
+      'About boot theme mismatch: expected dark'
+    );
+  });
+
   for (const cell of CELLS) {
     test(`${cell.locale}/${cell.theme}/${cell.viewport.width} uses the approved local ink mapping`, async ({
       page,

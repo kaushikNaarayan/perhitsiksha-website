@@ -289,7 +289,46 @@ jobs:
           echo "::error::deliberately failing Playwright spec was not rejected"
           exit 1
         fi
-        node scripts/verify-playwright-results.mjs negative-control-results.json
+        node --input-type=module -e '
+          import { readFile } from "node:fs/promises";
+          let results;
+          try {
+            results = JSON.parse(await readFile("negative-control-results.json", "utf8"));
+          } catch (error) {
+            console.error(`::error::negative control results are missing or invalid: ${error.message}`);
+            process.exit(1);
+          }
+          const stats = results.stats ?? {};
+          const expected = Number(stats.expected);
+          const unexpected = Number(stats.unexpected);
+          const flaky = Number(stats.flaky);
+          const skipped = Number(stats.skipped);
+          const total = expected + unexpected + flaky + skipped;
+          if (
+            ![expected, unexpected, flaky, skipped].every(Number.isSafeInteger) ||
+            expected !== 0 ||
+            unexpected !== 1 ||
+            flaky !== 0 ||
+            skipped !== 0 ||
+            total !== 1
+          ) {
+            console.error(`::error::negative control had wrong result polarity: ${JSON.stringify(stats)}`);
+            process.exit(1);
+          }
+        '
+        set +e
+        VERIFIER_OUTPUT="$(node scripts/verify-playwright-results.mjs negative-control-results.json 2>&1)"
+        VERIFIER_STATUS=$?
+        set -e
+        echo "$VERIFIER_OUTPUT"
+        if [ "$VERIFIER_STATUS" -eq 0 ]; then
+          echo "::error::verifier accepted the deliberately failing Playwright result"
+          exit 1
+        fi
+        if ! printf '%s' "$VERIFIER_OUTPUT" | grep -Fq '1 unexpected test failure(s)'; then
+          echo "::error::verifier failed without the expected unexpected-test diagnostic"
+          exit 1
+        fi
         cat negative-control-diagnostics.json
 
     # Playwright's own webServer (see playwright.config.ts) launches
@@ -303,17 +342,7 @@ jobs:
     # it. Different port means the two reap steps can never target each
     # other's process, no matter the timing.
     - name: Assert port 3100 is not owned by another job
-      run: |
-        PIDS="$(lsof -ti tcp:3100 2>/dev/null || true)"
-        if [ -n "$PIDS" ]; then
-          echo "::error::port 3100 is already occupied; refusing to kill a process not owned by this job: $PIDS"
-          for pid in $PIDS; do
-            echo "--- listener $pid ---"
-            ps -o pid=,ppid=,pgid=,sid=,uid=,stat=,wchan=,args= -p "$pid" || true
-            cat "/proc/$pid/cgroup" 2>/dev/null || true
-          done
-          exit 1
-        fi
+      run: node scripts/assert-port-clean.mjs 3100
 
     # PR-validate, not deploy.yml: on this repo push-to-main IS the deploy
     # (deploy.yml triggers on push to main), so a check that only runs there
@@ -352,18 +381,7 @@ jobs:
 
     - name: Prove token-scoped cleanup released port 3100
       if: always()
-      run: |
-        PIDS="$(lsof -ti tcp:3100 2>/dev/null || true)"
-        if [ -n "$PIDS" ]; then
-          echo "::error::port 3100 is still occupied after token-scoped E2E cleanup: $PIDS"
-          for pid in $PIDS; do
-            echo "--- listener $pid ---"
-            ps -o pid=,ppid=,pgid=,sid=,uid=,stat=,wchan=,args= -p "$pid" || true
-            cat "/proc/$pid/cgroup" 2>/dev/null || true
-          done
-          exit 1
-        fi
-        echo "port 3100 is clean"
+      run: node scripts/assert-port-clean.mjs 3100
 
     - name: Upload Playwright report on failure
       if: failure()

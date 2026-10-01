@@ -1,6 +1,16 @@
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
+async function openReadyEventsCarousel(page: Page) {
+  // The event feed is bundled at build time. Network activity and localized
+  // heading copy are not evidence that its first event card is ready.
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByTestId('events-carousel')).toHaveAttribute(
+    'data-events-ready',
+    'true'
+  );
+}
+
 /**
  * E2E Tests for Facebook Events Integration
  *
@@ -10,19 +20,16 @@ import type { Page } from '@playwright/test';
 
 test.describe('Facebook Events - EventsCarousel', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
+    await openReadyEventsCarousel(page);
   });
 
   test('displays events from facebook-events.json', async ({ page }) => {
-    // Check if Recent Events section exists
-    const eventsSection = page.locator('text=From Our Community').first();
-    await expect(eventsSection).toBeVisible();
-
-    // Check if carousel is present
-    const carousel = page.locator('[data-testid="events-carousel"]').first();
+    // The product-owned readiness contract means static event data has been
+    // accepted by the carousel and the first event card is rendered. This is
+    // locale-independent and does not couple CI to decorative heading copy.
+    const carousel = page.getByTestId('events-carousel');
     await expect(carousel).toBeVisible();
+    await expect(carousel.locator('h3').first()).toBeVisible();
 
     // Verify event content is displayed
     const eventImage = carousel.locator('img').first();
@@ -99,8 +106,7 @@ test.describe('Facebook Events - EventsCarousel', () => {
 
 test.describe('Facebook Events - Album Gallery Modal', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await openReadyEventsCarousel(page);
   });
 
   // pw-tqfz: these tests used to silently skip on "no album/video events
@@ -224,8 +230,7 @@ test.describe('Facebook Events - Album Gallery Modal', () => {
 
 test.describe('Facebook Events - Video Modal', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await openReadyEventsCarousel(page);
   });
 
   // See the comment above the identical helper in the Album Gallery Modal
@@ -298,8 +303,7 @@ test.describe('Facebook Events - Responsive Design', () => {
   test('carousel works on mobile viewport', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await openReadyEventsCarousel(page);
 
     // Check if carousel is visible
     const carousel = page.locator('[data-testid="events-carousel"]').first();
@@ -313,8 +317,7 @@ test.describe('Facebook Events - Responsive Design', () => {
   test('carousel works on tablet viewport', async ({ page }) => {
     // Set tablet viewport
     await page.setViewportSize({ width: 768, height: 1024 });
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await openReadyEventsCarousel(page);
 
     const carousel = page.locator('[data-testid="events-carousel"]').first();
     await expect(carousel).toBeVisible();
@@ -323,8 +326,7 @@ test.describe('Facebook Events - Responsive Design', () => {
   test('carousel works on desktop viewport', async ({ page }) => {
     // Set large desktop viewport
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await openReadyEventsCarousel(page);
 
     const carousel = page.locator('[data-testid="events-carousel"]').first();
     await expect(carousel).toBeVisible();

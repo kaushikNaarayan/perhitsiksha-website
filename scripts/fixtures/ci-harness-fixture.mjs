@@ -16,7 +16,7 @@ if (mode === 'server') {
   process.on('SIGTERM', () => {});
   const server = net.createServer(() => {});
   server.listen(Number(portValue), '127.0.0.1', async () => {
-    await writeFile(readyPath, 'ready\n');
+    await writeFile(readyPath, `${process.pid}\n`);
   });
   await new Promise(() => {});
 }

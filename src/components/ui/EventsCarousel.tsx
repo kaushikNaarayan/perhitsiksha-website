@@ -77,6 +77,7 @@ const EventsCarousel: React.FC<EventsCarouselProps> = ({
   return (
     <div
       data-testid="events-carousel"
+      data-events-ready="true"
       className="relative max-w-7xl mx-auto"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

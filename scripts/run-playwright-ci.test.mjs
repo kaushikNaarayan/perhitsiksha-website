@@ -10,6 +10,15 @@ import test from 'node:test';
 const runner = new URL('./run-playwright-ci.mjs', import.meta.url).pathname;
 const fixture = new URL('./fixtures/ci-harness-fixture.mjs', import.meta.url)
   .pathname;
+const slowListenerProbe = new URL(
+  './fixtures/slow-listener-probe.mjs',
+  import.meta.url
+).pathname;
+const fastListenerProbe = new URL(
+  './fixtures/fast-listener-probe.mjs',
+  import.meta.url
+).pathname;
+const portCheck = new URL('./assert-port-clean.mjs', import.meta.url).pathname;
 const verifier = new URL('./verify-playwright-results.mjs', import.meta.url)
   .pathname;
 
@@ -25,6 +34,7 @@ function runFixture(mode, directory, extraEnv = {}, port = '3100') {
       PLAYWRIGHT_CI_ARGS_JSON: JSON.stringify(args),
       PLAYWRIGHT_CI_DIAGNOSTICS: diagnostics,
       PLAYWRIGHT_CI_PORT: port,
+      PLAYWRIGHT_CI_LISTENER_PROBE_READY_PATH: ready,
       ...extraEnv,
     },
     stdio: 'pipe',
@@ -47,6 +57,23 @@ function runFixture(mode, directory, extraEnv = {}, port = '3100') {
 
 function runVerifier(resultsPath) {
   const child = spawn(process.execPath, [verifier, resultsPath], {
+    stdio: 'pipe',
+  });
+  return new Promise((resolve, reject) => {
+    let output = '';
+    child.stdout.on('data', chunk => {
+      output += chunk;
+    });
+    child.stderr.on('data', chunk => {
+      output += chunk;
+    });
+    child.once('error', reject);
+    child.once('exit', code => resolve({ code, output }));
+  });
+}
+
+function runPortCheck(port) {
+  const child = spawn(process.execPath, [portCheck, String(port)], {
     stdio: 'pipe',
   });
   return new Promise((resolve, reject) => {
@@ -125,6 +152,11 @@ test('hung no-result process tree is killed within the inner bound and frees its
     {
       PLAYWRIGHT_CI_TIMEOUT_MS: '750',
       PLAYWRIGHT_CI_KILL_GRACE_MS: '250',
+      PLAYWRIGHT_CI_LISTENER_PROBE_COMMAND: process.execPath,
+      PLAYWRIGHT_CI_LISTENER_PROBE_ARGS_JSON: JSON.stringify([
+        fastListenerProbe,
+        '{readyPath}',
+      ]),
     },
     String(port)
   );
@@ -137,7 +169,9 @@ test('hung no-result process tree is killed within the inner bound and frees its
   const diagnostics = JSON.parse(await readFile(result.diagnostics, 'utf8'));
   assert.equal(diagnostics.timedOut, true);
   assert.ok(
-    diagnostics.termination.some(attempt => attempt.listenersBefore.length > 0),
+    diagnostics.termination.some(attempt =>
+      attempt.listenersBefore.some(snapshot => Number.isSafeInteger(snapshot.pid))
+    ),
     'timeout diagnostics should capture the escaped listener before signalling'
   );
   assert.ok(
@@ -160,6 +194,64 @@ test('hung no-result process tree is killed within the inner bound and frees its
   );
 });
 
+test('a stalled listener probe is recorded as an error without extending the lifecycle bound', async t => {
+  const port = await availablePort();
+  const directory = await temporaryDirectory(t);
+  const startedAt = Date.now();
+  const result = await runFixture(
+    'hang',
+    directory,
+    {
+      PLAYWRIGHT_CI_TIMEOUT_MS: '750',
+      PLAYWRIGHT_CI_KILL_GRACE_MS: '250',
+      PLAYWRIGHT_CI_LISTENER_PROBE_COMMAND: process.execPath,
+      PLAYWRIGHT_CI_LISTENER_PROBE_ARGS_JSON: JSON.stringify([
+        slowListenerProbe,
+        '{port}',
+      ]),
+    },
+    String(port)
+  );
+
+  assert.equal(result.code, 124, result.output);
+  assert.ok(
+    Date.now() - startedAt < 5_000,
+    'stalled listener probe exceeded the explicit lifecycle bound'
+  );
+  const diagnostics = JSON.parse(await readFile(result.diagnostics, 'utf8'));
+  assert.ok(
+    diagnostics.termination.some(attempt =>
+      attempt.listenersBefore.some(snapshot => snapshot.listenerSnapshotError)
+    ),
+    'stalled probe must be recorded as an error rather than a listener'
+  );
+  assert.deepEqual(diagnostics.remainingTokenOwnedProcesses, []);
+  await assert.rejects(stat(result.results), { code: 'ENOENT' });
+  await new Promise(resolve => setTimeout(resolve, 100));
+  assert.equal(await canConnect(port), false);
+});
+
+test('bounded port probe accepts a free port and rejects an occupied one', async () => {
+  const port = await availablePort();
+  const free = await runPortCheck(port);
+  assert.equal(free.code, 0, free.output);
+
+  const listener = net.createServer();
+  await new Promise((resolve, reject) => {
+    listener.once('error', reject);
+    listener.listen(port, resolve);
+  });
+  try {
+    const occupied = await runPortCheck(port);
+    assert.equal(occupied.code, 1, occupied.output);
+    assert.match(occupied.output, /occupied or could not be probed/);
+  } finally {
+    await new Promise((resolve, reject) =>
+      listener.close(error => (error ? reject(error) : resolve()))
+    );
+  }
+});
+
 test('missing results fail verification', async t => {
   const directory = await temporaryDirectory(t);
   const verification = await runVerifier(
@@ -179,4 +271,28 @@ test('zero executed tests fail verification', async t => {
   const verification = await runVerifier(emptyResults);
   assert.equal(verification.code, 1, verification.output);
   assert.match(verification.output, /0 tests executed/);
+});
+
+test('flaky retry results fail verification even when Playwright exits zero', async t => {
+  const directory = await temporaryDirectory(t);
+  const flakyResults = path.join(directory, 'flaky-results.json');
+  await writeFile(
+    flakyResults,
+    JSON.stringify({ stats: { expected: 82, unexpected: 0, flaky: 1 } })
+  );
+  const verification = await runVerifier(flakyResults);
+  assert.equal(verification.code, 1, verification.output);
+  assert.match(verification.output, /1 flaky retry result/);
+});
+
+test('unexpected results fail verification', async t => {
+  const directory = await temporaryDirectory(t);
+  const unexpectedResults = path.join(directory, 'unexpected-results.json');
+  await writeFile(
+    unexpectedResults,
+    JSON.stringify({ stats: { expected: 82, unexpected: 1, flaky: 0 } })
+  );
+  const verification = await runVerifier(unexpectedResults);
+  assert.equal(verification.code, 1, verification.output);
+  assert.match(verification.output, /1 unexpected test failure/);
 });

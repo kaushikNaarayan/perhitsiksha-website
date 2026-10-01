@@ -97,14 +97,34 @@ function listenerSnapshots(port) {
     throw new Error(`PLAYWRIGHT_CI_PORT must be a numeric TCP port, received ${port}`);
   }
   try {
-    return execFileSync('lsof', ['-ti', `tcp:${port}`], { encoding: 'utf8' })
+    const command = process.env.PLAYWRIGHT_CI_LISTENER_PROBE_COMMAND ?? 'lsof';
+    const args = process.env.PLAYWRIGHT_CI_LISTENER_PROBE_ARGS_JSON
+      ? JSON.parse(process.env.PLAYWRIGHT_CI_LISTENER_PROBE_ARGS_JSON).map(arg =>
+          arg
+            .replaceAll('{port}', port)
+            .replaceAll(
+              '{readyPath}',
+              process.env.PLAYWRIGHT_CI_LISTENER_PROBE_READY_PATH ?? ''
+            )
+        )
+      : ['-ti', `tcp:${port}`];
+    if (!Array.isArray(args) || args.some(arg => typeof arg !== 'string')) {
+      throw new Error('PLAYWRIGHT_CI_LISTENER_PROBE_ARGS_JSON must be a JSON array of strings');
+    }
+    // Timeout diagnostics run on shared self-hosted runners. A stalled probe
+    // must be recorded as an error, never allowed to defeat the harness bound.
+    return execFileSync(command, args, {
+      encoding: 'utf8',
+      timeout: 500,
+      killSignal: 'SIGKILL',
+    })
       .split(/\s+/)
       .filter(Boolean)
       .map(processSnapshot)
       .filter(Boolean);
   } catch (error) {
-    // lsof returns 1 when no listener exists; other failures are still useful
-    // diagnostics but must not broaden cleanup beyond this run's token.
+    // A missing listener is clean. Any probe failure remains an explicit
+    // diagnostic and is not equivalent to observing a listener.
     if (error.status === 1) return [];
     return [{ listenerSnapshotError: error.message }];
   }
