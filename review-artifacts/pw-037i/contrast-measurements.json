@@ -1,0 +1,47 @@
+{
+  "bead": "pw-037i",
+  "auditedFrontendBaseline": "36e89e5f7e2024b08e6035c668afe5ef20846704",
+  "surface": "portalled mobile navigation",
+  "component": "VisitorCounter",
+  "finding": "The canonical resting token pair passes AA; ancestor opacity during the GSAP stagger creates a transient contrast failure.",
+  "reportedFailingSamples": {
+    "light": {
+      "contrastRatio": 1.76,
+      "source": "authenticated pw-037i PM DESIGN AMENDMENT route"
+    },
+    "dark": {
+      "contrastRatio": 2.0,
+      "source": "authenticated pw-037i PM DESIGN AMENDMENT route"
+    }
+  },
+  "restingTargets": {
+    "light": {
+      "foregroundToken": "--ink-body",
+      "foreground": "#63605D",
+      "backgroundToken": "--surface-page",
+      "background": "#F9F4F2",
+      "contrastRatio": 5.726
+    },
+    "dark": {
+      "foregroundToken": "--ink-body",
+      "foreground": "#BDB7B4",
+      "backgroundToken": "--surface-page",
+      "background": "#141314",
+      "contrastRatio": 9.352
+    }
+  },
+  "observedMechanism": {
+    "counterOwnOpacity": 1,
+    "animatedAncestorSelector": ".mobile-nav-item",
+    "animatedProperties": ["opacity", "transform"],
+    "durationSeconds": 0.4,
+    "staggerSeconds": 0.05,
+    "restingAncestorOpacity": 1
+  },
+  "target": {
+    "minimumContrastRatio": 4.5,
+    "counterAncestorOpacityForEveryRenderedFrame": 1,
+    "supportRowMotion": "transform-only under no-preference; none under reduced motion",
+    "newTokens": false
+  }
+}

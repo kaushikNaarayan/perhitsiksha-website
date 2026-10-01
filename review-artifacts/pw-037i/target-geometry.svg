@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img" aria-labelledby="title desc">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;600;700&amp;family=Anek+Latin:wght@400;600;700&amp;display=swap');</style>
+  <title id="title">Perhitsiksha mobile navigation portal geometry</title>
+  <desc id="desc">Annotated mobile and desktop layouts showing a viewport-covering warm-white mobile navigation dialog rendered outside the sticky header.</desc>
+  <rect width="1440" height="980" fill="#E8E2DE"/>
+  <text x="64" y="62" font-family="Anek Latin, sans-serif" font-size="26" font-weight="700" fill="#2D2C2B">PW-037I · VIEWPORT-SAFE MOBILE NAVIGATION</text>
+  <text x="64" y="94" font-family="Anek Latin, sans-serif" font-size="16" fill="#63605D">Portal the existing dialog to document.body · preserve sticky header and shared DS</text>
+
+  <g transform="translate(64 132)">
+    <rect width="390" height="760" rx="24" fill="#F9F4F2" stroke="#2D2C2B" stroke-width="3"/>
+    <rect x="1.5" y="1.5" width="387" height="757" rx="22" fill="none" stroke="#0061EF" stroke-width="3" stroke-dasharray="10 8"/>
+    <text x="24" y="35" font-family="Anek Latin, sans-serif" font-size="13" font-weight="700" fill="#0061EF">MOBILE · EN · 390×760</text>
+    <g transform="translate(24 56)">
+      <rect width="342" height="64" rx="14" fill="#FFFFFF" stroke="#E2DED9"/>
+      <circle cx="28" cy="32" r="16" fill="#FF7300" opacity="0.18"/>
+      <text x="54" y="39" font-family="Anek Latin, sans-serif" font-size="20" font-weight="700" fill="#2D2C2B">Perhitsiksha</text>
+      <rect x="286" y="10" width="44" height="44" rx="12" fill="#F1EAE7"/>
+      <path d="M300 24l16 16m0-16l-16 16" stroke="#2D2C2B" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <g font-family="Anek Latin, sans-serif" font-size="18" font-weight="600">
+      <rect x="24" y="144" width="342" height="52" rx="14" fill="#DCE7FF"/>
+      <text x="42" y="177" fill="#0061EF">Impact</text>
+      <text x="42" y="239" fill="#44423F">Stories</text>
+      <text x="42" y="301" fill="#44423F">Contribute</text>
+    </g>
+    <line x1="24" y1="334" x2="366" y2="334" stroke="#E2DED9"/>
+    <text x="24" y="376" font-family="Anek Latin, sans-serif" font-size="14" font-weight="600" fill="#63605D">THEME</text>
+    <rect x="24" y="392" width="82" height="44" rx="22" fill="#DCE7FF"/>
+    <circle cx="50" cy="414" r="12" fill="#FFFFFF"/>
+    <text x="132" y="420" font-family="Anek Latin, sans-serif" font-size="14" font-weight="600" fill="#63605D">LANGUAGE</text>
+    <rect x="220" y="392" width="100" height="44" rx="22" fill="#DCE7FF"/>
+    <circle cx="246" cy="414" r="18" fill="#FFFFFF"/>
+    <text x="240" y="420" font-family="Anek Latin, sans-serif" font-size="16" font-weight="700" fill="#0061EF">A</text>
+    <text x="280" y="420" font-family="Anek Devanagari, sans-serif" font-size="17" font-weight="700" fill="#63605D">अ</text>
+    <rect x="24" y="472" width="342" height="56" rx="28" fill="#0061EF"/>
+    <text x="195" y="507" text-anchor="middle" font-family="Anek Latin, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">Contribute now</text>
+    <line x1="24" y1="568" x2="366" y2="568" stroke="#E2DED9"/>
+    <g fill="#0061EF">
+      <circle cx="142" cy="610" r="20"/><circle cx="195" cy="610" r="20"/><circle cx="248" cy="610" r="20"/>
+    </g>
+    <text x="195" y="674" text-anchor="middle" font-family="Anek Latin, sans-serif" font-size="15" fill="#63605D">Visitor counter</text>
+    <text x="195" y="728" text-anchor="middle" font-family="Anek Latin, sans-serif" font-size="13" font-weight="700" fill="#0061EF">RECT = 0,0,390,760 · PORTALED ABOVE #ROOT</text>
+  </g>
+
+  <g transform="translate(500 132)">
+    <rect width="390" height="760" rx="24" fill="#141314" stroke="#2D2C2B" stroke-width="3"/>
+    <rect x="1.5" y="1.5" width="387" height="757" rx="22" fill="none" stroke="#66A3FF" stroke-width="3" stroke-dasharray="10 8"/>
+    <text x="24" y="35" font-family="Anek Devanagari, sans-serif" font-size="13" font-weight="700" fill="#66A3FF">मोबाइल · HI · DARK</text>
+    <g transform="translate(24 56)">
+      <rect width="342" height="64" rx="14" fill="#1E1C1D" stroke="#3A3637"/>
+      <circle cx="28" cy="32" r="16" fill="#FF7300" opacity="0.34"/>
+      <text x="54" y="39" font-family="Anek Latin, sans-serif" font-size="20" font-weight="700" fill="#F2EEEC">Perhitsiksha</text>
+      <rect x="286" y="10" width="44" height="44" rx="12" fill="#2A2627"/>
+      <path d="M300 24l16 16m0-16l-16 16" stroke="#F2EEEC" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <g font-family="Anek Devanagari, sans-serif" font-size="20" font-weight="600">
+      <rect x="24" y="144" width="342" height="52" rx="14" fill="#243958"/>
+      <text x="42" y="179" fill="#66A3FF">प्रभाव</text>
+      <text x="42" y="241" fill="#D8D3D0">कहानियाँ</text>
+      <text x="42" y="303" fill="#D8D3D0">योगदान</text>
+    </g>
+    <line x1="24" y1="334" x2="366" y2="334" stroke="#3A3637"/>
+    <rect x="24" y="392" width="82" height="44" rx="22" fill="#243958"/>
+    <circle cx="80" cy="414" r="12" fill="#1E1C1D"/>
+    <rect x="220" y="392" width="100" height="44" rx="22" fill="#243958"/>
+    <circle cx="294" cy="414" r="18" fill="#1E1C1D"/>
+    <text x="238" y="420" font-family="Anek Latin, sans-serif" font-size="16" font-weight="700" fill="#BDB7B4">A</text>
+    <text x="286" y="421" font-family="Anek Devanagari, sans-serif" font-size="17" font-weight="700" fill="#66A3FF">अ</text>
+    <rect x="24" y="472" width="342" height="56" rx="28" fill="#0061EF"/>
+    <text x="195" y="508" text-anchor="middle" font-family="Anek Devanagari, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">अभी योगदान करें</text>
+    <line x1="24" y1="568" x2="366" y2="568" stroke="#3A3637"/>
+    <g fill="#66A3FF"><circle cx="142" cy="610" r="20"/><circle cx="195" cy="610" r="20"/><circle cx="248" cy="610" r="20"/></g>
+    <text x="195" y="674" text-anchor="middle" font-family="Anek Devanagari, sans-serif" font-size="16" fill="#BDB7B4">विज़िटर काउंटर</text>
+    <text x="195" y="728" text-anchor="middle" font-family="Anek Latin, sans-serif" font-size="13" font-weight="700" fill="#66A3FF">SAME GEOMETRY · TOKEN-FLIPPED THEME</text>
+  </g>
+
+  <g transform="translate(936 132)">
+    <rect width="440" height="300" rx="24" fill="#F9F4F2" stroke="#2D2C2B" stroke-width="3"/>
+    <text x="24" y="35" font-family="Anek Latin, sans-serif" font-size="13" font-weight="700" fill="#0061EF">DESKTOP · 1280×800 CONTRACT</text>
+    <rect x="24" y="64" width="392" height="72" rx="16" fill="#FFFFFF" stroke="#E2DED9"/>
+    <circle cx="54" cy="100" r="18" fill="#FF7300" opacity="0.18"/>
+    <text x="82" y="107" font-family="Anek Latin, sans-serif" font-size="18" font-weight="700" fill="#2D2C2B">Perhitsiksha</text>
+    <text x="220" y="106" font-family="Anek Latin, sans-serif" font-size="13" font-weight="600" fill="#0061EF">Impact  Stories  Contribute</text>
+    <rect x="330" y="82" width="72" height="36" rx="18" fill="#0061EF"/>
+    <text x="366" y="105" text-anchor="middle" font-family="Anek Latin, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">Contribute</text>
+    <g font-family="Anek Latin, sans-serif" font-size="15" fill="#44423F">
+      <text x="24" y="178">✓ hamburger absent</text>
+      <text x="24" y="208">✓ mobile dialog absent</text>
+      <text x="24" y="238">✓ body unlocked after resize</text>
+      <text x="24" y="268">✓ sticky blur preserved</text>
+    </g>
+  </g>
+
+  <g transform="translate(936 474)">
+    <rect width="440" height="418" rx="24" fill="#FFFFFF" stroke="#E2DED9" stroke-width="2"/>
+    <text x="24" y="42" font-family="Anek Latin, sans-serif" font-size="17" font-weight="700" fill="#2D2C2B">LAYER + FOCUS ORDER</text>
+    <rect x="34" y="78" width="372" height="66" rx="14" fill="#F1EAE7"/>
+    <text x="54" y="106" font-family="Anek Latin, sans-serif" font-size="13" font-weight="700" fill="#63605D">#ROOT · INERT WHILE OPEN</text>
+    <text x="54" y="127" font-family="Anek Latin, sans-serif" font-size="12" fill="#63605D">page + sticky header · z-header 100</text>
+    <path d="M220 156v36" stroke="#0061EF" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="34" y="204" width="372" height="84" rx="14" fill="#F9F4F2" stroke="#0061EF" stroke-width="2"/>
+    <text x="54" y="234" font-family="Anek Latin, sans-serif" font-size="13" font-weight="700" fill="#0061EF">BODY PORTAL · z-modal 1000</text>
+    <text x="54" y="256" font-family="Anek Latin, sans-serif" font-size="12" fill="#44423F">fixed inset 0 · viewport containing block</text>
+    <text x="54" y="276" font-family="Anek Latin, sans-serif" font-size="12" fill="#44423F">warm page surface · dialog scroll only</text>
+    <g font-family="Anek Latin, sans-serif" font-size="13" fill="#44423F">
+      <text x="34" y="328">1 Open → Close receives focus</text>
+      <text x="34" y="352">2 Tab wraps inside portal</text>
+      <text x="34" y="376">3 Escape/Close → trigger restored</text>
+      <text x="34" y="400">4 Contribute → drawer owns focus + lock</text>
+    </g>
+  </g>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#0061EF"/></marker></defs>
+</svg>
