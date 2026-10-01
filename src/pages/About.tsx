@@ -130,7 +130,7 @@ const About: React.FC = () => {
               </p>
 
               <div className="bg-[rgba(0,97,239,0.06)] border border-[rgba(0,97,239,0.20)] p-8 rounded-2xl">
-                <h4 className="text-lg font-bold text-primary-900 mb-3 flex items-center">
+                <h4 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
                   <Heart
                     className="mr-3 text-primary-600"
                     size="1em"
@@ -138,7 +138,7 @@ const About: React.FC = () => {
                   />
                   {t('whoWeAre.whyItMatters.title')}
                 </h4>
-                <p className="text-primary-800 leading-relaxed">
+                <p className="text-gray-700 leading-relaxed">
                   {t('whoWeAre.whyItMatters.body')}
                 </p>
               </div>
