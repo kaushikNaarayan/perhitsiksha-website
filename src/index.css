@@ -555,7 +555,10 @@
   position: absolute;
   top: -40px;
   left: 6px;
-  background: var(--brand-primary);
+  /* This control must not inherit the lighter dark-theme brand alias: white
+     on that alias is only 2.54:1. The fixed canonical blue is 5.31:1 with
+     white in either theme. */
+  background: var(--blue-200);
   color: white;
   padding: 8px;
   text-decoration: none;
@@ -565,6 +568,10 @@
 
 .skip-link:focus {
   top: 6px;
+  outline: 2px solid transparent;
+  box-shadow:
+    0 0 0 2px var(--surface-page),
+    0 0 0 4px var(--ink-strong);
 }
 
 /* Hide scrollbar for carousel */
