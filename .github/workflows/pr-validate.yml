@@ -320,12 +320,17 @@ jobs:
     # ordering fix alone (running earlier) would not have been safe against
     # it. Different port means the two reap steps can never target each
     # other's process, no matter the timing.
-    - name: Reap orphan dev servers on port 3100
+    - name: Assert port 3100 is not owned by another job
       run: |
         PIDS="$(lsof -ti tcp:3100 2>/dev/null || true)"
         if [ -n "$PIDS" ]; then
-          echo "Killing orphan process(es) on port 3100: $PIDS"
-          kill -9 $PIDS || true
+          echo "::error::port 3100 is already occupied; refusing to kill a process not owned by this job: $PIDS"
+          for pid in $PIDS; do
+            echo "--- listener $pid ---"
+            ps -o pid=,ppid=,pgid=,sid=,uid=,stat=,wchan=,args= -p "$pid" || true
+            cat "/proc/$pid/cgroup" 2>/dev/null || true
+          done
+          exit 1
         fi
 
     # PR-validate, not deploy.yml: on this repo push-to-main IS the deploy
@@ -345,6 +350,7 @@ jobs:
         VITE_ENVIRONMENT: development
         VITE_COUNTER_BASE_COUNT: "10"
         PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-results.json
+        PLAYWRIGHT_CI_PORT: "3100"
         # This bound is intentionally inside the 20-minute Actions job bound.
         # It owns the entire process group, including Playwright's Vite
         # webServer and browser children, even before the first spec starts.
@@ -362,23 +368,17 @@ jobs:
       if: always()
       run: node scripts/verify-playwright-results.mjs
 
-    - name: Prove port 3100 is clean
+    - name: Prove token-scoped cleanup released port 3100
       if: always()
       run: |
         PIDS="$(lsof -ti tcp:3100 2>/dev/null || true)"
         if [ -n "$PIDS" ]; then
-          echo "Cleaning leaked process(es) on port 3100: $PIDS"
-          kill $PIDS 2>/dev/null || true
-          sleep 1
-          PIDS="$(lsof -ti tcp:3100 2>/dev/null || true)"
-        fi
-        if [ -n "$PIDS" ]; then
-          echo "Force-killing leaked process(es) on port 3100: $PIDS"
-          kill -9 $PIDS 2>/dev/null || true
-          sleep 1
-        fi
-        if lsof -ti tcp:3100 >/dev/null 2>&1; then
-          echo "::error::port 3100 is still occupied after E2E cleanup"
+          echo "::error::port 3100 is still occupied after token-scoped E2E cleanup: $PIDS"
+          for pid in $PIDS; do
+            echo "--- listener $pid ---"
+            ps -o pid=,ppid=,pgid=,sid=,uid=,stat=,wchan=,args= -p "$pid" || true
+            cat "/proc/$pid/cgroup" 2>/dev/null || true
+          done
           exit 1
         fi
         echo "port 3100 is clean"

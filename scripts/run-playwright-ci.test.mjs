@@ -24,6 +24,7 @@ function runFixture(mode, directory, extraEnv = {}, port = '3100') {
       PLAYWRIGHT_CI_COMMAND: process.execPath,
       PLAYWRIGHT_CI_ARGS_JSON: JSON.stringify(args),
       PLAYWRIGHT_CI_DIAGNOSTICS: diagnostics,
+      PLAYWRIGHT_CI_PORT: port,
       ...extraEnv,
     },
     stdio: 'pipe',
@@ -135,6 +136,19 @@ test('hung no-result process tree is killed within the inner bound and frees its
   );
   const diagnostics = JSON.parse(await readFile(result.diagnostics, 'utf8'));
   assert.equal(diagnostics.timedOut, true);
+  assert.ok(
+    diagnostics.termination.some(attempt => attempt.listenersBefore.length > 0),
+    'timeout diagnostics should capture the escaped listener before signalling'
+  );
+  assert.ok(
+    diagnostics.termination.some(attempt => attempt.signal === 'SIGTERM'),
+    'timeout should record TERM ownership diagnostics'
+  );
+  assert.ok(
+    diagnostics.termination.some(attempt => attempt.signal === 'SIGKILL'),
+    'escaped descendant should require token-scoped KILL cleanup'
+  );
+  assert.deepEqual(diagnostics.remainingTokenOwnedProcesses, []);
   await assert.rejects(stat(result.results), { code: 'ENOENT' });
 
   // Give the kernel a short interval to release the listener after SIGTERM.

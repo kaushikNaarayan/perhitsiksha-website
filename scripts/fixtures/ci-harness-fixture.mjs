@@ -32,9 +32,15 @@ if (mode === 'hang') {
       portValue,
     ],
     {
+      // Escape the runner's original process group to reproduce the CI
+      // failure: token-based cleanup, not group cleanup, must reap it.
+      detached: true,
       stdio: 'inherit',
     }
-  );
+  ).unref();
+  // A detached/unref'd child no longer keeps this parent's event loop alive.
+  // Keep the intentional hang alive until the runner's timeout terminates it.
+  setInterval(() => {}, 1_000);
   await new Promise(() => {});
 }
 

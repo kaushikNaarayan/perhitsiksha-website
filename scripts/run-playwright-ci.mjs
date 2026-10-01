@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { readdirSync, readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
@@ -46,6 +48,96 @@ function signalProcessTree(child, signal) {
   }
 }
 
+function processSnapshot(pid) {
+  try {
+    const stat = readFileSync(`/proc/${pid}/stat`, 'utf8');
+    const fields = stat.slice(stat.lastIndexOf(')') + 2).trim().split(/\s+/);
+    const status = readFileSync(`/proc/${pid}/status`, 'utf8');
+    const uid = status.match(/^Uid:\s+(\d+)/m)?.[1] ?? null;
+    return {
+      pid: Number(pid),
+      command: readFileSync(`/proc/${pid}/cmdline`, 'utf8')
+        .split('\0')
+        .filter(Boolean)
+        .join(' '),
+      uid,
+      ppid: Number(fields[1]),
+      pgid: Number(fields[2]),
+      sid: Number(fields[3]),
+      state: fields[0],
+      wchan: readFileSync(`/proc/${pid}/wchan`, 'utf8').trim(),
+      cgroup: readFileSync(`/proc/${pid}/cgroup`, 'utf8').trim(),
+    };
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null;
+    return { pid: Number(pid), snapshotError: error.message };
+  }
+}
+
+function tokenOwnedProcesses(token) {
+  return readdirSync('/proc', { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && /^\d+$/.test(entry.name))
+    .map(entry => entry.name)
+    .filter(pid => {
+      try {
+        return readFileSync(`/proc/${pid}/environ`, 'utf8')
+          .split('\0')
+          .includes(`PLAYWRIGHT_CI_RUN_TOKEN=${token}`);
+      } catch (error) {
+        return false;
+      }
+    })
+    .map(processSnapshot)
+    .filter(Boolean);
+}
+
+function listenerSnapshots(port) {
+  if (port === undefined) return [];
+  if (!/^\d+$/.test(port)) {
+    throw new Error(`PLAYWRIGHT_CI_PORT must be a numeric TCP port, received ${port}`);
+  }
+  try {
+    return execFileSync('lsof', ['-ti', `tcp:${port}`], { encoding: 'utf8' })
+      .split(/\s+/)
+      .filter(Boolean)
+      .map(processSnapshot)
+      .filter(Boolean);
+  } catch (error) {
+    // lsof returns 1 when no listener exists; other failures are still useful
+    // diagnostics but must not broaden cleanup beyond this run's token.
+    if (error.status === 1) return [];
+    return [{ listenerSnapshotError: error.message }];
+  }
+}
+
+function signalTokenOwnedProcesses(token, signal, terminationLog, port) {
+  const before = tokenOwnedProcesses(token);
+  const listenersBefore = listenerSnapshots(port);
+  const signals = before.map(snapshot => {
+    try {
+      process.kill(snapshot.pid, signal);
+      return { pid: snapshot.pid, result: 'sent' };
+    } catch (error) {
+      return { pid: snapshot.pid, result: 'failed', error: error.message };
+    }
+  });
+  const after = tokenOwnedProcesses(token);
+  const listenersAfter = listenerSnapshots(port);
+  terminationLog.push({
+    at: new Date().toISOString(),
+    signal,
+    before,
+    listenersBefore,
+    signals,
+    after,
+    listenersAfter,
+  });
+}
+
+function delay(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
 async function main() {
   const { command, args } = commandFromEnvironment();
   const timeoutMs = positiveInteger(
@@ -60,7 +152,10 @@ async function main() {
   );
   const diagnosticsPath =
     process.env.PLAYWRIGHT_CI_DIAGNOSTICS ?? 'playwright-ci-diagnostics.json';
+  const monitoredPort = process.env.PLAYWRIGHT_CI_PORT;
+  const runToken = randomUUID();
   const startedAt = new Date();
+  const terminationLog = [];
 
   console.log(
     `[playwright-ci] starting ${command} ${args.join(' ')}; ` +
@@ -69,7 +164,9 @@ async function main() {
 
   const child = spawn(command, args, {
     detached: process.platform !== 'win32',
-    env: process.env,
+    // Every descendant gets a unique, job-local ownership marker. Unlike a
+    // process group, this survives a child calling setsid() or reparenting.
+    env: { ...process.env, PLAYWRIGHT_CI_RUN_TOKEN: runToken },
     stdio: 'inherit',
   });
 
@@ -82,11 +179,23 @@ async function main() {
         'terminating the complete Playwright process group'
     );
     signalProcessTree(child, 'SIGTERM');
+    signalTokenOwnedProcesses(
+      runToken,
+      'SIGTERM',
+      terminationLog,
+      monitoredPort
+    );
     forcedKillTimer = setTimeout(() => {
       console.error(
         `[playwright-ci] process group did not exit within ${killGraceMs}ms; sending SIGKILL`
       );
       signalProcessTree(child, 'SIGKILL');
+      signalTokenOwnedProcesses(
+        runToken,
+        'SIGKILL',
+        terminationLog,
+        monitoredPort
+      );
     }, killGraceMs);
   }, timeoutMs);
 
@@ -109,7 +218,19 @@ async function main() {
   // The group leader can obey SIGTERM while a browser or webServer child
   // ignores it. Reap the group once more after the leader exits so those
   // descendants cannot outlive a timed-out run.
-  if (timedOut) signalProcessTree(child, 'SIGKILL');
+  if (timedOut) {
+    // The process-group leader can exit before the grace timer while an
+    // escaped Vite/browser child ignores TERM. Wait out that grace, then
+    // reap every remaining process bearing this run's token.
+    await delay(killGraceMs);
+    signalProcessTree(child, 'SIGKILL');
+    signalTokenOwnedProcesses(
+      runToken,
+      'SIGKILL',
+      terminationLog,
+      monitoredPort
+    );
+  }
 
   const finishedAt = new Date();
   const diagnostics = {
@@ -122,6 +243,9 @@ async function main() {
     timedOut,
     exitCode: result.code,
     signal: result.signal,
+    runToken,
+    termination: terminationLog,
+    remainingTokenOwnedProcesses: tokenOwnedProcesses(runToken),
   };
   await writeFile(diagnosticsPath, `${JSON.stringify(diagnostics, null, 2)}\n`);
 
