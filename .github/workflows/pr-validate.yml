@@ -239,6 +239,7 @@ jobs:
   e2e-tests:
     runs-on: [self-hosted, gt2]
     needs: validate
+    timeout-minutes: 20
 
     steps:
     - name: Checkout
@@ -266,14 +267,48 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    # Self-hosted gt2 runners are bare Node images, not the Playwright
-    # GitHub-hosted image — they do NOT ship Playwright's browsers. A run
-    # that skips this step doesn't fail loudly; every test times out waiting
-    # for a browser launch that never completes (pw-goht). --with-deps also
-    # installs the OS-level shared libraries Chromium needs, which a bare
-    # runner won't have either.
+    # Install Playwright's pinned browser without mutating runner-wide OS
+    # packages. The gt2 image owns its system dependencies; CI jobs must not
+    # mutate system packages on shared self-hosted hosts.
     - name: Install Playwright browsers
-      run: npx playwright install --with-deps chromium
+      run: |
+        BROWSERS_PATH="${{ runner.temp }}/ms-playwright"
+        export PLAYWRIGHT_BROWSERS_PATH="$BROWSERS_PATH"
+        echo "PLAYWRIGHT_BROWSERS_PATH=$BROWSERS_PATH" >> "$GITHUB_ENV"
+
+        npx playwright install chromium
+
+        BROWSER_EXECUTABLE="$(find "$BROWSERS_PATH" -type f \( -name chrome -o -name chrome-headless-shell \) -perm -u+x -print -quit)"
+        if [ -z "$BROWSER_EXECUTABLE" ]; then
+          echo "::error::Playwright installed no executable Chromium under $BROWSERS_PATH"
+          exit 1
+        fi
+        echo "Installed job-local Chromium executable: $BROWSER_EXECUTABLE"
+
+    - name: Verify E2E lifecycle harness contracts
+      run: npm run test:ci-harness
+
+    - name: Run deliberately failing Playwright negative control
+      id: playwright-negative-control
+      continue-on-error: true
+      env:
+        PLAYWRIGHT_JSON_OUTPUT_NAME: ${{ github.workspace }}/negative-control-results.json
+        PLAYWRIGHT_CI_ARGS_JSON: '["test","--config=scripts/fixtures/playwright-failure.config.mjs","--reporter=list,json"]'
+        PLAYWRIGHT_CI_DIAGNOSTICS: negative-control-diagnostics.json
+        PLAYWRIGHT_CI_TIMEOUT_MS: "60000"
+      run: node scripts/run-playwright-ci.mjs
+
+    - name: Verify Playwright negative control was rejected
+      if: always()
+      env:
+        NEGATIVE_CONTROL_OUTCOME: ${{ steps.playwright-negative-control.outcome }}
+      run: |
+        if [ "$NEGATIVE_CONTROL_OUTCOME" != "failure" ]; then
+          echo "::error::deliberately failing Playwright spec was not rejected"
+          exit 1
+        fi
+        node scripts/verify-playwright-results.mjs negative-control-results.json
+        cat negative-control-diagnostics.json
 
     # Playwright's own webServer (see playwright.config.ts) launches
     # `npm run dev` on a DEDICATED port (3100 under CI) precisely so this
@@ -285,12 +320,17 @@ jobs:
     # ordering fix alone (running earlier) would not have been safe against
     # it. Different port means the two reap steps can never target each
     # other's process, no matter the timing.
-    - name: Reap orphan dev servers on port 3100
+    - name: Assert port 3100 is not owned by another job
       run: |
         PIDS="$(lsof -ti tcp:3100 2>/dev/null || true)"
         if [ -n "$PIDS" ]; then
-          echo "Killing orphan process(es) on port 3100: $PIDS"
-          kill -9 $PIDS || true
+          echo "::error::port 3100 is already occupied; refusing to kill a process not owned by this job: $PIDS"
+          for pid in $PIDS; do
+            echo "--- listener $pid ---"
+            ps -o pid=,ppid=,pgid=,sid=,uid=,stat=,wchan=,args= -p "$pid" || true
+            cat "/proc/$pid/cgroup" 2>/dev/null || true
+          done
+          exit 1
         fi
 
     # PR-validate, not deploy.yml: on this repo push-to-main IS the deploy
@@ -310,29 +350,48 @@ jobs:
         VITE_ENVIRONMENT: development
         VITE_COUNTER_BASE_COUNT: "10"
         PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-results.json
-      run: npx playwright test --reporter=list,json
+        PLAYWRIGHT_CI_PORT: "3100"
+        # This bound is intentionally inside the 20-minute Actions job bound.
+        # It owns the entire process group, including Playwright's Vite
+        # webServer and browser children, even before the first spec starts.
+        PLAYWRIGHT_CI_TIMEOUT_MS: "720000"
+      run: |
+        BROWSER_EXECUTABLE="$(find "$PLAYWRIGHT_BROWSERS_PATH" -type f \( -name chrome -o -name chrome-headless-shell \) -perm -u+x -print -quit)"
+        if [ -z "$BROWSER_EXECUTABLE" ]; then
+          echo "::error::No executable Chromium remains under job-local PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH"
+          exit 1
+        fi
+        echo "Using job-local Chromium executable: $BROWSER_EXECUTABLE"
+        node scripts/run-playwright-ci.mjs
 
     - name: Verify the suite actually ran specs
       if: always()
+      run: node scripts/verify-playwright-results.mjs
+
+    - name: Prove token-scoped cleanup released port 3100
+      if: always()
       run: |
-        if [ ! -f playwright-results.json ]; then
-          echo "::error::playwright-results.json missing — the suite did not run at all."
+        PIDS="$(lsof -ti tcp:3100 2>/dev/null || true)"
+        if [ -n "$PIDS" ]; then
+          echo "::error::port 3100 is still occupied after token-scoped E2E cleanup: $PIDS"
+          for pid in $PIDS; do
+            echo "--- listener $pid ---"
+            ps -o pid=,ppid=,pgid=,sid=,uid=,stat=,wchan=,args= -p "$pid" || true
+            cat "/proc/$pid/cgroup" 2>/dev/null || true
+          done
           exit 1
         fi
-        node -e '
-          const r = require("./playwright-results.json");
-          const total = (r.stats?.expected ?? 0) + (r.stats?.unexpected ?? 0) + (r.stats?.flaky ?? 0);
-          console.log("Playwright ran " + total + " test(s): " + JSON.stringify(r.stats));
-          if (total === 0) {
-            console.error("::error::0 tests matched — this job would silently pass on an empty suite. Failing explicitly.");
-            process.exit(1);
-          }
-        '
+        echo "port 3100 is clean"
 
     - name: Upload Playwright report on failure
       if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: playwright-report
-        path: playwright-report/
+        path: |
+          playwright-report/
+          test-results/
+          playwright-results.json
+          playwright-ci-diagnostics.json
+        if-no-files-found: warn
         retention-days: 7
