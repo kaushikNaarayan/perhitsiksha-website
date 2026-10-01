@@ -417,10 +417,8 @@ const Testimonials: React.FC = () => {
       <section className="bg-gray-50 py-16 sm:py-20">
         <div className="max-w-4xl mx-auto container-padding">
           <div className="rounded-2xl bg-primary-500 text-white shadow-xl p-8 sm:p-12 text-center">
-            <h2 className="heading-2 mb-4">{t('cta.title')}</h2>
-            <p className="text-xl mb-8 text-primary-100">
-              {t('cta.description')}
-            </p>
+            <h2 className="heading-2 mb-4 text-white">{t('cta.title')}</h2>
+            <p className="text-xl mb-8 text-white">{t('cta.description')}</p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

@@ -166,7 +166,10 @@ jobs:
       # Setup Node.js resolves npm's cache dir, so every later step
       # (including npm ci) installs against an isolated dir instead of
       # racing the shared one.
-      run: echo "NPM_CONFIG_CACHE=${{ runner.temp }}/npm-cache" >> "$GITHUB_ENV"
+      run: |
+        echo "NPM_CONFIG_CACHE=${{ runner.temp }}/npm-cache" >> "$GITHUB_ENV"
+        # Browser binaries are isolated to this disposable job directory.
+        echo "PLAYWRIGHT_BROWSERS_PATH=${{ runner.temp }}/ms-playwright" >> "$GITHUB_ENV"
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -197,16 +200,19 @@ jobs:
     - name: Wait for server
       run: npx wait-on http://localhost:3000
 
-    - name: Install axe-core CLI
-      run: npm install -g @axe-core/cli
-      
     - name: Run accessibility tests
       run: |
-        # Test main pages
-        axe http://localhost:3000 --exit
-        axe http://localhost:3000/about --exit
-        axe http://localhost:3000/testimonials --exit
-        axe http://localhost:3000/stories --exit
+        npx playwright install chromium
+        npm run test:a11y -- http://localhost:3000 http://localhost:3000/about http://localhost:3000/testimonials
+        npm run test:a11y -- --seed-violation --expect-failure --expect-image-alt
+        if npm run test:a11y -- --seed-conforming --expect-failure --expect-image-alt; then
+          echo "::error::Conforming image unexpectedly satisfied the image-alt control" >&2
+          exit 1
+        fi
+        if npm run test:a11y -- --never-settles; then
+          echo "::error::Accessibility readiness control unexpectedly settled" >&2
+          exit 1
+        fi
 
   dependency-audit:
     runs-on: [self-hosted, gt2]
