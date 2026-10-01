@@ -73,7 +73,7 @@ npm run validate:events     # Validate facebook-events.json schema
   - Scrolling ticker animation on mobile/tablet (<1024px)
   - Hover-pause only works on devices with true hover capability (desktop with mouse)
   - Content: Registration announcement with link to certificate
-- **Carousels:** `EnhancedCarousel`, `TestimonialCarousel`, `PeekCarousel`, `EventsCarousel` - various carousel implementations with drag-to-scroll, autoplay, and accessibility features
+- **Carousels:** `TestimonialCarousel`, `PeekCarousel`, `EventsCarousel` - various carousel implementations with drag-to-scroll, autoplay, and accessibility features
   - **EventsCarousel** - Auto-rotating carousel for Recent Events section (automated via Facebook API)
     - Auto-rotates every 4 seconds (configurable via `autoRotateInterval` prop)
     - Pauses on hover (desktop), continuous rotation on touch devices
