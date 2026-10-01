@@ -204,7 +204,11 @@ jobs:
       run: |
         npx playwright install chromium
         npm run test:a11y -- http://localhost:3000 http://localhost:3000/about http://localhost:3000/testimonials
-        npm run test:a11y -- --seed-violation --expect-failure
+        npm run test:a11y -- --seed-violation --expect-failure --expect-image-alt
+        if npm run test:a11y -- --seed-conforming --expect-failure --expect-image-alt; then
+          echo "::error::Conforming image unexpectedly satisfied the image-alt control" >&2
+          exit 1
+        fi
         if npm run test:a11y -- --never-settles; then
           echo "::error::Accessibility readiness control unexpectedly settled" >&2
           exit 1

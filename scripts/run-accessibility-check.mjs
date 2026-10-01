@@ -3,7 +3,9 @@ import { chromium } from '@playwright/test';
 
 const args = new Set(process.argv.slice(2));
 const seededViolation = args.has('--seed-violation');
+const seededConforming = args.has('--seed-conforming');
 const expectFailure = args.has('--expect-failure');
+const expectImageAlt = args.has('--expect-image-alt');
 const neverSettles = args.has('--never-settles');
 const urls = process.argv.slice(2).filter(arg => !arg.startsWith('--'));
 const targets =
@@ -45,9 +47,19 @@ try {
 
   for (const target of targets) {
     const page = await context.newPage();
-    if (seededViolation) {
+    if (seededViolation || seededConforming) {
+      const alt = seededConforming ? 'A decorative test image' : null;
       await page.setContent(
-        '<main><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="></main>'
+        `<!doctype html>
+        <html lang="en">
+          <head><title>Accessibility scanner control</title></head>
+          <body>
+            <main>
+              <h1>Accessibility scanner control</h1>
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="${alt ? ` alt="${alt}"` : ''}>
+            </main>
+          </body>
+        </html>`
       );
     } else {
       await page.goto(target, { waitUntil: 'networkidle' });
@@ -72,14 +84,28 @@ try {
   }
 
   const found = violations.length > 0;
+  const foundImageAlt = violations.some(
+    violation => violation.id === 'image-alt'
+  );
   console.log(
     JSON.stringify(
-      { seededViolation, neverSettles, targets, violations },
+      {
+        seededViolation,
+        seededConforming,
+        expectImageAlt,
+        neverSettles,
+        targets,
+        violations,
+      },
       null,
       2
     )
   );
-  if (expectFailure ? !found : found) process.exitCode = 1;
+  if (expectFailure) {
+    if (expectImageAlt ? !foundImageAlt : !found) process.exitCode = 1;
+  } else if (found) {
+    process.exitCode = 1;
+  }
 } finally {
   await context.close();
   await browser.close();
