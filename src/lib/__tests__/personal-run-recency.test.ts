@@ -10,6 +10,7 @@ import {
   evaluateSuccessfulRunRecency,
   loadFixtureChecks,
   loadImmutableDeployChecks,
+  MAX_SUCCESS_AGE_MS,
 } from '../../../scripts/check-personal-run-recency.mjs';
 
 const now = Date.parse('2026-09-30T10:00:00Z');
@@ -58,10 +59,17 @@ describe('immutable personal deploy recency detector', () => {
         response({ check_runs: [deploy('2026-09-30T09:50:05Z')] })
       );
     const result = await loadImmutableDeployChecks({
+      now,
       fetchImpl,
       execImpl: lsRemote,
     });
-    expect(result).toMatchObject({ depth: 1 });
+    expect(result).toMatchObject({ depth: 1, source: 'immutable-check-runs' });
+    expect(result.checks).toHaveLength(1);
+    expect(fetchImpl.mock.calls.map(call => call[0])).toEqual([
+      expect.stringContaining(`/commits/${sha}/check-runs`),
+      expect.stringContaining(`/commits/${sha}`),
+      expect.stringContaining(`/commits/${parent}/check-runs`),
+    ]);
     expect(evaluateSuccessfulRunRecency(result.checks, now).ok).toBe(true);
   });
   it('fails stale deploy and ignores unrelated Pages success', async () => {
@@ -84,7 +92,7 @@ describe('immutable personal deploy recency detector', () => {
         })
       );
     expect(
-      (await loadImmutableDeployChecks({ fetchImpl, execImpl: lsRemote }))
+      (await loadImmutableDeployChecks({ now, fetchImpl, execImpl: lsRemote }))
         .checks
     ).toEqual([]);
   });
@@ -142,13 +150,44 @@ describe('immutable personal deploy recency detector', () => {
     expect(fetchImpl.mock.calls[1][0]).toContain(`/commits/${sha}`);
   });
 
-  it('stops at the 48-hour horizon without fetching a parent', async () => {
+  it('walks a commit exactly at the 48-hour horizon', async () => {
     const fetchImpl = vi
       .fn()
       .mockResolvedValueOnce(response({ check_runs: [] }))
       .mockResolvedValueOnce(
         response({
-          commit: { author: { date: '2026-09-27T09:00:00Z' } },
+          commit: {
+            author: {
+              date: new Date(now - MAX_SUCCESS_AGE_MS).toISOString(),
+            },
+          },
+          parents: [{ sha: parent }],
+        })
+      )
+      .mockResolvedValueOnce(
+        response({ check_runs: [deploy('2026-09-30T09:50:05Z')] })
+      );
+    const result = await loadImmutableDeployChecks({
+      now,
+      fetchImpl,
+      execImpl: lsRemote,
+    });
+    expect(result).toMatchObject({ depth: 1, source: 'immutable-check-runs' });
+    expect(result.checks).toHaveLength(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+  });
+
+  it('stops just outside the 48-hour horizon without fetching a parent', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(response({ check_runs: [] }))
+      .mockResolvedValueOnce(
+        response({
+          commit: {
+            author: {
+              date: new Date(now - MAX_SUCCESS_AGE_MS - 1).toISOString(),
+            },
+          },
           parents: [{ sha: parent }],
         })
       );
