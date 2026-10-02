@@ -1,15 +1,52 @@
 import { test, expect } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+
+const FIRST_CARD_READY_DIAGNOSTIC =
+  'Events carousel first-card semantic content is not ready';
+
+async function assertEventsCarouselFirstCardReady(carousel: Locator) {
+  await expect(carousel).toHaveAttribute('data-events-ready', 'true');
+  await expect(
+    carousel.locator('h3').first(),
+    FIRST_CARD_READY_DIAGNOSTIC
+  ).toBeVisible();
+  await expect(
+    carousel.locator('img').first(),
+    FIRST_CARD_READY_DIAGNOSTIC
+  ).toBeVisible();
+}
 
 async function openReadyEventsCarousel(page: Page) {
-  // The event feed is bundled at build time. Network activity and localized
-  // heading copy are not evidence that its first event card is ready.
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByTestId('events-carousel')).toHaveAttribute(
-    'data-events-ready',
-    'true'
-  );
+  // The event feed is bundled at build time. Successful navigation, the root
+  // marker, and the first card's semantic title/media are all required; route
+  // headings and network-idle are not readiness proxies.
+  const response = await page.goto('/', { waitUntil: 'domcontentloaded' });
+  expect(response, 'visitor route must produce a response').not.toBeNull();
+  expect(response!.ok(), 'visitor route must resolve successfully').toBe(true);
+  const carousel = page.getByTestId('events-carousel');
+  await carousel.waitFor({ state: 'attached' });
+  await assertEventsCarouselFirstCardReady(carousel);
 }
+
+test('readiness rejects a root-marker-only carousel control', async ({
+  page,
+}) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const carousel = page.getByTestId('events-carousel');
+  await expect(carousel).toHaveAttribute('data-events-ready', 'true');
+  await carousel
+    .locator('h3')
+    .first()
+    .evaluate(element => element.remove());
+  await carousel
+    .locator('img')
+    .first()
+    .evaluate(element => element.remove());
+
+  await expect(assertEventsCarouselFirstCardReady(carousel)).rejects.toThrow(
+    FIRST_CARD_READY_DIAGNOSTIC
+  );
+});
 
 /**
  * E2E Tests for Facebook Events Integration
@@ -59,7 +96,9 @@ test.describe('Facebook Events - EventsCarousel', () => {
     const carousel = page.locator('[data-testid="events-carousel"]').first();
 
     // Find pagination dots
-    const paginationDots = carousel.locator('button[aria-label*="Go to event"]');
+    const paginationDots = carousel.locator(
+      'button[aria-label*="Go to event"]'
+    );
     const dotCount = await paginationDots.count();
 
     if (dotCount > 1) {
@@ -121,10 +160,15 @@ test.describe('Facebook Events - Album Gallery Modal', () => {
   // the current index happens to be one — and THROW (fail the job loudly)
   // if no such event turns up within a full rotation, instead of skipping.
   // "we could not test this" and "this works" must not look identical.
-  async function navigateToEventType(page: Page, testId: string, maxClicks = 9) {
+  async function navigateToEventType(
+    page: Page,
+    testId: string,
+    maxClicks = 9
+  ) {
     const target = page.locator(`[data-testid="${testId}"]`).first();
     for (let i = 0; i < maxClicks; i++) {
-      if (await target.isVisible({ timeout: 1000 }).catch(() => false)) return target;
+      if (await target.isVisible({ timeout: 1000 }).catch(() => false))
+        return target;
       await page
         .locator('button[aria-label="Next event"]')
         .click({ timeout: 2000 })
@@ -167,21 +211,27 @@ test.describe('Facebook Events - Album Gallery Modal', () => {
     const galleryModal = page.locator('[data-testid="gallery-modal"]');
     await expect(galleryModal).toBeVisible();
 
-    const initialCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
+    const initialCounter = await page
+      .locator('text=/\\d+ \\/ \\d+/')
+      .textContent();
 
     const nextButton = page.locator('button[aria-label="Next image"]');
     if (await nextButton.isVisible()) {
       await nextButton.click();
       await page.waitForTimeout(300);
 
-      const newCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
+      const newCounter = await page
+        .locator('text=/\\d+ \\/ \\d+/')
+        .textContent();
       expect(newCounter).not.toBe(initialCounter);
 
       const prevButton = page.locator('button[aria-label="Previous image"]');
       await prevButton.click();
       await page.waitForTimeout(300);
 
-      const backCounter = await page.locator('text=/\\d+ \\/ \\d+/').textContent();
+      const backCounter = await page
+        .locator('text=/\\d+ \\/ \\d+/')
+        .textContent();
       expect(backCounter).toBe(initialCounter);
     }
 
@@ -212,7 +262,9 @@ test.describe('Facebook Events - Album Gallery Modal', () => {
     const galleryModal = page.locator('[data-testid="gallery-modal"]');
     await expect(galleryModal).toBeVisible();
 
-    const paginationDots = galleryModal.locator('button[aria-label*="Go to image"]');
+    const paginationDots = galleryModal.locator(
+      'button[aria-label*="Go to image"]'
+    );
     const dotCount = await paginationDots.count();
 
     if (dotCount > 1) {
@@ -237,10 +289,15 @@ test.describe('Facebook Events - Video Modal', () => {
   // describe block above — same rationale, kept local to each block since
   // Playwright specs don't share module state across describe blocks by
   // default.
-  async function navigateToEventType(page: Page, testId: string, maxClicks = 9) {
+  async function navigateToEventType(
+    page: Page,
+    testId: string,
+    maxClicks = 9
+  ) {
     const target = page.locator(`[data-testid="${testId}"]`).first();
     for (let i = 0; i < maxClicks; i++) {
-      if (await target.isVisible({ timeout: 1000 }).catch(() => false)) return target;
+      if (await target.isVisible({ timeout: 1000 }).catch(() => false))
+        return target;
       await page
         .locator('button[aria-label="Next event"]')
         .click({ timeout: 2000 })
