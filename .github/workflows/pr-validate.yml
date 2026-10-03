@@ -4,6 +4,12 @@ on:
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:
+    inputs:
+      exercise_job_timeout_negative:
+        description: 'Prove timeout cancellation plus the deliberate red verdict (manual only)'
+        required: false
+        default: false
+        type: boolean
 
 # Allow only one concurrent validation per PR
 concurrency:
@@ -12,7 +18,14 @@ concurrency:
 
 jobs:
   validate:
+    # The manual timeout control deliberately exercises only its own bounded
+    # job; production PR validation always runs this normal path.
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.exercise_job_timeout_negative }}
     runs-on: [self-hosted, gt2]
+    # Bound every shared-runner job so a setup or cache stall becomes terminal
+    # cancelled/non-success instead of occupying a gt2 slot indefinitely. The
+    # manual control's dependent verdict proves the explicit red negative signal.
+    timeout-minutes: 20
     
     steps:
     - name: Checkout
@@ -79,6 +92,7 @@ jobs:
   size-check:
     runs-on: [self-hosted, gt2]
     needs: validate
+    timeout-minutes: 20
     # size-limit-action posts a PR comment; without this the default read-only
     # GITHUB_TOKEN fails with "Resource not accessible by integration".
     permissions:
@@ -149,6 +163,7 @@ jobs:
   accessibility-check:
     runs-on: [self-hosted, gt2]
     needs: validate
+    timeout-minutes: 20
     
     steps:
     - name: Checkout
@@ -395,3 +410,35 @@ jobs:
           playwright-ci-diagnostics.json
         if-no-files-found: warn
         retention-days: 7
+
+  timeout-negative-control:
+    # Manual-only, opt-in proof that Actions terminally cancels a wedged job
+    # at the deadline; the dependent verdict reports the negative contract red.
+    # It has no checkout or dependencies, so it uses at most one gt2 runner
+    # for one minute and cannot affect a PR run.
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.exercise_job_timeout_negative }}
+    runs-on: [self-hosted, gt2]
+    timeout-minutes: 1
+    steps:
+    - name: Deliberately wedge until Actions terminally cancels the timeout job
+      run: |
+        echo "::notice::Intentional timeout control: terminal cancellation is expected; the verdict reports red."
+        while true; do sleep 1; done
+
+  timeout-negative-verdict:
+    # GitHub classifies a job-level timeout as cancelled. This dependent job
+    # turns that observed cutoff into the intentional red workflow outcome.
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.exercise_job_timeout_negative }}
+    needs: timeout-negative-control
+    runs-on: [self-hosted, gt2]
+    steps:
+    - name: Assert the timeout was observed and fail the negative contract
+      env:
+        TIMEOUT_CONTROL_RESULT: ${{ needs.timeout-negative-control.result }}
+      run: |
+        if [ "$TIMEOUT_CONTROL_RESULT" != "cancelled" ]; then
+          echo "::error::Timeout negative control returned unexpected result: $TIMEOUT_CONTROL_RESULT" >&2
+          exit 1
+        fi
+        echo "::error::Bounded timeout control was observed; deliberately failing the negative contract red." >&2
+        exit 1
