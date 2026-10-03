@@ -42,20 +42,32 @@ const INK_BODY: Record<Theme, string> = {
 
 const ORANGE = 'rgb(255, 115, 0)';
 
-async function openHome(page: Page, locale: Locale, theme: Theme) {
-  // Seed storage in the real app origin, then reload so i18next and the theme
-  // component both take their normal initial-load paths.
-  await page.goto('/');
-  await page.evaluate(
+async function seedHomeBeforeBoot(page: Page, locale: Locale, theme: Theme) {
+  await page.addInitScript(
     ({ nextLocale, nextTheme }) => {
-      window.localStorage.setItem('perhit-lang', nextLocale);
-      window.localStorage.setItem('perhit-theme', nextTheme);
+      localStorage.setItem('perhit-lang', nextLocale);
+      localStorage.setItem('perhit-theme', nextTheme);
     },
     { nextLocale: locale, nextTheme: theme }
   );
-  await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('lang', locale);
-  await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+  await page.goto('/');
+}
+
+async function expectHomeBootState(page: Page, locale: Locale, theme: Theme) {
+  const html = page.locator('html');
+  await expect(html, `Hero boot locale mismatch: expected ${locale}`).toHaveAttribute(
+    'lang',
+    locale
+  );
+  await expect(html, `Hero boot theme mismatch: expected ${theme}`).toHaveAttribute(
+    'data-theme',
+    theme
+  );
+}
+
+async function openHome(page: Page, locale: Locale, theme: Theme) {
+  await seedHomeBeforeBoot(page, locale, theme);
+  await expectHomeBootState(page, locale, theme);
 }
 
 async function inspectHero(page: Page, state: AnimationState) {
@@ -91,6 +103,16 @@ async function inspectHero(page: Page, state: AnimationState) {
 }
 
 test.describe('HeroEditorial contrast contract', () => {
+  test('negative control: a wrong pre-boot theme is rejected by the boot contract', async ({
+    page,
+  }) => {
+    await seedHomeBeforeBoot(page, 'en', 'light');
+    await expectHomeBootState(page, 'en', 'light');
+    await expect(expectHomeBootState(page, 'en', 'dark')).rejects.toThrow(
+      'Hero boot theme mismatch: expected dark'
+    );
+  });
+
   for (const cell of CELLS) {
     for (const state of ['mid-SplitText', 'settled'] as const) {
       test(`${cell.locale}/${cell.theme}/${cell.viewport.width} ${state} uses semantic ink with an orange signature underline`, async ({

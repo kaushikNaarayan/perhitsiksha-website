@@ -50,21 +50,45 @@ const ratio = (foreground: string, background: string) => {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 };
 
-async function openHome(page: Page, locale: Locale, theme: Theme) {
-  await page.goto('/');
-  await page.evaluate(
+async function seedHomeBeforeBoot(page: Page, locale: Locale, theme: Theme) {
+  await page.addInitScript(
     ({ nextLocale, nextTheme }) => {
-      window.localStorage.setItem('perhit-lang', nextLocale);
-      window.localStorage.setItem('perhit-theme', nextTheme);
+      localStorage.setItem('perhit-lang', nextLocale);
+      localStorage.setItem('perhit-theme', nextTheme);
     },
     { nextLocale: locale, nextTheme: theme }
   );
-  await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('lang', locale);
-  await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+  await page.goto('/');
+}
+
+async function expectHomeBootState(page: Page, locale: Locale, theme: Theme) {
+  const html = page.locator('html');
+  await expect(html, `Skip-link boot locale mismatch: expected ${locale}`).toHaveAttribute(
+    'lang',
+    locale
+  );
+  await expect(html, `Skip-link boot theme mismatch: expected ${theme}`).toHaveAttribute(
+    'data-theme',
+    theme
+  );
+}
+
+async function openHome(page: Page, locale: Locale, theme: Theme) {
+  await seedHomeBeforeBoot(page, locale, theme);
+  await expectHomeBootState(page, locale, theme);
 }
 
 test.describe('Skip-link accessibility contract', () => {
+  test('negative control: a wrong pre-boot theme is rejected by the boot contract', async ({
+    page,
+  }) => {
+    await seedHomeBeforeBoot(page, 'en', 'light');
+    await expectHomeBootState(page, 'en', 'light');
+    await expect(expectHomeBootState(page, 'en', 'dark')).rejects.toThrow(
+      'Skip-link boot theme mismatch: expected dark'
+    );
+  });
+
   for (const cell of CELLS) {
     test(`${cell.locale}/${cell.theme}/${cell.viewport.width} preserves keyboard access and contrast`, async ({
       page,
