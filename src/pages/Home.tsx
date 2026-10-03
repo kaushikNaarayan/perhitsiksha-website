@@ -631,6 +631,9 @@ const Home: React.FC = () => {
               <Button variant="secondary" size="lg" onClick={openDonation}>
                 {t('joinMission.cta')}
               </Button>
+              <p className="mt-3 max-w-xl text-xs font-medium leading-[1.5] text-white/90 [html[lang='hi']_&]:leading-[1.8]">
+                {t('common:taxNote')}
+              </p>
             </div>
             <img
               src={joinMissionIllustration}

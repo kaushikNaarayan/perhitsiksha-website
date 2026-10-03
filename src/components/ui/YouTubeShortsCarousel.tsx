@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import VideoModal from './VideoModal';
 import BlurImage from './BlurImage';
 import { gsap, prefersReducedMotion, useGSAP } from '../../lib/gsap';
+import { normalizeLoopPosition } from '../../lib/carouselLoop';
 
 interface CelebrityEndorsement {
   id: string;
@@ -33,6 +35,7 @@ interface CelebrityVideoCardProps {
   isDragging: boolean;
   modalIsOpen: boolean;
   onPlay: (celebrity: CelebrityEndorsement) => void;
+  mediaRailRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const CelebrityVideoCard: React.FC<CelebrityVideoCardProps> = ({
@@ -41,6 +44,7 @@ const CelebrityVideoCard: React.FC<CelebrityVideoCardProps> = ({
   isDragging,
   modalIsOpen,
   onPlay,
+  mediaRailRef,
 }) => {
   const { t: tCelebrity } = useTranslation('celebrity');
   const { t: tCommon } = useTranslation('common');
@@ -138,6 +142,7 @@ const CelebrityVideoCard: React.FC<CelebrityVideoCardProps> = ({
       </div>
 
       <div
+        ref={mediaRailRef}
         className="relative w-full overflow-hidden rounded-xl bg-[color:var(--surface-muted)] shadow-lg"
         style={{ aspectRatio: '9 / 16' }}
       >
@@ -207,6 +212,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
 }) => {
   const { t } = useTranslation('celebrity');
   const containerRef = useRef<HTMLDivElement>(null);
+  const mediaRailRef = useRef<HTMLDivElement>(null);
   // Gate the auto-scroll marquee on prefers-reduced-motion (audit pe-702 gap
   // #9) — this loop is a manual rAF/transform animation, not CSS, so the
   // global @media rule in index.css can't stop it; it needs its own check.
@@ -229,6 +235,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   const momentumRef = useRef(0);
 
   const [cursorState, setCursorState] = useState<'grab' | 'grabbing'>('grab');
+  const [controlsTop, setControlsTop] = useState<number | null>(null);
 
   const [modalVideo, setModalVideo] = useState<{
     isOpen: boolean;
@@ -287,11 +294,10 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
       }
 
       // Loop when we've scrolled 50% (seamless infinite scroll)
-      if (positionRef.current <= -halfWidthRef.current) {
-        positionRef.current = 0;
-      } else if (positionRef.current > 0) {
-        positionRef.current = -halfWidthRef.current;
-      }
+      positionRef.current = normalizeLoopPosition(
+        positionRef.current,
+        halfWidthRef.current
+      );
 
       // Direct DOM manipulation for better performance
       if (containerRef.current) {
@@ -310,12 +316,52 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
     };
   }, []); // Empty deps - only run once
 
+  useLayoutEffect(() => {
+    const updateControlsTop = () => {
+      const mediaRail = mediaRailRef.current;
+      if (!mediaRail) return;
+      setControlsTop(mediaRail.offsetTop + mediaRail.offsetHeight / 2);
+    };
+
+    updateControlsTop();
+    const observer = new ResizeObserver(updateControlsTop);
+    if (mediaRailRef.current) observer.observe(mediaRailRef.current);
+    window.addEventListener('resize', updateControlsTop);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateControlsTop);
+    };
+  }, []);
+
   const handleMouseEnter = () => {
     targetVelocityRef.current = 0; // Slow to complete halt
   };
 
   const handleMouseLeave = () => {
     targetVelocityRef.current = restVelocity;
+  };
+
+  const moveByCardPitch = (direction: 'previous' | 'next') => {
+    const firstCard = containerRef.current
+      ?.firstElementChild as HTMLElement | null;
+    if (!firstCard || !containerRef.current) return;
+
+    const gap = Number.parseFloat(
+      window.getComputedStyle(containerRef.current).columnGap
+    );
+    const pitch =
+      firstCard.getBoundingClientRect().width +
+      (Number.isFinite(gap) ? gap : 0);
+
+    // Controls pause the marquee before a deterministic single-card move.
+    targetVelocityRef.current = 0;
+    velocityRef.current = 0;
+    momentumRef.current = 0;
+    positionRef.current = normalizeLoopPosition(
+      positionRef.current + (direction === 'previous' ? pitch : -pitch),
+      halfWidthRef.current
+    );
   };
 
   // Drag handlers
@@ -433,14 +479,10 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      // Scroll right (opposite of visual direction)
-      positionRef.current += 100;
-      momentumRef.current = 5;
+      moveByCardPitch('previous');
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      // Scroll left
-      positionRef.current -= 100;
-      momentumRef.current = -5;
+      moveByCardPitch('next');
     }
   };
 
@@ -474,6 +516,24 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
 
   return (
     <div className="relative overflow-hidden select-none">
+      <button
+        type="button"
+        onClick={() => moveByCardPitch('previous')}
+        style={{ top: controlsTop ?? '50%' }}
+        className="absolute left-2 z-10 grid size-11 min-h-11 min-w-11 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-gray-800 shadow-lg transition-all duration-200 hover:bg-white hover:text-primary-500 hover:scale-105 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 sm:left-4"
+        aria-label={t('previousShortAria')}
+      >
+        <ChevronLeft className="size-4 sm:size-5" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        onClick={() => moveByCardPitch('next')}
+        style={{ top: controlsTop ?? '50%' }}
+        className="absolute right-2 z-10 grid size-11 min-h-11 min-w-11 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-gray-800 shadow-lg transition-all duration-200 hover:bg-white hover:text-primary-500 hover:scale-105 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 sm:right-4"
+        aria-label={t('nextShortAria')}
+      >
+        <ChevronRight className="size-4 sm:size-5" aria-hidden="true" />
+      </button>
       {/* Carousel Container */}
       <div
         role="region"
@@ -508,6 +568,7 @@ const YouTubeShortsCarousel: React.FC<YouTubeShortsCarouselProps> = ({
               isDragging={cursorState === 'grabbing'}
               modalIsOpen={modalVideo.isOpen}
               onPlay={handleVideoPlay}
+              mediaRailRef={index === 0 ? mediaRailRef : undefined}
             />
           ))}
         </div>

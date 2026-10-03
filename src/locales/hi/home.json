@@ -90,7 +90,9 @@
     "title": "हमारे समुदाय से",
     "previousEventAria": "पिछला आयोजन",
     "nextEventAria": "अगला आयोजन",
-    "goToEventAria": "आयोजन {{index}} पर जाएँ"
+    "goToEventAria": "आयोजन {{index}} पर जाएँ",
+    "paginationLabel": "आयोजन पेजिनेशन",
+    "paginationStatus": "आयोजन {{current}} / {{total}}"
   },
   "joinMission": {
     "title": "एक विद्यार्थी की शिक्षा में योगदान दें",

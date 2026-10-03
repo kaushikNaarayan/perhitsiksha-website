@@ -90,7 +90,9 @@
     "title": "From Our Community",
     "previousEventAria": "Previous event",
     "nextEventAria": "Next event",
-    "goToEventAria": "Go to event {{index}}"
+    "goToEventAria": "Go to event {{index}}",
+    "paginationLabel": "Event pagination",
+    "paginationStatus": "Event {{current}} of {{total}}"
   },
   "joinMission": {
     "title": "Fund a Scholar",
