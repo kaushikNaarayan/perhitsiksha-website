@@ -14,6 +14,25 @@ jobs:
     if: github.repository == 'material-lab-io/Perhitsiksha-Website'
     runs-on: [self-hosted, gt2]
     steps:
+      - name: Preflight sync deploy key before network access
+        env:
+          SYNC_DEPLOY_KEY: ${{ secrets.SYNC_DEPLOY_KEY }}
+        run: |
+          node --input-type=module <<'SYNC_DEPLOY_KEY_PREFLIGHT'
+          const diagnostic =
+            'SYNC_DEPLOY_KEY is absent or malformed; refusing personal-repo sync before network access.';
+          const envelope =
+            /^-----BEGIN (?:(OPENSSH|RSA|EC|DSA|ENCRYPTED) )?PRIVATE KEY-----\r?\n([\s\S]*\S[\s\S]*)\r?\n-----END (?:(OPENSSH|RSA|EC|DSA|ENCRYPTED) )?PRIVATE KEY-----$/;
+          const value = process.env.SYNC_DEPLOY_KEY;
+          const invalidFixture = process.env.SYNC_DEPLOY_KEY_INVALID_FIXTURE === '1';
+          const match = typeof value === 'string' && value.trim().match(envelope);
+
+          if (invalidFixture || !match || match[1] !== match[3]) {
+            process.stderr.write(`${diagnostic}\n`);
+            process.exitCode = 1;
+          }
+          SYNC_DEPLOY_KEY_PREFLIGHT
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -30,6 +49,7 @@ jobs:
       - name: Push to personal repo
         # SSH deploy key push triggers deploy.yml on the target repo automatically.
         run: |
+          trap 'echo "Personal-repo sync failed; public domain was not deployed." >&2' ERR
           # Idempotent: self-hosted runners reuse the workspace, so a bare
           # `git remote add` fails with 'remote personal already exists'.
           git remote set-url personal git@github.com:kaushikNaarayan/perhitsiksha-website.git || git remote add personal git@github.com:kaushikNaarayan/perhitsiksha-website.git
