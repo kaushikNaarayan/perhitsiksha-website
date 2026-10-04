@@ -1,0 +1,12 @@
+# Perhitsiksha Website - Robots.txt
+# Allow all web crawlers to index our content
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.perhitsiksha.org/sitemap.xml
+
+# Crawl-delay for polite crawling (optional, helps prevent server overload)
+# Most modern bots ignore this, but it's good practice
+Crawl-delay: 1
